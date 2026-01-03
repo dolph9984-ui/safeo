@@ -1,4 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
+
+export class GenerateAuthUrlDto {
+  @ApiProperty({ example: '' })
+  @IsString()
+  @IsNotEmpty()
+  codeChallenge: string;
+}
 
 export class AuthorizeUrlResponseDto {
   @ApiProperty({ example: 201 })
