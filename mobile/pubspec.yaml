@@ -36,6 +36,9 @@ dependencies:
   cupertino_icons: ^1.0.8
   provider: ^6.1.5+1
   dio: ^5.9.0
+  flutter_appauth: ^7.0.0          # Le meilleur package pour OAuth PKCE sur mobile (gère tout : ouverture navigateur, deep link, PKCE)
+  crypto: ^3.0.3                   # Pour générer le code_challenge (SHA256 + base64url)
+  flutter_secure_storage: ^9.2.2   # Pour stocker le JWT en sécurité (on l’utilisera à la fin)
 
 dev_dependencies:
   flutter_test:
