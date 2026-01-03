@@ -3,10 +3,14 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
+  Query,
+  Res,
 } from '@nestjs/common';
+import { firstValueFrom } from 'rxjs';
 import {
   ApiBody,
   ApiCreatedResponse,
@@ -14,11 +18,11 @@ import {
   ApiBadRequestResponse,
   ApiOkResponse,
 } from '@nestjs/swagger';
+import express from 'express';
 import {
   AuthorizeUrlResponseDto,
   GenerateAuthUrlDto,
 } from './dtos/generate-auth-url.dto';
-import { firstValueFrom } from 'rxjs';
 import { BaseApiReturn } from 'src/interfaces';
 import {
   ExchangeTokenDto,
@@ -94,5 +98,21 @@ export class OauthController {
         "Le code d'autorisation est invalide, expiré ou a déjà été utilisé. Veuillez recommencer le processus d'authentification.",
       );
     }
+  }
+
+  @Get('google/callback')
+  @HttpCode(HttpStatus.PERMANENT_REDIRECT)
+  googleAuthCallback(
+    @Res() res: express.Response,
+    @Query('code') code: string,
+    @Query('state') state: string,
+  ) {
+    if (!code || code.toString().length === 0) {
+      throw new BadRequestException("Le code d'authorisation est requis");
+    }
+
+    return res.redirect(
+      `safeo://auth?code=${code.toString()}&state=${state.toString()}`,
+    );
   }
 }
