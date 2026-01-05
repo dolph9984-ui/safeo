@@ -17,6 +17,7 @@ import {
   ApiTags,
   ApiBadRequestResponse,
   ApiOkResponse,
+  ApiOperation,
 } from '@nestjs/swagger';
 import express from 'express';
 import {
@@ -30,6 +31,11 @@ import {
 } from './dtos/exchange-token.dto';
 import { OAUTH_ERROR_MESSAGES } from './constants';
 import { renderRedirectionTemplate } from './templates/redirection_fallback_template';
+import {
+  generateCodeVerifier,
+  generateCodeChallenge,
+} from 'src/utils/pkce-utils';
+import { GeneratePKCECodesDto } from './dtos/generate-pkce-codes.dto';
 
 interface AuthorizeUrlResponse extends BaseApiReturn {
   auth_url: string;
@@ -39,16 +45,42 @@ interface ExchangeTokenResponse extends BaseApiReturn {
   payload: Record<string, any>;
 }
 
+interface PKCEGeneratorResponse {
+  codeVerifier: string;
+  codeChallenge: string;
+}
+
 @ApiTags('0auth')
 @Controller('oauth')
 export class OauthController {
   constructor(private auhtService: OauthService) {}
 
+  @Get('pkce-generator')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Générer des codes PKCE',
+  })
+  @ApiCreatedResponse({
+    description:
+      "Codes PKCE générés pour utiliser dans le processus d'authentification 0Auth",
+    type: GeneratePKCECodesDto,
+  })
+  async generatePKCECodes(): Promise<PKCEGeneratorResponse> {
+    const codeVerifier = generateCodeVerifier();
+
+    return {
+      codeVerifier: codeVerifier,
+      codeChallenge: await generateCodeChallenge(codeVerifier),
+    };
+  }
+
   @Post('google/authorize-url')
   @HttpCode(HttpStatus.CREATED)
-  @ApiBody({ type: GenerateAuthUrlDto })
+  @ApiOperation({
+    summary: "Générer l'URL d'autorisation Google",
+  })
   @ApiCreatedResponse({
-    description: 'Lien de connexion généré avec succès',
+    description: 'Lien de connexion généré avec succès',
     type: AuthorizeUrlResponseDto,
   })
   @ApiBadRequestResponse({
@@ -62,15 +94,22 @@ export class OauthController {
       auth_url: this.auhtService.generateGoogleAuthUrl(
         generateAuthUrlDto.codeChallenge,
       ),
-      message: 'Lien de connexion généré avec succès',
+      message: 'Lien de connexion généré avec succès',
     };
   }
 
   @Post('google/exchange-token')
+  @ApiOperation({
+    summary: "Échanger le code d'autorisation contre un token",
+  })
   @ApiBody({ type: ExchangeTokenDto })
   @ApiOkResponse({
-    description: 'Token échangé avec succés',
+    description: 'Token échangé avec succés',
     type: ExchangeTokenResponseDto,
+  })
+  @ApiBadRequestResponse({
+    description:
+      "Le code d'autorisation est invalide, expiré ou a déjà été utilisé",
   })
   @HttpCode(HttpStatus.OK)
   async exchangeToken(
@@ -104,6 +143,16 @@ export class OauthController {
 
   @Get('google/callback')
   @HttpCode(HttpStatus.PERMANENT_REDIRECT)
+  @ApiOperation({
+    summary: 'Callback de redirection Google OAuth',
+  })
+  @ApiOkResponse({
+    description:
+      "Redirection vers l'application mobile avec le code d'autorisation",
+  })
+  @ApiBadRequestResponse({
+    description: "Le code d'authorisation est requis",
+  })
   googleAuthCallback(
     @Res() res: express.Response,
     @Query('code') code: string,
