@@ -28,6 +28,8 @@ import {
   ExchangeTokenDto,
   ExchangeTokenResponseDto,
 } from './dtos/exchange-token.dto';
+import { OAUTH_ERROR_MESSAGES } from './constants';
+import { renderRedirectionTemplate } from './templates/redirection_fallback_template';
 
 interface AuthorizeUrlResponse extends BaseApiReturn {
   auth_url: string;
@@ -106,13 +108,37 @@ export class OauthController {
     @Res() res: express.Response,
     @Query('code') code: string,
     @Query('state') state: string,
+    @Query('error') error: string,
   ) {
     if (!code || code.toString().length === 0) {
       throw new BadRequestException("Le code d'authorisation est requis");
     }
 
-    return res.redirect(
-      `safeo://auth?code=${code.toString()}&state=${state.toString()}`,
-    );
+    const params = new URLSearchParams();
+
+    if (code) {
+      params.append('code', code);
+    }
+
+    if (state) {
+      params.append('state', state);
+    }
+
+    if (error && error.trim().length > 0) {
+      const errorMessage =
+        OAUTH_ERROR_MESSAGES[error] ||
+        "Une erreur s'est produite lors de l'authentification avec Google";
+
+      params.append('error', errorMessage);
+    }
+
+    const deepLink = `safeo://auth?${params.toString()}`;
+
+    setTimeout(() => {
+      window.close();
+    }, 2500);
+
+    // close window and redirect to deep link
+    return res.send(renderRedirectionTemplate(deepLink));
   }
 }
