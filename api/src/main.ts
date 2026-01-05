@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-
+import morgan from 'morgan';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -16,6 +16,8 @@ async function bootstrap() {
     origin: process.env.NODE_ENV === 'production' ? [''] : '*',
     credentials: true,
   });
+
+  app.use(morgan('dev'));
 
   app.useGlobalPipes(
     new ValidationPipe({
