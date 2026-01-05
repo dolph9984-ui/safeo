@@ -8,8 +8,8 @@ import {
   GOOGLE_AUTHORIZE_REQUEST_URL,
   GOOGLE_SCOPES,
   GOOGLE_TOKEN_REQUEST_URL,
-} from 'src/constants/oauth.constants';
-import { IExchangeCodeToTokenResponse } from 'src/interfaces';
+} from 'src/core/constants/oauth.constants';
+import { IExchangeCodeToTokenResponse } from 'src/core/interfaces';
 import { generateRandomString } from 'src/utils/crypto-utils';
 
 @Injectable()

@@ -24,7 +24,7 @@ import {
   AuthorizeUrlResponseDto,
   GenerateAuthUrlDto,
 } from './dtos/generate-auth-url.dto';
-import { BaseApiReturn } from 'src/interfaces';
+import { BaseApiReturn } from 'src/core/interfaces';
 import {
   ExchangeTokenDto,
   ExchangeTokenResponseDto,
