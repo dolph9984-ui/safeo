@@ -134,10 +134,6 @@ export class OauthController {
 
     const deepLink = `safeo://auth?${params.toString()}`;
 
-    setTimeout(() => {
-      window.close();
-    }, 2500);
-
     // close window and redirect to deep link
     return res.send(renderRedirectionTemplate(deepLink));
   }
