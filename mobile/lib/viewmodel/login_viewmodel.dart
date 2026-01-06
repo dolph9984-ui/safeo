@@ -4,6 +4,7 @@ import 'package:securite_mobile/services/form_auth_service.dart';
 
 class LoginViewModel extends ChangeNotifier {
   final FormAuthService _authService = FormAuthService();
+
   String _email = '';
   String _password = '';
   String? _errorMessage;
@@ -14,7 +15,6 @@ class LoginViewModel extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   bool get isLoading => _isLoading;
 
-  // Validation en temps réel
   String? get emailError {
     if (_email.isEmpty) return null;
     final regex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
@@ -34,7 +34,6 @@ class LoginViewModel extends ChangeNotifier {
         !_isLoading;
   }
 
-  // Mise à jour des champs
   void updateEmail(String value) {
     _email = value.trim().toLowerCase();
     _clearServerError();
@@ -54,32 +53,26 @@ class LoginViewModel extends ChangeNotifier {
     }
   }
 
-  void _setError(String message) {
-    _errorMessage = message;
-    _isLoading = false;
+  // Méthode publique pour contrôler le loading depuis la View (OAuth)
+  void setLoading(bool value) {
+    _isLoading = value;
     notifyListeners();
   }
 
-  // Tentative de connexion
   Future<bool> submit() async {
     if (!canSubmit) return false;
 
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
+    setLoading(true);
 
     try {
       final credentials = LoginCredentials(email: _email, password: _password);
       final success = await _authService.login(credentials);
 
-      if (success) {
-        _isLoading = false;
-        notifyListeners();
-        return true;
-      }
-      return false;
+      setLoading(false);
+      return success;
     } catch (e) {
-      _setError(e.toString().replaceFirst('Exception: ', ''));
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
+      setLoading(false);
       return false;
     }
   }

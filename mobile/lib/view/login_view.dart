@@ -1,3 +1,5 @@
+// lib/view/login_view.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:securite_mobile/constants/routes.dart';
@@ -43,7 +45,6 @@ class _LoginViewState extends State<LoginView> {
                       ),
                       const SizedBox(height: 60),
 
-                      // Email field
                       TextField(
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
@@ -55,7 +56,6 @@ class _LoginViewState extends State<LoginView> {
                       ),
                       const SizedBox(height: 20),
 
-                      // Password field 
                       TextField(
                         obscureText: _obscurePassword,
                         textInputAction: TextInputAction.done,
@@ -77,7 +77,6 @@ class _LoginViewState extends State<LoginView> {
                       ),
                       const SizedBox(height: 24),
 
-                      // Server error
                       if (vm.errorMessage != null)
                         Container(
                           width: double.infinity,
@@ -116,6 +115,69 @@ class _LoginViewState extends State<LoginView> {
                         onPressed: () {},
                         child: const Text('Mot de passe oublié ?'),
                       ),
+
+                      // ========================
+                      // OAuth buttons (en bas)
+                      // ========================
+
+                      const SizedBox(height: 40),
+
+                      Row(
+                        children: [
+                          Expanded(child: Divider(color: Colors.grey[400])),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Text(
+                              'OU',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          ),
+                          Expanded(child: Divider(color: Colors.grey[400])),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+
+                      OutlinedButton.icon(
+                        icon: const Icon(Icons.android, size: 24),
+                        label: const Text('Continuer avec Google'),
+                        onPressed: () async {
+                          vm.setLoading(true);
+
+                          await Future.delayed(const Duration(seconds: 2));
+
+                          vm.setLoading(false);
+
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Connexion Google réussie ! (simulation)')),
+                            );
+                            Navigator.pushNamed(context, Routes.twoFA);
+                          }
+                        },
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      OutlinedButton.icon(
+                        icon: const Icon(Icons.apple, size: 28),
+                        label: const Text('Continuer avec Apple'),
+                        onPressed: () async {
+                          vm.setLoading(true);
+
+                          await Future.delayed(const Duration(seconds: 2));
+
+                          vm.setLoading(false);
+
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Connexion Apple réussie ! (simulation)')),
+                            );
+                            Navigator.pushNamed(context, Routes.twoFA);
+                          }
+                        },
+                      ),
+
+                      const SizedBox(height: 40),
                     ],
                   );
                 },
