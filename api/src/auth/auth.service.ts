@@ -1,22 +1,33 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  Inject,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { AxiosResponse } from 'axios';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import { AxiosError, AxiosResponse } from 'axios';
 import {
   GOOGLE_AUTHORIZE_REQUEST_URL,
   GOOGLE_SCOPES,
   GOOGLE_TOKEN_REQUEST_URL,
+  GOOGLE_USERINFO_REQUEST_URL,
 } from 'src/core/constants/oauth.constants';
-import { IExchangeCodeToTokenResponse } from 'src/core/interfaces';
+import {
+  IExchangeCodeToTokenResponse,
+  IUserFromTokenResponse,
+} from 'src/core/interfaces';
 import { generateRandomString } from 'src/utils/crypto-utils';
+import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
 @Injectable()
-export class OauthService {
+export class AuthService {
   constructor(
     private configService: ConfigService,
     private httpService: HttpService,
+    @Inject('DrizzleAsyncProvider') private readonly db: NodePgDatabase,
   ) {}
 
   generateGoogleAuthUrl(codeChallenge: string): string {
@@ -69,6 +80,28 @@ export class OauthService {
           (response: AxiosResponse<IExchangeCodeToTokenResponse>) =>
             response.data,
         ),
+      );
+  }
+
+  getUserFromToken(token: string): Observable<IUserFromTokenResponse | Error> {
+    return this.httpService
+      .get<IUserFromTokenResponse>(GOOGLE_USERINFO_REQUEST_URL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .pipe(
+        map((response: AxiosResponse<IUserFromTokenResponse>) => response.data),
+        catchError((err: AxiosError): Observable<Error> => {
+          if (err.response?.status === 401) {
+            return throwError(
+              () =>
+                new UnauthorizedException('Token Google invalide ou expiré'),
+            );
+          }
+
+          return throwError(() => err);
+        }),
       );
   }
 }

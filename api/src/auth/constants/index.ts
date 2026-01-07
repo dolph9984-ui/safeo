@@ -10,3 +10,6 @@ export const OAUTH_ERROR_MESSAGES: Record<string, string> = {
   temporarily_unavailable:
     'Le service est temporairement indisponible. Réessayez dans quelques instants.',
 };
+
+export const JWT_SECRET =
+  'a2M7SehZM5nlTQ6mxeTFzRIQLFBs2kkP7wZhgRD1bImaFQGJDFxf2fEai9MvTLtZ' as const;
