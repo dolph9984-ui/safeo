@@ -161,8 +161,6 @@ export class AuthController {
           AuthTypeEnum.OAUTH,
         );
 
-        console.log(newUser);
-
         if (newUser?.length === 0 || !newUser) throw new BadRequestException();
 
         const JWTpayload = { sub: newUser[0].id, email: newUser[0].email };
