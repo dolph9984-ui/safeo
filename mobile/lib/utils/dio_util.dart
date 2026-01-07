@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 
-const baseUrl = 'http://192.168.1.82';
+const baseUrl = 'https://safeo-api.onrender.com';
 
 final dio =
     Dio(
