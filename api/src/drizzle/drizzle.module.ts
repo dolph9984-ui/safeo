@@ -3,5 +3,6 @@ import { drizzleProvider } from './drizzle.provider';
 
 @Module({
   providers: [...drizzleProvider],
+  exports: [...drizzleProvider],
 })
 export class DrizzleModule {}

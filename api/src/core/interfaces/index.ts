@@ -10,6 +10,18 @@ export interface IExchangeCodeToTokenResponse {
   id_token: string;
   refresh_token: string;
   refresh_token_expires_in: number;
-  scope: string[];
+  scope: string;
   token_type: string;
+  expires_in: string;
+}
+
+export interface IUserFromTokenResponse {
+  sub: string;
+  name: string;
+  given_name: string;
+  family_name: number;
+  picture: string;
+  email: string;
+  email_verified: boolean;
+  locale: string;
 }

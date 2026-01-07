@@ -11,3 +11,6 @@ export const GOOGLE_SCOPES: string[] = [
   'https://www.googleapis.com/auth/userinfo.email',
   'https://www.googleapis.com/auth/userinfo.profile',
 ] as const;
+
+export const GOOGLE_USERINFO_REQUEST_URL =
+  'https://www.googleapis.com/oauth2/v3/userinfo' as const;

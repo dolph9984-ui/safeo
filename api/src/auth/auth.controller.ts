@@ -1,4 +1,4 @@
-import { OauthService } from './oauth.service';
+import { AuthService } from './auth.service';
 import {
   BadRequestException,
   Body,
@@ -9,8 +9,10 @@ import {
   Post,
   Query,
   Res,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
+import { JwtService } from '@nestjs/jwt';
 import {
   ApiBody,
   ApiCreatedResponse,
@@ -20,11 +22,13 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 import express from 'express';
+import { UserService } from 'src/user/user.service';
+import { AuthTypeEnum } from 'src/enums/auth_enums';
+import { BaseApiReturn, IUserFromTokenResponse } from 'src/core/interfaces';
 import {
   AuthorizeUrlResponseDto,
   GenerateAuthUrlDto,
 } from './dtos/generate-auth-url.dto';
-import { BaseApiReturn } from 'src/core/interfaces';
 import {
   ExchangeTokenDto,
   ExchangeTokenResponseDto,
@@ -38,22 +42,26 @@ import {
 import { GeneratePKCECodesDto } from './dtos/generate-pkce-codes.dto';
 
 interface AuthorizeUrlResponse extends BaseApiReturn {
-  auth_url: string;
+  authUrl: string;
 }
 
 interface ExchangeTokenResponse extends BaseApiReturn {
-  payload: Record<string, any>;
+  accessToken: string;
 }
 
-interface PKCEGeneratorResponse {
+type PKCEGeneratorResponse = {
   codeVerifier: string;
   codeChallenge: string;
-}
+};
 
-@ApiTags('0auth')
-@Controller('oauth')
-export class OauthController {
-  constructor(private auhtService: OauthService) {}
+@ApiTags('Auth')
+@Controller('auth')
+export class AuthController {
+  constructor(
+    private auhtService: AuthService,
+    private userService: UserService,
+    private jwtService: JwtService,
+  ) {}
 
   @Get('pkce-generator')
   @HttpCode(HttpStatus.CREATED)
@@ -91,7 +99,7 @@ export class OauthController {
   ): AuthorizeUrlResponse {
     return {
       statusCode: HttpStatus.CREATED,
-      auth_url: this.auhtService.generateGoogleAuthUrl(
+      authUrl: this.auhtService.generateGoogleAuthUrl(
         generateAuthUrlDto.codeChallenge,
       ),
       message: 'Lien de connexion généré avec succès',
@@ -116,6 +124,7 @@ export class OauthController {
     @Body() exchangeTokenDto: ExchangeTokenDto,
   ): Promise<ExchangeTokenResponse> {
     try {
+      // exchange code to token
       const responsePayload = await firstValueFrom(
         this.auhtService.exchangeCodeToToken(
           exchangeTokenDto.codeVerifier,
@@ -123,21 +132,71 @@ export class OauthController {
         ),
       );
 
+      const userInfoPayload = await firstValueFrom(
+        this.auhtService.getUserFromToken(responsePayload.access_token),
+      );
+
+      if (!userInfoPayload) throw new BadRequestException();
+
+      const user = await this.userService.getUserByEmail(
+        (userInfoPayload as IUserFromTokenResponse).email,
+      );
+
+      // create user if not exist
+      if (!user) {
+        const newUser = await this.userService.createUser(
+          {
+            email: (userInfoPayload as IUserFromTokenResponse).email,
+            fullName: (userInfoPayload as IUserFromTokenResponse).name,
+            type: '0Auth',
+            provider: 'GOOGLE',
+            accessToken: responsePayload.access_token,
+            tokenType: 'Bearer',
+            expiresAt: responsePayload.expires_in,
+            scope: responsePayload.scope,
+            idToken: responsePayload.id_token,
+            sessionState: '',
+            providerAccountId: (userInfoPayload as IUserFromTokenResponse).sub,
+          },
+          AuthTypeEnum.OAUTH,
+        );
+
+        if (newUser?.length === 0 || !newUser) throw new BadRequestException();
+
+        const JWTpayload = { sub: newUser[0].id, email: newUser[0].email };
+
+        return {
+          statusCode: HttpStatus.OK,
+          accessToken: await this.jwtService.signAsync(JWTpayload),
+          message: 'Utilisateur connecté avec succés avec Google',
+        };
+      }
+
+      //  update account and create JWT Token
+      await this.userService.updateAccount(user.id, {
+        accessToken: responsePayload.access_token,
+        tokenType: 'Bearer',
+        expiresAt: responsePayload.expires_in,
+        scope: responsePayload.scope,
+        idToken: responsePayload.id_token,
+        sessionState: '',
+      });
+
+      const JWTpayload = { sub: user.id, email: user.email };
+
       return {
         statusCode: HttpStatus.OK,
-        payload: responsePayload,
-        message: '',
+        accessToken: await this.jwtService.signAsync(JWTpayload),
+        message: 'Utilisateur connecté avec succés avec Google',
       };
     } catch (err) {
       console.error('An error was occurend when exchanging token: ', err);
 
-      if (err instanceof BadRequestException) {
+      if (err instanceof UnauthorizedException) {
         throw err;
       }
 
-      throw new BadRequestException(
-        "Le code d'autorisation est invalide, expiré ou a déjà été utilisé. Veuillez recommencer le processus d'authentification.",
-      );
+      throw new BadRequestException(err);
     }
   }
 
