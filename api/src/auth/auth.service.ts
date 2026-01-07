@@ -19,7 +19,7 @@ import {
   IExchangeCodeToTokenResponse,
   IUserFromTokenResponse,
 } from 'src/core/interfaces';
-import { generateRandomString } from 'src/utils/crypto-utils';
+import { generateRandomString } from 'src/core/utils/crypto-utils';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
 @Injectable()

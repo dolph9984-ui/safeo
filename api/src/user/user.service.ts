@@ -2,7 +2,7 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import * as drizzleProvider from 'src/drizzle/drizzle.provider';
 import { Account, account, User, users } from 'src/drizzle/schemas';
-import { AuthTypeEnum } from 'src/enums/auth_enums';
+import { AuthTypeEnum } from 'src/core/enums/auth_enums';
 
 type CreateUserSchema = {
   email: string;

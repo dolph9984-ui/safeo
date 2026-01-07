@@ -23,7 +23,7 @@ import {
 } from '@nestjs/swagger';
 import express from 'express';
 import { UserService } from 'src/user/user.service';
-import { AuthTypeEnum } from 'src/enums/auth_enums';
+import { AuthTypeEnum } from 'src/core/enums/auth_enums';
 import { BaseApiReturn, IUserFromTokenResponse } from 'src/core/interfaces';
 import {
   AuthorizeUrlResponseDto,
@@ -38,7 +38,7 @@ import { renderRedirectionTemplate } from './templates/redirection_fallback_temp
 import {
   generateCodeVerifier,
   generateCodeChallenge,
-} from 'src/utils/pkce-utils';
+} from 'src/core/utils/pkce-utils';
 import { GeneratePKCECodesDto } from './dtos/generate-pkce-codes.dto';
 
 interface AuthorizeUrlResponse extends BaseApiReturn {
@@ -108,7 +108,8 @@ export class AuthController {
 
   @Post('google/exchange-token')
   @ApiOperation({
-    summary: "Échanger le code d'autorisation contre un token",
+    summary:
+      "Échanger le code d'autorisation contre un token et insérer l'utilisateur dans la base de données",
   })
   @ApiBody({ type: ExchangeTokenDto })
   @ApiOkResponse({
@@ -142,7 +143,7 @@ export class AuthController {
         (userInfoPayload as IUserFromTokenResponse).email,
       );
 
-      // create user if not exist
+      // create user if not exist and create account
       if (!user) {
         const newUser = await this.userService.createUser(
           {
@@ -196,7 +197,9 @@ export class AuthController {
         throw err;
       }
 
-      throw new BadRequestException(err);
+      throw new BadRequestException(
+        'Impossible d’échanger le code d’autorisation avec Google',
+      );
     }
   }
 
