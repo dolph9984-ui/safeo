@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 
-const baseUrl = 'https://safeo-api.onrender.com';
+const baseUrl = 'https://safeo.greny.app';
 
 final dio =
     Dio(
