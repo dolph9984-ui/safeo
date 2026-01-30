@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:securite_mobile/model/login_credentials.dart';
-import 'package:securite_mobile/services/form_auth_service.dart';
+import 'package:securite_mobile/model/auth/login_credentials.dart';
+import 'package:securite_mobile/model/auth/login_response.dart';
+import 'package:securite_mobile/services/auth/form_auth_service.dart';
 
 class LoginViewModel extends ChangeNotifier {
   final FormAuthService _authService = FormAuthService();
@@ -15,22 +16,12 @@ class LoginViewModel extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   bool get isLoading => _isLoading;
 
-  String? get emailError {
-    if (_email.isEmpty) return null;
-    final regex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    return regex.hasMatch(_email) ? null : 'Email invalide';
-  }
 
-  String? get passwordError {
-    if (_password.isEmpty) return null;
-    return _password.length >= 6 ? null : 'Minimum 6 caractères';
-  }
+
 
   bool get canSubmit {
     return _email.isNotEmpty &&
         _password.isNotEmpty &&
-        emailError == null &&
-        passwordError == null &&
         !_isLoading;
   }
 
@@ -53,27 +44,27 @@ class LoginViewModel extends ChangeNotifier {
     }
   }
 
-  // Méthode publique pour contrôler le loading depuis la View (OAuth)
   void setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
   }
 
-  Future<bool> submit() async {
-    if (!canSubmit) return false;
+  Future<LoginResponse?> submit() async {
+    if (!canSubmit) return null;
 
     setLoading(true);
 
     try {
       final credentials = LoginCredentials(email: _email, password: _password);
-      final success = await _authService.login(credentials);
+
+      final response = await _authService.login(credentials);
 
       setLoading(false);
-      return success;
+      return response; //verificationToken
     } catch (e) {
       _errorMessage = e.toString().replaceFirst('Exception: ', '');
       setLoading(false);
-      return false;
+      return null;
     }
   }
 }
