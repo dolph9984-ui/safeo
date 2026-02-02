@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:securite_mobile/constants/routes.dart';
-import 'package:securite_mobile/services/auth/auth_storage_service.dart';
+import 'package:securite_mobile/services/security/secure_storage_service.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -13,7 +13,7 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  final AuthStorageService _authStorage = AuthStorageService();
+  final SecureStorageService _authStorage = SecureStorageService();
   String? _userEmail;
 
   @override
@@ -57,7 +57,7 @@ class _HomeViewState extends State<HomeView> {
 
       // Rediriger vers login et supprimer l'historique
       if (mounted) {
-        context.go(Routes.login);
+        context.go(AppRoutes.login);
 
         // Message de confirmation
         ScaffoldMessenger.of(context).showSnackBar(

@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -24,85 +23,80 @@ class OnboardingView extends StatelessWidget {
           child: LayoutBuilder(
             builder: (context, constraints) {
               return SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
                 child: ConstrainedBox(
                   constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: IntrinsicHeight(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // 1. LOGO
-                          SvgPicture.asset(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // 1. LOGO (Padding séparé pour ne pas gêner l'image)
+                        Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: SvgPicture.asset(
                             'assets/icons/logo_safeo.svg',
                             height: 35,
                             colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
                           ),
+                        ),
 
-                          const SizedBox(height: 20),
+                        // 2. ILLUSTRATION (Maximisée)
+                        // On lui donne 55% de la hauteur totale pour qu'elle soit imposante
+                        Expanded(
+                          child: Center(
+                            child: SvgPicture.asset(
+                              'assets/icons/onboarding_illustration.svg',
+                              width: constraints.maxWidth,
+                              height: constraints.maxHeight * 0.55, 
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
 
-                          // 2. ILLUSTRATION (Flexible mais contenue)
-                          Expanded(
-                            child: Center(
-                              child: SvgPicture.asset(
-                                'assets/icons/onboarding_illustration.svg',
-                                width: constraints.maxWidth * 0.85,
-                                fit: BoxFit.contain, // Important pour ne pas déborder
+                        // 3. ZONE BASSE (Texte + Bouton)
+                        Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Vos documents\nsensibles, en\nsécurité',
+                                style: TextStyle(
+                                  fontSize: 36,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.white,
+                                  height: 1.1,
+                                  letterSpacing: -1.2,
+                                ),
                               ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 20),
-
-                          // 3. TEXTE
-                          const Text(
-                            'Vos documents\nsensibles, en\nsécurité',
-                            style: TextStyle(
-                              fontSize: 36,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.white,
-                              height: 1.1,
-                              letterSpacing: -1.2,
-                            ),
-                          ),
-
-                          const SizedBox(height: 30),
-ElevatedButton(
-  onPressed: () async {
-    try {
-      final response = await Dio().get('https://safeo.greny.app/ping'); // ou un endpoint qui existe
-      print('Réponse : ${response.data}');
-    } catch (e) {
-      print('Erreur réseau : $e');
-    }
-  },
-  child: Text('Test Connexion API'),
-),
-                          // 4. BOUTON AVEC NAVIGATION
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              child: InkWell(
-                                onTap: () => context.go(Routes.login),
-                                child: Container(
-                                  width: 80,
-                                  height: 65,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
+                              const SizedBox(height: 30),
+                              Align(
+                                alignment: Alignment.bottomRight,
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    onTap: () => context.go(AppRoutes.login),
                                     borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: const Icon(
-                                    Icons.north_east,
-                                    color: Color(0xFF536DFE),
-                                    size: 30,
+                                    child: Container(
+                                      width: 80,
+                                      height: 65,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: const Icon(
+                                        Icons.north_east,
+                                        color: Color(0xFF536DFE),
+                                        size: 30,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

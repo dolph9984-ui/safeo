@@ -1,7 +1,8 @@
-class Routes {
-  static final home = '/home';
-  static final login = '/login';
-  static final signup = '/signup';
-  static final twoFA = '/2FA';
-  static final onboarding = '/onboarding';
+class AppRoutes {
+  static const String root = '/';
+  static const String onboarding = '/onboarding';
+  static const String login = '/login';
+  static const String signup = '/signup';
+  static const String twoFA = '/2fa';
+  static const String home = '/home';
 }

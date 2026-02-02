@@ -1,10 +1,14 @@
+// lib/viewmodel/auth/signup_viewmodel.dart
+
 import 'package:flutter/material.dart';
 import '../../model/auth/signup_credentials.dart';
 import '../../model/auth/signup_response.dart';
 import '../../services/auth/signup_service.dart';
+import '../../services/security/audit_service.dart'; // ✅ AJOUTER
 
 class SignupViewModel extends ChangeNotifier {
   final SignupService _signupService = SignupService();
+  final AuditService _audit = AuditService(); // ✅ AJOUTER
 
   String _email = '';
   String _fullName = '';
@@ -17,7 +21,6 @@ class SignupViewModel extends ChangeNotifier {
   String? _passwordError;
   String? _confirmPasswordError;
   String? _errorMessage;
-
 
   String get email => _email;
   String get fullName => _fullName;
@@ -43,7 +46,6 @@ class SignupViewModel extends ChangeNotifier {
       _passwordError == null &&
       _confirmPasswordError == null;
 
-  // Update methods with validation
   void updateEmail(String value) {
     _email = value.trim();
     _emailError = _validateEmail(value);
@@ -77,12 +79,18 @@ class SignupViewModel extends ChangeNotifier {
 
   String? _validateEmail(String value) {
     if (value.isEmpty) return null;
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+
+    // Regex plus stricte
+    final emailRegex = RegExp(
+      r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+    );
     if (!emailRegex.hasMatch(value)) {
       return 'Email invalide';
     }
+
     return null;
   }
+
 
   String? _validateFullName(String value) {
     if (value.isEmpty) return null;
@@ -106,8 +114,12 @@ class SignupViewModel extends ChangeNotifier {
     if (!RegExp(r'[0-9]').hasMatch(value)) {
       return 'Un chiffre requis';
     }
+    if (!RegExp(r'[!@#\$%^&*(),.?":{}|<>]').hasMatch(value)) {
+      return 'Un caractère spécial requis';
+    }
     return null;
   }
+
 
   String? _validateConfirmPassword(String value) {
     if (value.isEmpty) return null;
@@ -137,11 +149,27 @@ class SignupViewModel extends ChangeNotifier {
       );
 
       final response = await _signupService.sendOtp(credentials);
+
+      // ✅ AUDIT : Inscription initiée
+      await _audit.logSecurityEvent(
+        event: 'SIGNUP_INITIATED',
+        userId: _email,
+        details: 'Code OTP envoyé pour inscription',
+      );
+
       _isLoading = false;
       notifyListeners();
       return response;
     } catch (e) {
       _errorMessage = e.toString().replaceAll('Exception: ', '');
+
+      // ✅ AUDIT : Échec inscription
+      await _audit.logSecurityEvent(
+        event: 'SIGNUP_FAILED',
+        userId: _email,
+        details: _errorMessage,
+      );
+
       _isLoading = false;
       notifyListeners();
       return null;
