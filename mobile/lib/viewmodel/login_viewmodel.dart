@@ -47,9 +47,11 @@ class LoginViewModel extends ChangeNotifier {
       );
 
       // Extraction du code
-      final authCode = Uri.parse(
+      final authCode = Uri
+          .parse(
         result,
-      ).queryParameters[ApiRequestKeys.authorizationCode]!;
+      )
+          .queryParameters[ApiRequestKeys.authorizationCode]!;
 
       // Échanger et stocker les tokens
       final tokens = await _oAuthService.exchangeTokens(codeVerifier, authCode);
