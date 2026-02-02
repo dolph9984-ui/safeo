@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:securite_mobile/constants/routes.dart';
+import 'package:securite_mobile/router/routes.dart';
 import 'package:securite_mobile/viewmodel/login_viewmodel.dart';
 
 class LoginView extends StatefulWidget {
@@ -23,7 +23,10 @@ class _LoginViewState extends State<LoginView> {
         body: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 32.0,
+                vertical: 24.0,
+              ),
               child: Consumer<LoginViewModel>(
                 builder: (context, vm, child) {
                   return Column(
@@ -69,7 +72,9 @@ class _LoginViewState extends State<LoginView> {
                                   : Icons.visibility_off_outlined,
                             ),
                             onPressed: () {
-                              setState(() => _obscurePassword = !_obscurePassword);
+                              setState(
+                                () => _obscurePassword = !_obscurePassword,
+                              );
                             },
                           ),
                         ).copyWith(errorText: vm.passwordError),
@@ -83,12 +88,18 @@ class _LoginViewState extends State<LoginView> {
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.errorContainer,
-                            border: Border.all(color: Theme.of(context).colorScheme.error),
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.error,
+                            ),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
                             vm.errorMessage!,
-                            style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer),
+                            style: TextStyle(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onErrorContainer,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -105,7 +116,9 @@ class _LoginViewState extends State<LoginView> {
                               }
                             : null,
                         child: vm.isLoading
-                            ? const CircularProgressIndicator(color: Colors.white)
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
                             : const Text('Se connecter'),
                       ),
 
@@ -119,7 +132,6 @@ class _LoginViewState extends State<LoginView> {
                       // ========================
                       // OAuth buttons (en bas)
                       // ========================
-
                       const SizedBox(height: 40),
 
                       Row(
@@ -141,17 +153,17 @@ class _LoginViewState extends State<LoginView> {
                         icon: const Icon(Icons.android, size: 24),
                         label: const Text('Continuer avec Google'),
                         onPressed: () async {
-                          vm.setLoading(true);
+                          final isLoginSuccess = await vm.oAuthLogin();
 
-                          await Future.delayed(const Duration(seconds: 2));
-
-                          vm.setLoading(false);
-
-                          if (context.mounted) {
+                          if (isLoginSuccess && context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Connexion Google réussie ! (simulation)')),
+                              const SnackBar(
+                                content: Text(
+                                  'Connexion Google réussie ! (simulation)',
+                                ),
+                              ),
                             );
-                            Navigator.pushNamed(context, Routes.twoFA);
+                            Navigator.pushNamed(context, Routes.home);
                           }
                         },
                       ),
@@ -170,7 +182,11 @@ class _LoginViewState extends State<LoginView> {
 
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Connexion Apple réussie ! (simulation)')),
+                              const SnackBar(
+                                content: Text(
+                                  'Connexion Apple réussie ! (simulation)',
+                                ),
+                              ),
                             );
                             Navigator.pushNamed(context, Routes.twoFA);
                           }
