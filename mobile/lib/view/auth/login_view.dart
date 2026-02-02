@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:securite_mobile/constants/routes.dart';
+import 'package:securite_mobile/router/routes.dart';
 import 'package:securite_mobile/view/auth/components/auth_components.dart';
 import 'package:securite_mobile/view/auth/components/auth_scrollable_body.dart';
 import 'package:securite_mobile/view/auth/components/labeled_text_field_components.dart';
 import 'package:securite_mobile/view/auth/components/loading_elevated_button_components.dart';
 import 'package:securite_mobile/viewmodel/auth/login_viewmodel.dart';
+import 'package:securite_mobile/viewmodel/auth/oauth_viewmodel.dart';
 import 'package:securite_mobile/viewmodel/auth/two_fa_viewmodel.dart';
 
 class LoginView extends StatefulWidget {
@@ -23,10 +24,13 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return ChangeNotifierProvider(
-      create: (_) => LoginViewModel(),
-      child: Consumer<LoginViewModel>(
-        builder: (context, vm, _) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => LoginViewModel()),
+        ChangeNotifierProvider(create: (_) => OAuthViewModel()),
+      ],
+      child: Consumer2<LoginViewModel, OAuthViewModel>(
+        builder: (context, loginVm, oauthVm, _) {
           return AuthLayout(
             onBackPressed: () =>
                 context.canPop() ? context.pop() : context.go(AppRoutes.onboarding),
@@ -39,7 +43,7 @@ class _LoginViewState extends State<LoginView> {
                   label: 'Adresse email',
                   hintText: 'ex: rabe@example.com',
                   keyboardType: TextInputType.emailAddress,
-                  onChanged: vm.updateEmail,
+                  onChanged: loginVm.updateEmail,
                 ),
 
                 const SizedBox(height: 24),
@@ -48,7 +52,7 @@ class _LoginViewState extends State<LoginView> {
                   label: 'Mot de passe',
                   hintText: '••••••••••',
                   obscureText: _obscurePassword,
-                  onChanged: vm.updatePassword,
+                  onChanged: loginVm.updatePassword,
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword
@@ -60,22 +64,22 @@ class _LoginViewState extends State<LoginView> {
                   ),
                 ),
 
-                AuthErrorMessage(message: vm.errorMessage),
+                AuthErrorMessage(message: loginVm.errorMessage ?? oauthVm.errorMessage),
                 const SizedBox(height: 35),
 
                 LoadingElevatedButton(
                   label: 'Se connecter',
-                  isLoading: vm.isLoading,
-                  onPressed: vm.canSubmit
+                  isLoading: loginVm.isLoading,
+                  onPressed: loginVm.canSubmit
                       ? () async {
-                          final response = await vm.submit();
+                          final response = await loginVm.submit();
                           if (response != null && context.mounted) {
                             context.go(
                               AppRoutes.twoFA,
                               extra: {
                                 'verificationToken': response.verificationToken,
                                 'mode': TwoFAMode.login,
-                                'email': vm.email,
+                                'email': loginVm.email,
                               },
                             );
                           }
@@ -88,7 +92,16 @@ class _LoginViewState extends State<LoginView> {
                 const SizedBox(height: 25),
 
                 GoogleAuthButton(
-                  onPressed: () => debugPrint('Google Login'),
+                  isLoading: oauthVm.isLoading,
+                  onPressed: () async {
+                    final success = await oauthVm.googleLogin(
+                      context: 'login_screen',
+                    );
+                    
+                    if (success && context.mounted) {
+                      context.go(AppRoutes.home);
+                    }
+                  },
                 ),
 
                 const Spacer(),

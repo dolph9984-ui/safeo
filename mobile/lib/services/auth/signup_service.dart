@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import '../../model/auth/signup_credentials.dart';
 import '../../model/auth/signup_response.dart';
-import '../../utils/dio_client.dart';
+import '../../utils/dio_util.dart';
 
 class SignupService {
   final Dio _dio = DioClient.dio;

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:securite_mobile/constants/routes.dart';
+import 'package:securite_mobile/router/routes.dart';
 import 'package:securite_mobile/view/auth/components/auth_components.dart';
 import 'package:securite_mobile/view/auth/components/auth_scrollable_body.dart';
 import 'package:securite_mobile/view/auth/components/labeled_text_field_components.dart';
 import 'package:securite_mobile/view/auth/components/loading_elevated_button_components.dart';
 import 'package:securite_mobile/viewmodel/auth/signup_viewmodel.dart';
+import 'package:securite_mobile/viewmodel/auth/oauth_viewmodel.dart';
 import 'package:securite_mobile/viewmodel/auth/two_fa_viewmodel.dart';
 
 class SignupView extends StatefulWidget {
@@ -24,10 +25,13 @@ class _SignupViewState extends State<SignupView> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return ChangeNotifierProvider(
-      create: (_) => SignupViewModel(),
-      child: Consumer<SignupViewModel>(
-        builder: (context, vm, _) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SignupViewModel()),
+        ChangeNotifierProvider(create: (_) => OAuthViewModel()),
+      ],
+      child: Consumer2<SignupViewModel, OAuthViewModel>(
+        builder: (context, signupVm, oauthVm, _) {
           return AuthLayout(
             onBackPressed: () =>
                 context.canPop() ? context.pop() : context.go(AppRoutes.login),
@@ -44,8 +48,8 @@ class _SignupViewState extends State<SignupView> {
                 LabeledTextField(
                   label: 'Nom complet',
                   hintText: 'ex: Rabe Andry',
-                  onChanged: vm.updateFullName,
-                  errorText: vm.fullNameError,
+                  onChanged: signupVm.updateFullName,
+                  errorText: signupVm.fullNameError,
                   textInputAction: TextInputAction.next,
                 ),
 
@@ -55,8 +59,8 @@ class _SignupViewState extends State<SignupView> {
                   label: 'Adresse email',
                   hintText: 'ex: rabe@example.com',
                   keyboardType: TextInputType.emailAddress,
-                  onChanged: vm.updateEmail,
-                  errorText: vm.emailError,
+                  onChanged: signupVm.updateEmail,
+                  errorText: signupVm.emailError,
                   textInputAction: TextInputAction.next,
                 ),
 
@@ -66,8 +70,8 @@ class _SignupViewState extends State<SignupView> {
                   label: 'Créer votre mot de passe',
                   hintText: '••••••••••',
                   obscureText: _obscurePassword,
-                  onChanged: vm.updatePassword,
-                  errorText: vm.passwordError,
+                  onChanged: signupVm.updatePassword,
+                  errorText: signupVm.passwordError,
                   textInputAction: TextInputAction.next,
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -86,8 +90,8 @@ class _SignupViewState extends State<SignupView> {
                   label: 'Confirmer le mot de passe',
                   hintText: '••••••••••',
                   obscureText: _obscureConfirmPassword,
-                  onChanged: vm.updateConfirmPassword,
-                  errorText: vm.confirmPasswordError,
+                  onChanged: signupVm.updateConfirmPassword,
+                  errorText: signupVm.confirmPasswordError,
                   textInputAction: TextInputAction.done,
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -100,15 +104,15 @@ class _SignupViewState extends State<SignupView> {
                   ),
                 ),
 
-                AuthErrorMessage(message: vm.errorMessage),
+                AuthErrorMessage(message: signupVm.errorMessage ?? oauthVm.errorMessage),
                 const SizedBox(height: 24),
 
                 LoadingElevatedButton(
                   label: "S'inscrire",
-                  isLoading: vm.isLoading,
-                  onPressed: vm.canSubmit
+                  isLoading: signupVm.isLoading,
+                  onPressed: signupVm.canSubmit
                       ? () async {
-                          final response = await vm.submit();
+                          final response = await signupVm.submit();
                           if (response != null && context.mounted) {
                             context.go(
                               AppRoutes.twoFA,
@@ -116,7 +120,7 @@ class _SignupViewState extends State<SignupView> {
                                 'verificationToken':
                                     response.verificationToken,
                                 'mode': TwoFAMode.signup,
-                                'email': vm.email,
+                                'email': signupVm.email,
                               },
                             );
                           }
@@ -129,7 +133,16 @@ class _SignupViewState extends State<SignupView> {
                 const SizedBox(height: 25),
 
                 GoogleAuthButton(
-                  onPressed: () => debugPrint('Google Signup'),
+                  isLoading: oauthVm.isLoading,
+                  onPressed: () async {
+                    final success = await oauthVm.googleLogin(
+                      context: 'signup_screen',
+                    );
+                    
+                    if (success && context.mounted) {
+                      context.go(AppRoutes.home);
+                    }
+                  },
                 ),
 
                 const Spacer(),

@@ -2,7 +2,7 @@
 
 import 'package:dio/dio.dart';
 import 'package:securite_mobile/model/auth/twofa_response.dart';
-import 'package:securite_mobile/utils/dio_client.dart';
+import 'package:securite_mobile/utils/dio_util.dart';
 
 class TwoFAService {
   final Dio _dio = DioClient.dio;

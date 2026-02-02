@@ -171,43 +171,54 @@ class AuthErrorMessage extends StatelessWidget {
 
 /// BOUTON GOOGLE
 class GoogleAuthButton extends StatelessWidget {
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final String label;
+  final bool isLoading;
 
   const GoogleAuthButton({
     super.key,
     required this.onPressed,
     this.label = 'Continuer avec Google',
+    this.isLoading = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
-      onPressed: onPressed,
+      onPressed: isLoading ? null : onPressed,
       style: OutlinedButton.styleFrom(
         minimumSize: const Size(double.infinity, 52),
         backgroundColor: Colors.white,
         side: const BorderSide(color: AppColors.borderGray),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SvgPicture.asset(
-            'assets/icons/google_icon.svg',
-            height: 24,
-            width: 24,
-          ),
-          const SizedBox(width: 12),
-          Text(
-            label,
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+      child: isLoading
+          ? const SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+              ),
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SvgPicture.asset(
+                  'assets/icons/google_icon.svg',
+                  height: 24,
+                  width: 24,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }
