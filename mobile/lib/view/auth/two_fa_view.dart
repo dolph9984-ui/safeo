@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
-import 'package:securite_mobile/constants/routes.dart';
+import 'package:securite_mobile/router/routes.dart';
 import 'package:securite_mobile/services/security/secure_storage_service.dart';
 import 'package:securite_mobile/view/auth/components/auth_components.dart';
 import 'package:securite_mobile/view/auth/components/auth_scrollable_body.dart';
@@ -228,7 +228,7 @@ class _ResendCodeFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    Theme.of(context);
     
     return Padding(
       padding: const EdgeInsets.only(top: 40, bottom: 10),

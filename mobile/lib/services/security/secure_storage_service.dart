@@ -99,15 +99,29 @@ final FlutterSecureStorage _storage = const FlutterSecureStorage(
     await _storage.deleteAll();
   }
 
-  Future<String?> read(String key) async {
-    return await _storage.read(key: key);
+  Future<void> write(String key, String value) async {
+    try {
+      await _storage.write(key: key, value: value);
+    } catch (e) {
+      print('Erreur lors de l’écriture dans secure storage');
+    }
   }
 
-  Future<void> write(String key, String value) async {
-    await _storage.write(key: key, value: value);
+  Future<String?> read(String key) async {
+    try {
+      return await _storage.read(key: key);
+    } catch (e) {
+      print('Erreur lors de la lecture dans secure storage');
+      return null;
+    }
   }
 
   Future<void> delete(String key) async {
-    await _storage.delete(key: key);
+    try {
+      await _storage.delete(key: key);
+    } catch (e) {
+      print('Erreur lors de la suppression dans secure storage : $e');
+    }
   }
+
 }

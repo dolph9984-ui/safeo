@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:securite_mobile/constants/routes.dart';
+import 'package:securite_mobile/router/routes.dart';
 
 class OnboardingView extends StatelessWidget {
   const OnboardingView({super.key});
