@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:securite_mobile/router/routes.dart';
-import 'package:securite_mobile/view/home_view.dart';
-import 'package:securite_mobile/view/login_view.dart';
-import 'package:securite_mobile/view/two_fa_view.dart';
 import 'package:securite_mobile/constants/app_theme.dart';
+import 'package:securite_mobile/services/security/secure_storage_service.dart';
+import 'package:securite_mobile/router/app_router.dart'; 
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SecureStorageService().initialize();
   runApp(const MyApp());
 }
 
@@ -14,16 +14,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'SafeO',
       theme: AppTheme.lightTheme,
-      initialRoute: Routes.login,
-      routes: {
-        Routes.login: (_) => const LoginView(),
-        Routes.twoFA: (_) => const TwoFAView(),
-        Routes.home: (_) => const HomeView(),
-      },
+      routerConfig: appRouter, 
     );
   }
 }

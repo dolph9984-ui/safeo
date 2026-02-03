@@ -1,5 +1,5 @@
 import 'package:securite_mobile/constants/storage_keys.dart';
-import 'package:securite_mobile/services/secure_storage_service.dart';
+import 'package:securite_mobile/services/security/secure_storage_service.dart';
 
 class OAuthToken {
   final String accessToken;
@@ -15,17 +15,17 @@ class OAuthToken {
 
 class OAuthTokenModel {
   static Future<void> storeTokens(OAuthToken token) async {
-    await SecureStorageService.write(
+    await SecureStorageService().write(
       StorageKeys.accessToken,
       token.accessToken,
     );
-    await SecureStorageService.write(
+    await SecureStorageService().write(
       StorageKeys.refreshToken,
       token.refreshToken,
     );
   }
 
   static Future<void> deleteTokens() async {
-    await SecureStorageService.delete(StorageKeys.accessToken);
+    await SecureStorageService().delete(StorageKeys.accessToken);
   }
 }
