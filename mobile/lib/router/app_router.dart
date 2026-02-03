@@ -105,9 +105,7 @@ final GoRouter appRouter = GoRouter(
   ],
 );
 
-/// ------------------------------------------------------------
-/// ROUTE SIMPLE AVEC TRANSITION
-/// ------------------------------------------------------------
+//ROUTE SIMPLE AVEC TRANSITION
 GoRoute _pureRoute({
   required String path,
   required Widget child,
@@ -120,9 +118,7 @@ GoRoute _pureRoute({
   );
 }
 
-/// ------------------------------------------------------------
-/// MOTEUR DE TRANSITION MODERNE (UX 2025)
-/// ------------------------------------------------------------
+//MOTEUR DE TRANSITION MODERNE (UX 2025)
 CustomTransitionPage _buildCustomTransition({
   required GoRouterState state,
   required Widget child,
@@ -132,7 +128,7 @@ CustomTransitionPage _buildCustomTransition({
     key: state.pageKey,
     child: child,
 
-    /// Durées optimisées (rapide & fluide)
+    //Durées optimisées (rapide & fluide)
     transitionDuration: const Duration(milliseconds: 320),
     reverseTransitionDuration: const Duration(milliseconds: 280),
 
@@ -144,7 +140,6 @@ CustomTransitionPage _buildCustomTransition({
       );
 
       switch (type) {
-        /// 🌫️ Fade premium (Splash / Home)
         case TransitionType.fade:
           return FadeTransition(
             opacity: curved,
@@ -154,7 +149,7 @@ CustomTransitionPage _buildCustomTransition({
             ),
           );
 
-        /// ➡️ Slide horizontal doux (Login / Signup)
+        //Slide horizontal doux (Login / Signup)
         case TransitionType.slideRight:
           return SlideTransition(
             position: Tween<Offset>(
@@ -167,7 +162,7 @@ CustomTransitionPage _buildCustomTransition({
             ),
           );
 
-        /// ⬆️ Bottom sheet moderne (2FA)
+        //Bottom sheet moderne (2FA)
         case TransitionType.slideBottom:
           return SlideTransition(
             position: Tween<Offset>(

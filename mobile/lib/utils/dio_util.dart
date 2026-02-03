@@ -3,7 +3,25 @@ import 'package:dio/io.dart';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
 
+
+class DioClient {
+  static final Dio dio = Dio(
+    BaseOptions(
+      baseUrl: 'http://192.168.100.106:3000',//telephone
+      //baseUrl: 'http://10.0.2.2:3000', //android emulator
+      //baseUrl: 'https://safeo.greny.app', //web
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    ),
+  );
+}
+/*
+
 const baseUrl = 'https://safeo.greny.app';
+
 
 class DioClient {
   static final Dio dio = _createDio();
@@ -43,21 +61,20 @@ class DioClient {
             final isValid = certFingerprint == expectedFingerprint;
 
             if (!isValid) {
-              print('⚠️ CERTIFICATE MISMATCH - POSSIBLE MITM ATTACK');
+              print('CERTIFICATE MISMATCH - POSSIBLE MITM ATTACK');
               print('Expected : $expectedFingerprint');
               print('Received : $certFingerprint');
             } else {
-              print('✅ Certificate validated successfully');
+              print('Certificate validated successfully');
             }
 
             return isValid;
           };
       };
     } else {
-      print('⚠️ Certificate Pinning DÉSACTIVÉ - À UTILISER EN DEV SEULEMENT !');
+      print('Certificate Pinning DÉSACTIVÉ - À UTILISER EN DEV SEULEMENT !');
     }
 
-    // Intercepteurs (style simplifié de la version 2)
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
@@ -73,13 +90,13 @@ class DioClient {
           return handler.next(options);
         },
         onResponse: (Response response, ResponseInterceptorHandler handler) {
-          print('✅ RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}');
+          print('RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}');
           return handler.next(response);
         },
         onError: (DioException err, ErrorInterceptorHandler handler) async {
-          print('❌ ERROR[${err.response?.statusCode}] => PATH: ${err.requestOptions.path}');
+          print('ERROR[${err.response?.statusCode}] => PATH: ${err.requestOptions.path}');
           if (err.response != null) {
-            print('   Data: ${err.response?.data}');
+            print('Data: ${err.response?.data}');
           }
           return handler.next(err);
         },
@@ -89,3 +106,5 @@ class DioClient {
     return dio;
   }
 }
+
+*/

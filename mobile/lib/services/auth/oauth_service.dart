@@ -5,7 +5,7 @@ import 'package:securite_mobile/model/auth/oauth_token_model.dart';
 import 'package:securite_mobile/utils/dio_util.dart';
 
 class OAuthService {
-final Dio _dio = DioClient.dio;
+  final Dio _dio = DioClient.dio;
 
   Future<Map<String, String>> getAuthCodes() async {
     final response = await _dio.get(OAuthConstants.pkceGeneratorUri);
@@ -24,14 +24,29 @@ final Dio _dio = DioClient.dio;
     String codeVerifier,
     String authCode,
   ) async {
-    final response = await _dio.post(
-      OAuthConstants.exchangeTokenUri,
-      data: {
-        ApiRequestKeys.codeVerifier: codeVerifier,
-        ApiRequestKeys.authorizationCode: authCode,
-      },
-    );
-    return Map<String, String>.from(response.data);
+    try {
+      final response = await _dio.post(
+        OAuthConstants.exchangeTokenUri,
+        data: {
+          ApiRequestKeys.codeVerifier: codeVerifier,
+          ApiRequestKeys.authorizationCode: authCode,
+        },
+      );
+
+      print('Réponse brute du serveur: ${response.data}');
+      print('Type: ${response.data.runtimeType}');
+
+      //Conversion explicite en String
+      final data = response.data as Map<String, dynamic>;
+      
+      return {
+        ApiRequestKeys.accessToken: data[ApiRequestKeys.accessToken]?.toString() ?? '',
+        ApiRequestKeys.refreshToken: data[ApiRequestKeys.refreshToken]?.toString() ?? '',
+      };
+    } catch (e) {
+      print('Erreur exchangeTokens: $e');
+      rethrow;
+    }
   }
 
   Future<void> storeTokens(OAuthToken token) async {

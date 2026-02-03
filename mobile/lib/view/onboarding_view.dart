@@ -30,7 +30,6 @@ class OnboardingView extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // 1. LOGO (Padding séparé pour ne pas gêner l'image)
                         Padding(
                           padding: const EdgeInsets.all(24.0),
                           child: SvgPicture.asset(
@@ -40,8 +39,6 @@ class OnboardingView extends StatelessWidget {
                           ),
                         ),
 
-                        // 2. ILLUSTRATION (Maximisée)
-                        // On lui donne 55% de la hauteur totale pour qu'elle soit imposante
                         Expanded(
                           child: Center(
                             child: SvgPicture.asset(
@@ -53,7 +50,6 @@ class OnboardingView extends StatelessWidget {
                           ),
                         ),
 
-                        // 3. ZONE BASSE (Texte + Bouton)
                         Padding(
                           padding: const EdgeInsets.all(24.0),
                           child: Column(

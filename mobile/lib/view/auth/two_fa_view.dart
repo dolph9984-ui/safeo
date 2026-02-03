@@ -211,27 +211,89 @@ class _TwoFAViewState extends State<TwoFAView> {
 
                 const Spacer(),
 
-                AuthFooter(
-                  text: 'Code non reçu?',
-                  linkText: 'Renvoyer',
-                  onTap: vm.isResending
-                      ? () {}
-                      : () async {
-                          final ok = await vm.resendCode();
-                          if (ok && context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Code renvoyé'),
-                                backgroundColor: AppColors.success,
-                              ),
-                            );
-                          }
-                        },
-                ),
+                _ResendCodeFooter(viewModel: vm),
               ],
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _ResendCodeFooter extends StatelessWidget {
+  final TwoFAViewModel viewModel;
+
+  const _ResendCodeFooter({required this.viewModel});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    return Padding(
+      padding: const EdgeInsets.only(top: 40, bottom: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text('Code non reçu?'),
+          const SizedBox(width: 4),
+          if (viewModel.isResending)
+            Padding(
+              padding: const EdgeInsets.only(left: 4),
+              child: SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    AppColors.primary,
+                  ),
+                ),
+              ),
+            )
+          else if (!viewModel.canResend)
+            Row(
+              children: [
+                Text(
+                  ' Renvoyer',
+                  style: TextStyle(
+                    color: Colors.grey[400],
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '(${viewModel.resendCountdown}s)',
+                  style: TextStyle(
+                    color: Colors.grey[500],
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            )
+          else
+            GestureDetector(
+              onTap: () async {
+                final ok = await viewModel.resendCode();
+                if (ok && context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Code renvoyé'),
+                      backgroundColor: AppColors.success,
+                    ),
+                  );
+                }
+              },
+              child: const Text(
+                ' Renvoyer',
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
