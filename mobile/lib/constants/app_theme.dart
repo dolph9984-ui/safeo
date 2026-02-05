@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
+import 'package:securite_mobile/constants/app_fonts.dart';
 
 /// Global theme configuration for the entire SafeO application
 class AppTheme {
@@ -24,7 +25,8 @@ class AppTheme {
       filled: false,
       hintStyle: TextStyle(color: AppColors.textSecondary),
       prefixIconColor: AppColors.primary,
-      suffixIconColor: AppColors.primary, // ← Added: eye icon in blue automatically
+      suffixIconColor: AppColors.primary,
+      // ← Added: eye icon in blue automatically
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
@@ -47,12 +49,18 @@ class AppTheme {
 
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
+        disabledBackgroundColor: AppColors.buttonDisabled,
+        elevation: 0,
+        shadowColor: Colors.transparent,
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        elevation: 4,
+        padding: EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         minimumSize: const Size(double.infinity, 56),
-        textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+        textStyle: TextStyle(
+          fontFamily: AppFonts.productSansRegular,
+          fontSize: 16,
+        ),
       ),
     ),
 
@@ -75,8 +83,16 @@ class AppTheme {
     iconTheme: const IconThemeData(color: AppColors.primary, size: 28),
 
     textTheme: const TextTheme(
-      headlineMedium: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: AppColors.primary),
-      titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+      headlineMedium: TextStyle(
+        fontSize: 40,
+        fontWeight: FontWeight.bold,
+        color: AppColors.primary,
+      ),
+      titleLarge: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textPrimary,
+      ),
       bodyLarge: TextStyle(fontSize: 16, color: AppColors.textPrimary),
       bodyMedium: TextStyle(fontSize: 16, color: AppColors.textSecondary),
     ),
