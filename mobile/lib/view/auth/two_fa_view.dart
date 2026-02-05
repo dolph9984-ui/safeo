@@ -199,15 +199,14 @@ class _TwoFAViewState extends State<TwoFAView> {
                   onPressed: vm.canSubmit
                       ? () async {
                           FocusScope.of(context).unfocus();
-                          final response = await vm.verifyCode();
-                          if (response != null && context.mounted) {
-                            await _storage
-                                .saveAccessToken(response.accessToken);
+                          final success = await vm.verifyAndPersist();
+                          if (success && context.mounted) {
                             context.go(AppRoutes.home);
                           }
                         }
                       : null,
                 ),
+
 
                 const Spacer(),
 
