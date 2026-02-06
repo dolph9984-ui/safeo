@@ -67,6 +67,12 @@ class CreateFileView extends StatelessWidget {
                             popOnOutsideDialogTap: false,
                             child: RenameFileDialog(
                               initialName: vm.fileName,
+                              validator: (newName) {
+                                if (newName != null && newName.trim().isEmpty) {
+                                  return 'Veuillez entrer un nom valide.';
+                                }
+                                return null;
+                              },
                               onCancelPress: () => context.pop(),
                               onConfirmPress: (newName) {
                                 vm.setFileName(newName);

@@ -6,12 +6,14 @@ class RenameFileDialog extends StatefulWidget {
   final String initialName;
   final Function() onCancelPress;
   final Function(String newName) onConfirmPress;
+  final FormFieldValidator<String> validator;
 
   const RenameFileDialog({
     super.key,
     required this.initialName,
     required this.onCancelPress,
     required this.onConfirmPress,
+    required this.validator,
   });
 
   @override
@@ -20,6 +22,7 @@ class RenameFileDialog extends StatefulWidget {
 
 class _RenameFileDialogState extends State<RenameFileDialog> {
   late final TextEditingController nameController;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -29,45 +32,54 @@ class _RenameFileDialogState extends State<RenameFileDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 24,
-        children: [
-          Text(
-            'Renommer le fichier',
-            style: TextStyle(
-              color: AppColors.foreground,
-              fontSize: 16,
-              fontFamily: AppFonts.productSansMedium,
+    return Form(
+      key: _formKey,
+      child: Container(
+        padding: EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 24,
+          children: [
+            Text(
+              'Renommer le fichier',
+              style: TextStyle(
+                color: AppColors.foreground,
+                fontSize: 16,
+                fontFamily: AppFonts.productSansMedium,
+              ),
             ),
-          ),
-          TextField(controller: nameController),
-          Row(
-            spacing: 16,
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: widget.onCancelPress,
-                  child: Text('Annuler'),
+            TextFormField(
+              controller: nameController,
+              validator: widget.validator,
+            ),
+            Row(
+              spacing: 16,
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: widget.onCancelPress,
+                    child: Text('Annuler'),
+                  ),
                 ),
-              ),
-              Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(minimumSize: Size(40, 40)),
-                  onPressed: () => widget.onConfirmPress(nameController.text),
-                  child: Text('Confirmer'),
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(minimumSize: Size(40, 40)),
+                    onPressed: () {
+                      if (!_formKey.currentState!.validate()) return;
+                      widget.onConfirmPress(nameController.text);
+                    },
+                    child: Text('Confirmer'),
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -31,6 +31,7 @@ class CreateFileViewModel extends ChangeNotifier {
   }
 
   void setFileName(String newName) {
+    if (newName.trim().isEmpty) return;
     _fileName = newName;
     notifyListeners();
   }

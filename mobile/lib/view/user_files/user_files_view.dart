@@ -46,6 +46,12 @@ class UserFilesView extends StatelessWidget {
               return BlurredDialog(
                 popOnOutsideDialogTap: false,
                 child: RenameFileDialog(
+                  validator: (newName) {
+                    if (newName != null && newName.trim().isEmpty) {
+                      return 'Veuillez entrer un nom valide.';
+                    }
+                    return null;
+                  },
                   initialName: '',
                   onCancelPress: () => context.pop(),
                   onConfirmPress: (newName) {
