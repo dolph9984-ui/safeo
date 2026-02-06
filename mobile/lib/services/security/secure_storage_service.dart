@@ -1,22 +1,23 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureStorageService {
-  static final SecureStorageService _instance = SecureStorageService._internal();
+  static final SecureStorageService _instance =
+      SecureStorageService._internal();
+
   factory SecureStorageService() => _instance;
+
   SecureStorageService._internal();
 
-final FlutterSecureStorage _storage = const FlutterSecureStorage(
-  aOptions: AndroidOptions(
-    keyCipherAlgorithm:
-        KeyCipherAlgorithm.RSA_ECB_OAEPwithSHA_256andMGF1Padding,
-    storageCipherAlgorithm:
-        StorageCipherAlgorithm.AES_GCM_NoPadding,
-  ),
-  iOptions: IOSOptions(
-    accessibility: KeychainAccessibility.first_unlock_this_device,
-  ),
-);
-
+  final FlutterSecureStorage _storage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      keyCipherAlgorithm:
+          KeyCipherAlgorithm.RSA_ECB_OAEPwithSHA_256andMGF1Padding,
+      storageCipherAlgorithm: StorageCipherAlgorithm.AES_GCM_NoPadding,
+    ),
+    iOptions: IOSOptions(
+      accessibility: KeychainAccessibility.first_unlock_this_device,
+    ),
+  );
 
   static const String _keyAccessToken = 'access_token';
   static const String _keyRefreshToken = 'refresh_token';
@@ -49,7 +50,6 @@ final FlutterSecureStorage _storage = const FlutterSecureStorage(
     return await _storage.read(key: _keyRefreshToken);
   }
 
-
   Future<void> saveUserInfo({
     required String userId,
     required String email,
@@ -58,11 +58,11 @@ final FlutterSecureStorage _storage = const FlutterSecureStorage(
   }) async {
     await _storage.write(key: _keyUserId, value: userId);
     await _storage.write(key: _keyUserEmail, value: email);
-    
+
     if (role != null) {
       await _storage.write(key: _keyUserRole, value: role);
     }
-    
+
     if (refreshToken != null) {
       await saveRefreshToken(refreshToken);
     }
@@ -80,12 +80,10 @@ final FlutterSecureStorage _storage = const FlutterSecureStorage(
     return await _storage.read(key: _keyUserRole);
   }
 
-
   Future<bool> isLoggedIn() async {
     final token = await getAccessToken();
     return token != null && token.isNotEmpty;
   }
-
 
   Future<void> logout() async {
     await _storage.delete(key: _keyAccessToken);
@@ -123,5 +121,4 @@ final FlutterSecureStorage _storage = const FlutterSecureStorage(
       print('Erreur lors de la suppression dans secure storage : $e');
     }
   }
-
 }

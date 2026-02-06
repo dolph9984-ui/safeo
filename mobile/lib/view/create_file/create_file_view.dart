@@ -46,6 +46,8 @@ class CreateFileView extends StatelessWidget {
                     },
                   )
                 : FilePreview(
+                    padding: EdgeInsets.all(45),
+                    filePath: vm.filePath,
                     fileName: vm.fileName,
                     sizeInMB: vm.fileSizeInMB,
                     onEditTap: () {},

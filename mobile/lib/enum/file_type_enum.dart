@@ -1,6 +1,11 @@
 import 'dart:ui';
 
 enum FileTypeEnum {
+  image(
+    name: "image",
+    bgColor: Color(0xFFC7D7FE),
+    assetName: 'assets/icons/document.svg',
+  ),
   pdf(
     name: "pdf",
     bgColor: Color(0xFFFECDCA),
@@ -17,7 +22,7 @@ enum FileTypeEnum {
     assetName: 'assets/icons/document.svg',
   ),
   other(
-    name: "other",
+    name: 'other',
     bgColor: Color(0xFFC7D7FE),
     assetName: 'assets/icons/document.svg',
   );
@@ -31,4 +36,23 @@ enum FileTypeEnum {
     required this.bgColor,
     required this.assetName,
   });
+
+  static FileTypeEnum fromExtension(String? ext) {
+    switch (ext?.toLowerCase()) {
+      case 'png':
+      case 'jpg':
+      case 'jpeg':
+        return FileTypeEnum.image;
+      case 'pdf':
+        return FileTypeEnum.pdf;
+      case 'csv':
+        return FileTypeEnum.csv;
+      case 'doc':
+      case 'docx':
+      case 'txt':
+        return FileTypeEnum.document;
+      default:
+        return FileTypeEnum.other;
+    }
+  }
 }

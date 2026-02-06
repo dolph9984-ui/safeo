@@ -1,9 +1,13 @@
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
 import 'package:securite_mobile/enum/file_type_enum.dart';
 import 'package:securite_mobile/enum/month_enum.dart';
+import 'package:securite_mobile/view/widgets/file_thumbnail.dart';
 
 class FileItem extends StatelessWidget {
   final String id;
@@ -48,17 +52,17 @@ class FileItem extends StatelessWidget {
               child: Row(
                 spacing: 10,
                 children: [
-                  Container(
+                  FileThumbnail(
+                    file: PlatformFile.fromMap({
+                      "name": fileName,
+                      "path": "",
+                      "bytes": Uint8List(0),
+                      "size": 0,
+                    }),
                     height: 40,
                     width: 40,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: fileType.bgColor,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SvgPicture.asset(fileType.assetName),
-                    ),
+                    padding: EdgeInsets.all(10),
+                    radius: 10,
                   ),
 
                   Expanded(
