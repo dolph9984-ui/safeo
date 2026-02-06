@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:securite_mobile/constants/app_theme.dart';
-import 'package:securite_mobile/router/router.dart';
+import 'package:securite_mobile/router/app_router.dart';
+import 'package:securite_mobile/services/security/secure_storage_service.dart';
 import 'package:securite_mobile/viewmodel/create_file_viewmodel.dart';
-import 'package:securite_mobile/viewmodel/login_viewmodel.dart';
 import 'package:securite_mobile/viewmodel/shared_files_viewmodel.dart';
-import 'package:securite_mobile/viewmodel/two_fa_viewmodel.dart';
 import 'package:securite_mobile/viewmodel/user_files_viewmodel.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SecureStorageService().initialize();
   runApp(const MyApp());
 }
 
@@ -19,8 +20,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => LoginViewModel()),
-        ChangeNotifierProvider(create: (_) => TwoFAViewModel()),
         ChangeNotifierProvider(create: (_) => UserFilesViewModel()),
         ChangeNotifierProvider(create: (_) => SharedFilesViewModel()),
         ChangeNotifierProvider(create: (_) => CreateFileViewModel()),

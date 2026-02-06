@@ -11,7 +11,6 @@ class LoginCredentials {
   String get email => _email;
   String get password => _password;
 
-  // Convertit en JSON
   Map<String, dynamic> toJson() {
     return {
       'email': _email,
