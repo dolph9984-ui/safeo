@@ -27,7 +27,7 @@ final GoRouter appRouter = GoRouter(
   },
 
   routes: [
-    GoRoute(path: AppRoutes.root, builder: (_, __) => const SizedBox.shrink()),
+    GoRoute(path: AppRoutes.root, builder: (_, _) => const SizedBox.shrink()),
 
     // Onboarding
     GoRoute(

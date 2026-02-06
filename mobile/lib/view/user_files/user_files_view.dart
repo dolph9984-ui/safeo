@@ -57,10 +57,11 @@ class UserFilesView extends StatelessWidget {
       ),
     ];
 
+    final ext = ['pdf', 'doc', 'docx', 'csv', 'jpg', 'jpeg'];
     final files = List.generate(
-      4,
+      8,
       (index) => FileItem(
-        fileName: 'example_file_name',
+        fileName: 'example_file_name.${ext[index % ext.length]}',
         fileSize: 2.2,
         dateTime: DateTime.now(),
         fileType: FileTypeEnum.values[index % 4],

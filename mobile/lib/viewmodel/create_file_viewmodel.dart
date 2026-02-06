@@ -14,6 +14,9 @@ class CreateFileViewModel extends ChangeNotifier {
   String get fileName =>
       selectedFile != null ? selectedFile!.files.first.name : '';
 
+  String get filePath =>
+      selectedFile != null ? selectedFile!.files.first.path ?? '' : '';
+
   void setLoading(bool val) {
     loading = val;
     notifyListeners();
@@ -30,13 +33,13 @@ class CreateFileViewModel extends ChangeNotifier {
 
     selectedFile = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['pdf, doc, docx, csv, jpg, jpeg'],
+      allowedExtensions: ['pdf', 'doc', 'docx', 'csv', 'jpg', 'jpeg'],
     );
 
     setLoading(false);
 
     if (selectedFile != null) {
-      Uint8List fileBytes = selectedFile!.files.first.bytes!;
+      Uint8List fileBytes = selectedFile!.files.first.bytes ?? Uint8List(0);
       String fileName = selectedFile!.files.first.name;
     }
   }

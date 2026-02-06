@@ -1,18 +1,26 @@
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
+import 'package:securite_mobile/view/widgets/file_thumbnail.dart';
 
 class FilePreview extends StatelessWidget {
   final String fileName;
+  final String filePath;
   final double sizeInMB;
+  final EdgeInsets? padding;
   final Function() onEditTap;
   final Function() onDeleteTap;
 
   const FilePreview({
     super.key,
     required this.fileName,
+    required this.filePath,
     required this.sizeInMB,
+    this.padding,
     required this.onEditTap,
     required this.onDeleteTap,
   });
@@ -31,14 +39,17 @@ class FilePreview extends StatelessWidget {
         children: [
           Stack(
             children: [
-              Container(
-                padding: EdgeInsets.all(8),
+              FileThumbnail(
+                padding: padding,
+                file: PlatformFile.fromMap({
+                  'name': fileName,
+                  'path': filePath,
+                  'size': 0,
+                  'bytes': Uint8List(0),
+                }),
                 width: 160,
                 height: 128,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: AppColors.primary,
-                ),
+                radius: 8,
               ),
               Positioned(
                 top: 8,
@@ -97,12 +108,16 @@ class FilePreview extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                fileName,
-                style: TextStyle(
-                  fontFamily: AppFonts.productSansRegular,
-                  fontSize: 14,
-                  color: AppColors.foreground,
+              SizedBox(
+                width: 150,
+                child: Text(
+                  overflow: TextOverflow.ellipsis,
+                  fileName,
+                  style: TextStyle(
+                    fontFamily: AppFonts.productSansRegular,
+                    fontSize: 14,
+                    color: AppColors.foreground,
+                  ),
                 ),
               ),
               Text(
