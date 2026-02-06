@@ -11,6 +11,7 @@ import 'package:securite_mobile/view/home/home_view.dart';
 import 'package:securite_mobile/view/onboarding_view.dart';
 import 'package:securite_mobile/view/shared_files_view.dart';
 import 'package:securite_mobile/view/user_files/user_files_view.dart';
+import 'package:securite_mobile/view/widgets/app_drawer.dart';
 import 'package:securite_mobile/view/widgets/bottom_nav.dart';
 import 'package:securite_mobile/view/widgets/top_bar.dart';
 import 'package:securite_mobile/viewmodel/auth/two_fa_viewmodel.dart';
@@ -101,6 +102,7 @@ final GoRouter appRouter = GoRouter(
     ShellRoute(
       builder: (context, state, child) {
         final location = state.uri.toString();
+        bool canPop = location.startsWith(AppRoutes.userFiles);
 
         final currentIndex = switch (location) {
           String l when l.startsWith(AppRoutes.userFiles) => 0,
@@ -108,25 +110,40 @@ final GoRouter appRouter = GoRouter(
           String l when l.startsWith(AppRoutes.sharedFiles) => 2,
           _ => 0,
         };
-        return Scaffold(
-          appBar: TopBar(),
-          bottomNavigationBar: BottomNav(
-            onTap: (index) {
-              switch (index) {
-                case 0:
-                  context.go(AppRoutes.userFiles);
-                  break;
-                case 1:
-                  context.pushNamed(AppRoutes.createFile);
-                  break;
-                case 2:
-                  context.go(AppRoutes.sharedFiles);
-                  break;
-              }
-            },
-            currentIndex: currentIndex,
+
+        final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
+        return PopScope(
+          canPop: canPop,
+          onPopInvokedWithResult: (didPop, result) {
+            context.go(AppRoutes.userFiles);
+          },
+          child: Scaffold(
+            key: scaffoldKey,
+            drawer: AppDrawer(),
+            appBar: TopBar(
+              onImageTap: () {
+                scaffoldKey.currentState?.openDrawer();
+              },
+            ),
+            bottomNavigationBar: BottomNav(
+              onTap: (index) {
+                switch (index) {
+                  case 0:
+                    context.go(AppRoutes.userFiles);
+                    break;
+                  case 1:
+                    context.pushNamed(AppRoutes.createFile);
+                    break;
+                  case 2:
+                    context.go(AppRoutes.sharedFiles);
+                    break;
+                }
+              },
+              currentIndex: currentIndex,
+            ),
+            body: child,
           ),
-          body: child,
         );
       },
       routes: [

@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
 
-class BottomSheetItem extends StatelessWidget {
+class DrawerItem extends StatelessWidget {
   final String label;
   final String assetName;
   final Function() onTap;
   final Color color;
 
-  const BottomSheetItem({
+  const DrawerItem({
     super.key,
     required this.label,
     required this.assetName,
@@ -21,18 +21,20 @@ class BottomSheetItem extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Ink(
-        height: 48,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Row(
             mainAxisSize: MainAxisSize.max,
             spacing: 16,
             children: [
               SvgPicture.asset(
                 assetName,
-                height: 18,
-                width: 18,
-                colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+                height: 20,
+                width: 20,
+                colorFilter: ColorFilter.mode(
+                  color.withAlpha(180),
+                  BlendMode.srcIn,
+                ),
               ),
               Text(
                 label,

@@ -5,8 +5,9 @@ import 'package:securite_mobile/constants/app_fonts.dart';
 
 class TopBar extends StatelessWidget implements PreferredSizeWidget {
   final String? imageUrl;
+  final Function() onImageTap;
 
-  const TopBar({super.key, this.imageUrl});
+  const TopBar({super.key, this.imageUrl, required this.onImageTap});
 
   @override
   Size get preferredSize => const Size.fromHeight(56);
@@ -32,23 +33,27 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
                 color: AppColors.primary,
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(4),
-              child: CircleAvatar(
-                radius: 17,
-                child: (imageUrl != null)
-                    ? Image.network(
-                        imageUrl!,
-                        height: 34,
-                        width: 34,
-                        errorBuilder: (_, _, _) {
-                          return SvgPicture.asset(
-                            'assets/icons/user.svg',
-                            height: 20,
-                          );
-                        },
-                      )
-                    : SvgPicture.asset('assets/icons/user.svg', height: 20),
+            InkWell(
+              borderRadius: BorderRadius.circular(50),
+              onTap: onImageTap,
+              child: Padding(
+                padding: const EdgeInsets.all(4),
+                child: CircleAvatar(
+                  radius: 17,
+                  child: (imageUrl != null)
+                      ? Image.network(
+                          imageUrl!,
+                          height: 34,
+                          width: 34,
+                          errorBuilder: (_, _, _) {
+                            return SvgPicture.asset(
+                              'assets/icons/user.svg',
+                              height: 20,
+                            );
+                          },
+                        )
+                      : SvgPicture.asset('assets/icons/user.svg', height: 20),
+                ),
               ),
             ),
           ],

@@ -21,7 +21,16 @@ class FilesList extends StatelessWidget {
       spacing: 24,
       children: [
         title(listTitle, showSearchIcon),
-        Column(spacing: 16, children: files),
+        files.isEmpty
+            ? Text(
+                'Aucun fichier pour le moment.',
+                style: TextStyle(
+                  fontFamily: AppFonts.productSansRegular,
+                  color: AppColors.mutedForeground,
+                  fontSize: 14,
+                ),
+              )
+            : Column(spacing: 16, children: files),
       ],
     );
   }
