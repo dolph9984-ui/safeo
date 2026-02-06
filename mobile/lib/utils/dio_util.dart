@@ -3,21 +3,19 @@ import 'package:dio/io.dart';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
 
-
 class DioClient {
   static final Dio dio = Dio(
     BaseOptions(
-      baseUrl: 'http://192.168.100.106:3000',//telephone
+      //baseUrl: 'http://192.168.100.106:3000',//telephone
       //baseUrl: 'http://10.0.2.2:3000', //android emulator
-      //baseUrl: 'https://safeo.greny.app', //web
+      baseUrl: 'https://safeo-api.greny.app', //web
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: {'Content-Type': 'application/json'},
     ),
   );
 }
+
 /*
 
 const baseUrl = 'https://safeo.greny.app';
@@ -25,9 +23,9 @@ const baseUrl = 'https://safeo.greny.app';
 
 class DioClient {
   static final Dio dio = _createDio();
- 
-  static const String _certificateSHA256 = '724B4AF45AC5955912FD7EEB70662EF2504E66F829C849941B6E14ABB868417E'; 
-  static const bool _enableCertificatePinning = true; 
+
+  static const String _certificateSHA256 = '724B4AF45AC5955912FD7EEB70662EF2504E66F829C849941B6E14ABB868417E';
+  static const bool _enableCertificatePinning = true;
 
   static Dio _createDio() {
     final dio = Dio(
@@ -46,9 +44,9 @@ class DioClient {
       (dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
         return HttpClient()
           ..badCertificateCallback = (X509Certificate cert, String host, int port) {
-            final certBytes = cert.der; 
+            final certBytes = cert.der;
             final digest = sha256.convert(certBytes);
-            
+
             final certFingerprint = digest
                 .toString()
                 .toUpperCase()
@@ -86,7 +84,7 @@ class DioClient {
 
           print('REQUEST[${options.method}] => PATH: ${options.path}');
           print('Headers (sanitized): $sanitizedHeaders');
-          
+
           return handler.next(options);
         },
         onResponse: (Response response, ResponseInterceptorHandler handler) {

@@ -18,16 +18,27 @@ import 'package:securite_mobile/viewmodel/auth/two_fa_viewmodel.dart';
 final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.userFiles,
   redirect: (context, state) async {
-    if (state.matchedLocation == AppRoutes.root) {
-      final storage = SecureStorageService();
-      final isLoggedIn = await storage.isLoggedIn();
-      return isLoggedIn ? AppRoutes.home : AppRoutes.onboarding;
+    final currentLocation = state.matchedLocation;
+    final storage = SecureStorageService();
+    final isLoggedIn = await storage.isLoggedIn();
+
+    return null;
+
+    if (!isLoggedIn &&
+        !currentLocation.startsWith(AppRoutes.login) &&
+        !currentLocation.startsWith(AppRoutes.signup) &&
+        !currentLocation.startsWith(AppRoutes.onboarding)) {
+      return AppRoutes.onboarding;
     }
     return null;
   },
 
   routes: [
     GoRoute(path: AppRoutes.root, builder: (_, _) => const SizedBox.shrink()),
+    GoRoute(
+      path: AppRoutes.authCallback,
+      redirect: (context, state) => AppRoutes.root,
+    ),
 
     // Onboarding
     GoRoute(

@@ -32,11 +32,14 @@ class _LoginViewState extends State<LoginView> {
       child: Consumer2<LoginViewModel, OAuthViewModel>(
         builder: (context, loginVm, oauthVm, _) {
           return AuthLayout(
-            onBackPressed: () =>
-                context.canPop() ? context.pop() : context.go(AppRoutes.onboarding),
+            onBackPressed: () => context.canPop()
+                ? context.pop()
+                : context.go(AppRoutes.onboarding),
             child: AuthScrollableBody(
               children: [
-                Center(child: Text('Se connecter', style: textTheme.headlineLarge)),
+                Center(
+                  child: Text('Se connecter', style: textTheme.headlineLarge),
+                ),
                 const SizedBox(height: 40),
 
                 LabeledTextField(
@@ -64,7 +67,9 @@ class _LoginViewState extends State<LoginView> {
                   ),
                 ),
 
-                AuthErrorMessage(message: loginVm.errorMessage ?? oauthVm.errorMessage),
+                AuthErrorMessage(
+                  message: loginVm.errorMessage ?? oauthVm.errorMessage,
+                ),
                 const SizedBox(height: 35),
 
                 LoadingElevatedButton(
@@ -97,7 +102,7 @@ class _LoginViewState extends State<LoginView> {
                     final success = await oauthVm.googleLogin(
                       context: 'login_screen',
                     );
-                    
+
                     if (success && context.mounted) {
                       context.go(AppRoutes.home);
                     }
