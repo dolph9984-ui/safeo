@@ -1,0 +1,127 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:securite_mobile/constants/app_colors.dart';
+import 'package:securite_mobile/constants/app_fonts.dart';
+import 'package:securite_mobile/enum/file_type_enum.dart';
+import 'package:securite_mobile/enum/month_enum.dart';
+
+class FileItem extends StatelessWidget {
+  final String id;
+  final String fileName;
+  final double fileSize;
+  final DateTime dateTime;
+  final FileTypeEnum fileType;
+  final Function(String id) onButtonTap;
+
+  const FileItem({
+    super.key,
+    required this.fileName,
+    required this.fileSize,
+    required this.dateTime,
+    required this.fileType,
+    required this.onButtonTap,
+    required this.id,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.foreground.withAlpha(10),
+            blurRadius: 6,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          spacing: 16,
+          children: [
+            // icon & title
+            Expanded(
+              child: Row(
+                spacing: 10,
+                children: [
+                  Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: fileType.bgColor,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SvgPicture.asset(fileType.assetName),
+                    ),
+                  ),
+
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 4,
+                      children: [
+                        Text(
+                          fileName,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: AppFonts.productSansMedium,
+                            fontSize: 14,
+                            color: AppColors.foreground,
+                          ),
+                        ),
+
+                        Text(
+                          '$fileSize MB, ${formatDateTime(dateTime)}',
+                          style: TextStyle(
+                            fontFamily: AppFonts.productSansRegular,
+                            fontSize: 11,
+                            color: AppColors.mutedForeground,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // trailing icon
+            Transform.translate(
+              offset: Offset(4, 0),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => onButtonTap(id),
+                  borderRadius: BorderRadius.circular(50),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: SvgPicture.asset(
+                      'assets/icons/more_vert.svg',
+                      colorFilter: ColorFilter.mode(
+                        AppColors.mutedForeground,
+                        BlendMode.srcIn,
+                      ),
+                      height: 24,
+                      width: 24,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String formatDateTime(DateTime dateTime) {
+    return '${dateTime.day} ${MonthEnum.values[dateTime.month - 1].name} ${dateTime.year}, ${dateTime.hour}:${dateTime.minute}';
+  }
+}

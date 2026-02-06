@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
+import 'package:securite_mobile/constants/app_fonts.dart';
 
 class AppTheme {
   static final ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
     primaryColor: AppColors.primary,
-    scaffoldBackgroundColor: Colors.white,
-    fontFamily: 'SF Pro Display',
+    scaffoldBackgroundColor: AppColors.background,
 
-    colorScheme: const ColorScheme.light(
+    // Define color scheme for errors and other semantic colors
+    colorScheme: ColorScheme.light(
       primary: AppColors.primary,
       error: AppColors.error,
       surface: AppColors.surface,
@@ -39,27 +40,27 @@ class AppTheme {
 
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.inputBackground, 
-      
+      fillColor: AppColors.inputBackground,
+
       hintStyle: const TextStyle(color: AppColors.textHint, fontSize: 14),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      
+
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: AppColors.inputBackground, width: 1),
       ),
-      
+
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: AppColors.primary, width: 2),
       ),
-      
+
       // Bordure rouge en cas d'erreur
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: AppColors.error, width: 1),
       ),
-      
+
       // Bordure rouge quand on clique dedans et qu'il y a une erreur
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -69,12 +70,18 @@ class AppTheme {
 
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
+        disabledBackgroundColor: AppColors.buttonDisabled,
+        elevation: 0,
+        shadowColor: Colors.transparent,
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        minimumSize: const Size(double.infinity, 52),
-        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-        elevation: 0,
+        padding: EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        minimumSize: const Size(double.infinity, 56),
+        textStyle: TextStyle(
+          fontFamily: AppFonts.productSansRegular,
+          fontSize: 16,
+        ),
       ),
     ),
   );

@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:securite_mobile/router/routes.dart';
+import 'package:securite_mobile/router/app_routes.dart';
 import 'package:securite_mobile/services/security/secure_storage_service.dart';
 
 class HomeView extends StatefulWidget {

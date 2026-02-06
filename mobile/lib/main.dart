@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:securite_mobile/constants/app_theme.dart';
+import 'package:securite_mobile/router/app_router.dart';
 import 'package:securite_mobile/services/security/secure_storage_service.dart';
-import 'package:securite_mobile/router/app_router.dart'; 
+import 'package:securite_mobile/viewmodel/create_file_viewmodel.dart';
+import 'package:securite_mobile/viewmodel/shared_files_viewmodel.dart';
+import 'package:securite_mobile/viewmodel/user_files_viewmodel.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,11 +18,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      title: 'SafeO',
-      theme: AppTheme.lightTheme,
-      routerConfig: appRouter, 
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserFilesViewModel()),
+        ChangeNotifierProvider(create: (_) => SharedFilesViewModel()),
+        ChangeNotifierProvider(create: (_) => CreateFileViewModel()),
+      ],
+      child: MaterialApp.router(
+        routerConfig: appRouter,
+        debugShowCheckedModeBanner: false,
+        title: 'SafeO',
+        theme: AppTheme.lightTheme,
+      ),
     );
   }
 }

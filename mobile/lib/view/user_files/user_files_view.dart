@@ -1,0 +1,94 @@
+import 'package:flutter/material.dart';
+import 'package:securite_mobile/constants/app_colors.dart';
+import 'package:securite_mobile/enum/file_type_enum.dart';
+import 'package:securite_mobile/view/user_files/widgets/file_item.dart';
+import 'package:securite_mobile/view/user_files/widgets/files_list.dart';
+import 'package:securite_mobile/view/user_files/widgets/storage_card.dart';
+import 'package:securite_mobile/view/widgets/app_bottom_sheet.dart';
+import 'package:securite_mobile/view/widgets/bottom_sheet_item.dart';
+
+class UserFilesView extends StatelessWidget {
+  const UserFilesView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomSheetItems = [
+      BottomSheetItem(
+        label: 'Ouvrir',
+        assetName: 'assets/icons/open.svg',
+        onTap: () {},
+        color: AppColors.foreground,
+      ),
+      BottomSheetItem(
+        label: 'Partager',
+        assetName: 'assets/icons/share.svg',
+        onTap: () {},
+        color: AppColors.foreground,
+      ),
+      BottomSheetItem(
+        label: 'Gérer les partages',
+        assetName: 'assets/icons/users_round.svg',
+        onTap: () {},
+        color: AppColors.foreground,
+      ),
+      BottomSheetItem(
+        label: 'Renommer',
+        assetName: 'assets/icons/edit.svg',
+        onTap: () {},
+        color: AppColors.foreground,
+      ),
+      BottomSheetItem(
+        label: 'Télécharger',
+        assetName: 'assets/icons/download.svg',
+        onTap: () {},
+        color: AppColors.foreground,
+      ),
+      BottomSheetItem(
+        label: 'Informations sur le fichier',
+        assetName: 'assets/icons/info.svg',
+        onTap: () {},
+        color: AppColors.foreground,
+      ),
+      BottomSheetItem(
+        label: 'Placer dans la corbeille',
+        assetName: 'assets/icons/trash.svg',
+        onTap: () {},
+        color: AppColors.destructive,
+      ),
+    ];
+
+    final files = List.generate(
+      4,
+      (index) => FileItem(
+        fileName: 'example_file_name',
+        fileSize: 2.2,
+        dateTime: DateTime.now(),
+        fileType: FileTypeEnum.values[index % 4],
+        onButtonTap: (String id) {
+          showModalBottomSheet(
+            useRootNavigator: true,
+            context: context,
+            builder: (context) {
+              return AppBottomSheet(items: bottomSheetItems);
+            },
+          );
+        },
+        id: index.toString(),
+      ),
+    );
+
+    return ListView(
+      padding: EdgeInsets.only(left: 24, right: 24, bottom: 40),
+      children: [
+        SizedBox(height: 16),
+        StorageCard(used: 2, totalStorage: 5),
+        SizedBox(height: 32),
+        FilesList(
+          listTitle: 'Mes fichiers',
+          files: files,
+          showSearchIcon: true,
+        ),
+      ],
+    );
+  }
+}

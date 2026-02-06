@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:securite_mobile/router/routes.dart';
+import 'package:securite_mobile/router/app_routes.dart';
 import 'package:securite_mobile/view/auth/components/auth_components.dart';
 import 'package:securite_mobile/view/auth/components/auth_scrollable_body.dart';
 import 'package:securite_mobile/view/auth/components/labeled_text_field_components.dart';
