@@ -21,7 +21,7 @@ class BottomSheetItem extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Ink(
-        height: 40,
+        height: 48,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32),
           child: Row(
@@ -30,15 +30,15 @@ class BottomSheetItem extends StatelessWidget {
             children: [
               SvgPicture.asset(
                 assetName,
-                height: 16,
-                width: 16,
+                height: 18,
+                width: 18,
                 colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
               ),
               Text(
                 label,
                 style: TextStyle(
                   fontFamily: AppFonts.productSansRegular,
-                  fontSize: 14,
+                  fontSize: 16,
                   color: color,
                 ),
               ),

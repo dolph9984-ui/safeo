@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
-import 'package:securite_mobile/view/create_file/widgets/confidentiality_card.dart';
+import 'package:securite_mobile/enum/file_visibility_enum.dart';
+import 'package:securite_mobile/view/create_file/widgets/file_visibility_card.dart';
+import 'package:securite_mobile/view/widgets/rename_file_dialog.dart';
+import 'package:securite_mobile/view/widgets/blurred_dialog.dart';
 import 'package:securite_mobile/view/widgets/file_preview.dart';
 import 'package:securite_mobile/view/widgets/file_uploader.dart';
 import 'package:securite_mobile/viewmodel/create_file_viewmodel.dart';
@@ -15,6 +19,7 @@ class CreateFileView extends StatelessWidget {
     final vm = context.watch<CreateFileViewModel>();
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         titleSpacing: 4,
         backgroundColor: AppColors.background,
@@ -50,7 +55,28 @@ class CreateFileView extends StatelessWidget {
                     filePath: vm.filePath,
                     fileName: vm.fileName,
                     sizeInMB: vm.fileSizeInMB,
-                    onEditTap: () {},
+                    onEditTap: () {
+                      showDialog(
+                        context: context,
+                        barrierColor: Colors.transparent,
+                        animationStyle: AnimationStyle(
+                          duration: Duration(milliseconds: 0),
+                        ),
+                        builder: (context) {
+                          return BlurredDialog(
+                            popOnOutsideDialogTap: false,
+                            child: RenameFileDialog(
+                              initialName: vm.fileName,
+                              onCancelPress: () => context.pop(),
+                              onConfirmPress: (newName) {
+                                vm.setFileName(newName);
+                                context.pop();
+                              },
+                            ),
+                          );
+                        },
+                      );
+                    },
                     onDeleteTap: () => vm.unselectFile(),
                   ),
             Column(
@@ -66,16 +92,16 @@ class CreateFileView extends StatelessWidget {
                   ),
                 ),
 
-                ConfidentialityCard(
-                  selected: true,
-                  onTap: () {},
+                FileVisibilityCard(
+                  selected: vm.fileVisibility == FileVisibilityEnum.private,
+                  onTap: () => vm.setFileVisibility(FileVisibilityEnum.private),
                   label: 'Privé',
                   description: 'Accessible uniquement par vous',
                   iconPath: 'assets/icons/lock.svg',
                 ),
-                ConfidentialityCard(
-                  selected: false,
-                  onTap: () {},
+                FileVisibilityCard(
+                  selected: vm.fileVisibility == FileVisibilityEnum.shared,
+                  onTap: () => vm.setFileVisibility(FileVisibilityEnum.shared),
                   label: 'Partagé',
                   description: 'Accessible aux personnes que vous autorisez',
                   iconPath: 'assets/icons/users_line.svg',

@@ -35,7 +35,7 @@ class FilesList extends StatelessWidget {
           title,
           style: TextStyle(
             fontFamily: AppFonts.zalandoSans,
-            fontSize: 16,
+            fontSize: 18,
             color: AppColors.foreground,
           ),
         ),

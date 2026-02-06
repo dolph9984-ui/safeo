@@ -69,7 +69,7 @@ class StorageCard extends StatelessWidget {
                       '${used.toInt()}GB',
                       style: TextStyle(
                         fontFamily: AppFonts.productSansMedium,
-                        fontSize: 14,
+                        fontSize: 15,
                         color: Colors.white,
                       ),
                     ),
@@ -78,7 +78,7 @@ class StorageCard extends StatelessWidget {
                       style: TextStyle(
                         fontFamily: AppFonts.productSansRegular,
                         fontWeight: FontWeight.w400,
-                        fontSize: 14,
+                        fontSize: 15,
                         color: Colors.white,
                       ),
                     ),
