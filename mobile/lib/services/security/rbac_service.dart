@@ -1,7 +1,4 @@
-enum Role {
-  viewer,   
-  owner,    
-}
+enum Role { viewer, owner }
 
 enum Permission {
   addDocument,
@@ -15,7 +12,9 @@ enum Permission {
 /// Module 2, pages 40-49
 class RBACService {
   static final RBACService _instance = RBACService._internal();
+
   factory RBACService() => _instance;
+
   RBACService._internal();
 
   static final Map<Role, Set<Permission>> _permissions = {
@@ -27,9 +26,7 @@ class RBACService {
       Permission.shareDocument,
       Permission.downloadDocument,
     },
-    Role.viewer: {
-      Permission.readDocument,
-    },
+    Role.viewer: {Permission.readDocument},
   };
 
   bool hasPermission(Role role, Permission permission) {

@@ -15,24 +15,28 @@ class UserFilesBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bottomSheetItems = [
+      // open
       BottomSheetItem(
         label: 'Ouvrir',
         assetName: 'assets/icons/open.svg',
         onTap: () {},
         color: AppColors.foreground,
       ),
+      // share
       BottomSheetItem(
         label: 'Partager',
         assetName: 'assets/icons/share.svg',
         onTap: () {},
         color: AppColors.foreground,
       ),
+      // manage share
       BottomSheetItem(
         label: 'Gérer les partages',
         assetName: 'assets/icons/users_round.svg',
         onTap: () {context.pushNamed(AppRoutes.shareFile);},
         color: AppColors.foreground,
       ),
+      // rename
       BottomSheetItem(
         label: 'Renommer',
         assetName: 'assets/icons/edit.svg',
@@ -63,18 +67,21 @@ class UserFilesBottomSheet extends StatelessWidget {
         },
         color: AppColors.foreground,
       ),
+      // download
       BottomSheetItem(
         label: 'Télécharger',
         assetName: 'assets/icons/download.svg',
         onTap: () {},
         color: AppColors.foreground,
       ),
+      // info
       BottomSheetItem(
         label: 'Informations sur le fichier',
         assetName: 'assets/icons/info.svg',
         onTap: () {},
         color: AppColors.foreground,
       ),
+      // delete
       BottomSheetItem(
         label: 'Placer dans la corbeille',
         assetName: 'assets/icons/trash.svg',
