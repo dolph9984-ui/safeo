@@ -2,13 +2,13 @@ class TwoFAResponse {
   final int statusCode;
   final String message;
   final String accessToken;
-  final String refreshToken; // ← Ajout du refreshToken
+  final String refreshToken; 
 
   TwoFAResponse({
     required this.statusCode,
     required this.message,
     required this.accessToken,
-    required this.refreshToken, // ← Ajout du refreshToken
+    required this.refreshToken, 
   });
 
   factory TwoFAResponse.fromJson(Map<String, dynamic> json) {
@@ -16,7 +16,7 @@ class TwoFAResponse {
       statusCode: json['statusCode'] ?? 200,
       message: json['message'] ?? '',
       accessToken: json['accessToken'] ?? '',
-      refreshToken: json['refreshToken'] ?? '', // ← Ajout du refreshToken
+      refreshToken: json['refreshToken'] ?? '', 
     );
   }
 }

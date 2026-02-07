@@ -22,7 +22,7 @@ import 'package:securite_mobile/viewmodel/scaffold_view_model.dart';
 import '../constants/app_colors.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: AppRoutes.root,
+  initialLocation: AppRoutes.userFiles,
   redirect: (context, state) async {
     final currentLocation = state.matchedLocation;
     final storage = SecureStorageService();

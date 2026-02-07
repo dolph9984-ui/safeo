@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:securite_mobile/router/app_routes.dart';
 import 'package:securite_mobile/view/widgets/app_bottom_sheet.dart';
 import 'package:securite_mobile/view/widgets/blurred_dialog.dart';
 import 'package:securite_mobile/view/widgets/confirm_dialog.dart';
@@ -29,7 +30,7 @@ class UserFilesBottomSheet extends StatelessWidget {
       BottomSheetItem(
         label: 'Gérer les partages',
         assetName: 'assets/icons/users_round.svg',
-        onTap: () {},
+        onTap: () {context.pushNamed(AppRoutes.shareFile);},
         color: AppColors.foreground,
       ),
       BottomSheetItem(
