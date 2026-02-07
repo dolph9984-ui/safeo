@@ -3,7 +3,7 @@ import 'package:securite_mobile/model/file_model.dart';
 class FileCacheService {
   final Duration? ttl;
 
-  const FileCacheService({this.ttl});
+  const FileCacheService({required this.ttl});
 
   Future<List<AppFile>?> getFilesOrNull() async {
     final cacheTime = await _getCacheTime();
@@ -14,9 +14,14 @@ class FileCacheService {
   }
 
   Future<void> syncFiles(
-    List<AppFile> cachedFiles,
+    List<AppFile>? cachedFiles,
     List<AppFile> serverFiles,
   ) async {
+    if (cachedFiles == null) {
+      await _saveNewFiles(serverFiles);
+      return;
+    }
+
     final Map<String, AppFile> cacheMap = {for (var f in cachedFiles) f.id: f};
 
     final List<AppFile> newFiles = [];

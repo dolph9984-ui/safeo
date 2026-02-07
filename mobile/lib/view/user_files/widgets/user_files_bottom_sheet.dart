@@ -33,7 +33,9 @@ class UserFilesBottomSheet extends StatelessWidget {
       BottomSheetItem(
         label: 'Gérer les partages',
         assetName: 'assets/icons/users_round.svg',
-        onTap: () {context.pushNamed(AppRoutes.shareFile);},
+        onTap: () {
+          context.pushNamed(AppRoutes.shareFile);
+        },
         color: AppColors.foreground,
       ),
       // rename
@@ -97,6 +99,8 @@ class UserFilesBottomSheet extends StatelessWidget {
                 cancelLabel: 'Annuler',
                 confirmLabel: 'Déplacer vers la corbeille',
                 confirmBgColor: AppColors.destructive,
+                onConfirm: () {},
+                onCancel: () {},
               );
             },
           );

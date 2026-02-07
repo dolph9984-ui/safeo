@@ -6,12 +6,12 @@ import 'package:securite_mobile/utils/dio_util.dart';
 class FormAuthService {
   final Dio _dio = DioClient.dio;
 
-  Future<LoginResponse> login(LoginCredentials credentials) async {
+  Future<CredentialLoginResponse> login(LoginCredentials credentials) async {
     final response = await _dio.post(
       '/v1/api/auth/login',
       data: credentials.toJson(),
     );
 
-    return LoginResponse.fromJson(response.data);
+    return CredentialLoginResponse.fromJson(response.data);
   }
 }

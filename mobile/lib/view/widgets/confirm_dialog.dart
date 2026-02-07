@@ -11,6 +11,8 @@ class ConfirmDialog extends StatelessWidget {
   final String cancelLabel;
   final String confirmLabel;
   final Color confirmBgColor;
+  final Function() onConfirm;
+  final Function() onCancel;
 
   const ConfirmDialog({
     super.key,
@@ -19,6 +21,8 @@ class ConfirmDialog extends StatelessWidget {
     required this.cancelLabel,
     required this.confirmLabel,
     required this.confirmBgColor,
+    required this.onConfirm,
+    required this.onCancel,
   });
 
   @override
@@ -64,14 +68,20 @@ class ConfirmDialog extends StatelessWidget {
                       minimumSize: Size(40, 40),
                       backgroundColor: confirmBgColor,
                     ),
-                    onPressed: () => context.pop(),
+                    onPressed: () {
+                      onConfirm();
+                      context.pop();
+                    },
                     child: Text(confirmLabel),
                   ),
                 ),
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
-                    onPressed: () => context.pop(),
+                    onPressed: () {
+                      onCancel();
+                      context.pop();
+                    },
                     child: Text(cancelLabel),
                   ),
                 ),

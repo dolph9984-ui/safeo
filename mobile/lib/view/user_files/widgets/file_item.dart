@@ -5,16 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
-import 'package:securite_mobile/enum/file_type_enum.dart';
 import 'package:securite_mobile/enum/month_enum.dart';
+import 'package:securite_mobile/utils/file_size_converter.dart';
 import 'package:securite_mobile/view/widgets/file_thumbnail.dart';
 
 class FileItem extends StatelessWidget {
   final String id;
   final String fileName;
-  final double fileSize;
+  final int fileSize;
   final DateTime dateTime;
-  final FileTypeEnum fileType;
   final Function(String id) onButtonTap;
 
   const FileItem({
@@ -22,7 +21,6 @@ class FileItem extends StatelessWidget {
     required this.fileName,
     required this.fileSize,
     required this.dateTime,
-    required this.fileType,
     required this.onButtonTap,
     required this.id,
   });
@@ -82,7 +80,7 @@ class FileItem extends StatelessWidget {
                         ),
 
                         Text(
-                          '$fileSize MB, ${formatDateTime(dateTime)}',
+                          '${FileSizeConverter.bytesToMb(fileSize)} MB, ${formatDateTime(dateTime)}',
                           style: TextStyle(
                             fontFamily: AppFonts.productSansRegular,
                             fontSize: 12,

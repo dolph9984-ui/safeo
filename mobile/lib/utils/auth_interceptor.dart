@@ -1,19 +1,22 @@
 import 'package:dio/dio.dart';
-import 'package:securite_mobile/services/security/secure_storage_service.dart';
+import 'package:securite_mobile/model/auth/session_token.dart';
+import 'package:securite_mobile/services/auth/session_service.dart';
 
 class AuthInterceptor extends Interceptor {
-  final SecureStorageService storage;
+  final SessionService sessionService;
   final Dio dio;
 
   bool _isRefreshing = false;
 
-  AuthInterceptor(this.storage, this.dio);
+  AuthInterceptor(this.sessionService, this.dio);
 
   @override
   void onRequest(
-      RequestOptions options, RequestInterceptorHandler handler) async {
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
     if (!options.path.contains('/auth/')) {
-      final accessToken = await storage.getAccessToken();
+      final accessToken = await sessionService.getAccessToken();
 
       if (accessToken != null && accessToken.isNotEmpty) {
         options.headers['Authorization'] = 'Bearer $accessToken';
@@ -30,10 +33,10 @@ class AuthInterceptor extends Interceptor {
       _isRefreshing = true;
 
       try {
-        final refreshToken = await storage.getRefreshToken();
+        final refreshToken = await sessionService.getRefreshToken();
 
         if (refreshToken == null || refreshToken.isEmpty) {
-          await storage.logout();
+          await SessionService().endSession();
           _isRefreshing = false;
           return handler.next(err);
         }
@@ -48,12 +51,12 @@ class AuthInterceptor extends Interceptor {
         final newAccessToken = response.data['accessToken'];
 
         if (newAccessToken == null) {
-          await storage.logout();
+          await sessionService.endSession();
           _isRefreshing = false;
           return handler.next(err);
         }
 
-        await storage.saveAccessToken(newAccessToken);
+        await SessionTokenModel.storeAccessToken(newAccessToken);
 
         final retryResponse = await dio.request(
           err.requestOptions.path,
@@ -72,7 +75,7 @@ class AuthInterceptor extends Interceptor {
         return handler.resolve(retryResponse);
       } catch (_) {
         _isRefreshing = false;
-        await storage.logout();
+        await sessionService.endSession();
       }
     }
 

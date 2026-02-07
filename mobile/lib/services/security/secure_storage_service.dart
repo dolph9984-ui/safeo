@@ -1,4 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:securite_mobile/constants/storage_keys.dart';
 
 class SecureStorageService {
   static final SecureStorageService _instance =
@@ -7,8 +8,6 @@ class SecureStorageService {
   factory SecureStorageService() => _instance;
 
   SecureStorageService._internal();
-
-  String? _accessToken;
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage(
     aOptions: AndroidOptions(
@@ -21,80 +20,13 @@ class SecureStorageService {
     ),
   );
 
-  static const String _keyAccessToken = 'access_token';
-  static const String _keyRefreshToken = 'refresh_token';
-  static const String _keyUserId = 'user_id';
-  static const String _keyUserEmail = 'user_email';
-  static const String _keyUserRole = 'user_role';
-
   Future<void> initialize() async {
     try {
-      await _storage.containsKey(key: _keyAccessToken);
+      await _storage.containsKey(key: StorageKeys.accessToken);
       print('SecureStorageService initialisé');
     } catch (e) {
       print('Erreur initialisation SecureStorage: $e');
     }
-  }
-
-  Future<void> saveAccessToken(String token) async {
-    await _storage.write(key: _keyAccessToken, value: token);
-  }
-
-  Future<String?> getAccessToken() async {
-    return await _storage.read(key: _keyAccessToken);
-  }
-
-  Future<void> saveRefreshToken(String token) async {
-    await _storage.write(key: _keyRefreshToken, value: token);
-  }
-
-  Future<String?> getRefreshToken() async {
-    return await _storage.read(key: _keyRefreshToken);
-  }
-
-  Future<void> saveUserInfo({
-    required String userId,
-    required String email,
-    String? role,
-    String? refreshToken,
-  }) async {
-    await _storage.write(key: _keyUserId, value: userId);
-    await _storage.write(key: _keyUserEmail, value: email);
-
-    if (role != null) {
-      await _storage.write(key: _keyUserRole, value: role);
-    }
-
-    if (refreshToken != null) {
-      await saveRefreshToken(refreshToken);
-    }
-  }
-
-  Future<String?> getUserId() async {
-    return await _storage.read(key: _keyUserId);
-  }
-
-  Future<String?> getUserEmail() async {
-    return await _storage.read(key: _keyUserEmail);
-  }
-
-  Future<String?> getUserRole() async {
-    return await _storage.read(key: _keyUserRole);
-  }
-
-  Future<bool> isLoggedIn() async {
-    if (_accessToken != null && _accessToken!.isNotEmpty) return true;
-    final token = await getAccessToken();
-    _accessToken = token;
-    return token != null && token.isNotEmpty;
-  }
-
-  Future<void> logout() async {
-    await _storage.delete(key: _keyAccessToken);
-    await _storage.delete(key: _keyRefreshToken);
-    await _storage.delete(key: _keyUserId);
-    await _storage.delete(key: _keyUserEmail);
-    await _storage.delete(key: _keyUserRole);
   }
 
   Future<void> deleteAll() async {

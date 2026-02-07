@@ -1,16 +1,16 @@
-class LoginResponse {
+class CredentialLoginResponse {
   final int statusCode;
   final String verificationToken;
   final String message;
 
-  LoginResponse({
+  CredentialLoginResponse({
     required this.statusCode,
     required this.verificationToken,
     required this.message,
   });
 
-  factory LoginResponse.fromJson(Map<String, dynamic> json) {
-    return LoginResponse(
+  factory CredentialLoginResponse.fromJson(Map<String, dynamic> json) {
+    return CredentialLoginResponse(
       statusCode: json['statusCode'] ?? 200,
       verificationToken: json['verificationToken'],
       message: json['message'],

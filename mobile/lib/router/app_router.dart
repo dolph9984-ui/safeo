@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:securite_mobile/router/app_routes.dart';
-import 'package:securite_mobile/services/security/secure_storage_service.dart';
+import 'package:securite_mobile/services/auth/session_service.dart';
+import 'package:securite_mobile/view/app_scaffold.dart';
 import 'package:securite_mobile/view/auth/login_view.dart';
 import 'package:securite_mobile/view/auth/signup_view.dart';
 import 'package:securite_mobile/view/auth/two_fa_view.dart';
@@ -12,21 +13,14 @@ import 'package:securite_mobile/view/onboarding_view.dart';
 import 'package:securite_mobile/view/share_file/share_file_view.dart';
 import 'package:securite_mobile/view/shared_files/shared_files_view.dart';
 import 'package:securite_mobile/view/user_files/user_files_view.dart';
-import 'package:securite_mobile/view/widgets/app_drawer.dart';
-import 'package:securite_mobile/view/widgets/bottom_nav.dart';
-import 'package:securite_mobile/view/widgets/confirm_dialog.dart';
-import 'package:securite_mobile/view/widgets/top_bar.dart';
 import 'package:securite_mobile/viewmodel/auth/two_fa_viewmodel.dart';
-import 'package:securite_mobile/viewmodel/scaffold_view_model.dart';
-
-import '../constants/app_colors.dart';
+import 'package:securite_mobile/viewmodel/scaffold_viewmodel.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.userFiles,
   redirect: (context, state) async {
     final currentLocation = state.matchedLocation;
-    final storage = SecureStorageService();
-    final isLoggedIn = await storage.isLoggedIn();
+    final isLoggedIn = await SessionService().isLoggedIn;
 
     if (!isLoggedIn &&
         !currentLocation.startsWith(AppRoutes.login) &&
@@ -104,8 +98,6 @@ final GoRouter appRouter = GoRouter(
 
     ShellRoute(
       builder: (context, state, child) {
-        final vm = context.watch<ScaffoldViewModel>();
-
         final location = state.uri.toString();
         bool canPop = location.startsWith(AppRoutes.userFiles);
 
@@ -121,55 +113,10 @@ final GoRouter appRouter = GoRouter(
           onPopInvokedWithResult: (didPop, result) {
             context.go(AppRoutes.userFiles);
           },
-          child: Scaffold(
-            key: vm.scaffoldKey,
-            drawer: AppDrawer(
-              username: vm.userName,
-              email: vm.email,
-              filesNbr: vm.filesNumber,
-              sharedFilesNbr: vm.sharedFilesNumber,
-              onTrashTap: () {},
-              onLogoutTap: () {
-                showDialog(
-                  context: context,
-                  barrierColor: Colors.transparent,
-                  animationStyle: AnimationStyle(
-                    duration: Duration(milliseconds: 0),
-                  ),
-                  builder: (_) {
-                    return ConfirmDialog(
-                      title: 'Se déconnecter',
-                      description: 'Voulez-vous vraiment vous déconnecter',
-                      cancelLabel: 'Annuler',
-                      confirmLabel: 'Se déconnecter',
-                      confirmBgColor: AppColors.primary,
-                    );
-                  },
-                );
-              },
-            ),
-            appBar: TopBar(
-              onImageTap: () => vm.openDrawer(),
-              username: vm.userName,
-              imageUrl: vm.imageProfileUrl,
-            ),
-            bottomNavigationBar: BottomNav(
-              onTap: (index) {
-                switch (index) {
-                  case 0:
-                    context.go(AppRoutes.userFiles);
-                    break;
-                  case 1:
-                    context.pushNamed(AppRoutes.createFile);
-                    break;
-                  case 2:
-                    context.go(AppRoutes.sharedFiles);
-                    break;
-                }
-              },
-              currentIndex: currentIndex,
-            ),
-            body: child,
+          child: AppScaffold(
+            currentIndex: currentIndex,
+            vm: context.read<ScaffoldViewModel>(),
+            child: child,
           ),
         );
       },
@@ -190,9 +137,9 @@ final GoRouter appRouter = GoRouter(
       ],
     ),
     GoRoute(
-          path: AppRoutes.shareFile,
-          name: AppRoutes.shareFile,
-          builder: (context, state) => const ShareFileView(),
-        ),
+      path: AppRoutes.shareFile,
+      name: AppRoutes.shareFile,
+      builder: (context, state) => const ShareFileView(),
+    ),
   ],
 );

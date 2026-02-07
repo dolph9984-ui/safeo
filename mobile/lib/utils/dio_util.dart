@@ -1,9 +1,10 @@
+import 'dart:io';
+
+import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
-import 'dart:io';
-import 'package:crypto/crypto.dart';
+import 'package:securite_mobile/services/auth/session_service.dart';
 import 'package:securite_mobile/utils/auth_interceptor.dart';
-import '../services/security/secure_storage_service.dart';
 
 /*
 class DioClient {
@@ -19,8 +20,6 @@ class DioClient {
   );
 }
 */
-
-
 
 class DioClient {
   static late final Dio dio;
@@ -41,18 +40,19 @@ class DioClient {
       ),
     );
 
- 
     (dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
       return HttpClient()
         ..badCertificateCallback =
             (X509Certificate cert, String host, int port) {
-          final fingerprint =
-              sha256.convert(cert.der).toString().toUpperCase();
-          return fingerprint == certificateSHA256;
-        };
+              final fingerprint = sha256
+                  .convert(cert.der)
+                  .toString()
+                  .toUpperCase();
+              return fingerprint == certificateSHA256;
+            };
     };
 
-    final storage = SecureStorageService();
-    dio.interceptors.add(AuthInterceptor(storage, dio));
+    final sessionService = SessionService();
+    dio.interceptors.add(AuthInterceptor(sessionService, dio));
   }
 }

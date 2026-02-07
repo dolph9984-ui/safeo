@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:securite_mobile/constants/oauth_constants.dart';
 import 'package:securite_mobile/constants/api_request_keys.dart';
-import 'package:securite_mobile/model/auth/oauth_token_model.dart';
+import 'package:securite_mobile/constants/storage_keys.dart';
+import 'package:securite_mobile/model/auth/session_token.dart';
 import 'package:securite_mobile/utils/dio_util.dart';
 
 class OAuthService {
@@ -33,9 +35,6 @@ class OAuthService {
         },
       );
 
-      print('Réponse brute du serveur: ${response.data}');
-      print('Type: ${response.data.runtimeType}');
-
       //Conversion explicite en String
       final data = response.data as Map<String, dynamic>;
 
@@ -51,11 +50,38 @@ class OAuthService {
     }
   }
 
-  Future<void> storeTokens(OAuthToken token) async {
-    OAuthTokenModel.storeTokens(token);
-  }
+  Future<SessionToken> login() async {
+    final pkceCodes = await getAuthCodes();
+    final codeChallenge = pkceCodes[ApiRequestKeys.codeChallenge]!;
+    final codeVerifier = pkceCodes[ApiRequestKeys.codeVerifier]!;
 
-  Future<void> removeTokens() async {
-    OAuthTokenModel.deleteTokens();
+    final googleAuthUrl = await getAuthUrl(codeChallenge);
+
+    final result = await FlutterWebAuth2.authenticate(
+      url: googleAuthUrl,
+      callbackUrlScheme: OAuthConstants.urlScheme,
+    );
+
+    final uri = Uri.parse(result);
+    String? authCode = uri.queryParameters['code'];
+
+    if (authCode == null || authCode.isEmpty) {
+      if (uri.fragment.isNotEmpty) {
+        final fragmentParams = Uri.splitQueryString(uri.fragment);
+        authCode = fragmentParams['code'];
+      }
+    }
+
+    if (authCode == null || authCode.isEmpty) {
+      throw Exception('Code d\'autorisation manquant');
+    }
+
+    final tokens = await exchangeTokens(codeVerifier, authCode);
+    print(tokens);
+    print('debug ${tokens[StorageKeys.accessToken]}');
+    return SessionToken(
+      accessToken: tokens[ApiRequestKeys.accessToken]!,
+      refreshToken: tokens[ApiRequestKeys.refreshToken]!,
+    );
   }
 }

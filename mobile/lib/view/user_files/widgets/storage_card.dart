@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
+import 'package:securite_mobile/utils/file_size_converter.dart';
 
 class StorageCard extends StatelessWidget {
-  final double used;
-  final double totalStorage;
+  final int used;
+  final int totalStorage;
 
   const StorageCard({
     super.key,
@@ -66,7 +67,7 @@ class StorageCard extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      '${used.toInt()}GB',
+                      '${FileSizeConverter.bytesToGb(used)}GB',
                       style: TextStyle(
                         fontFamily: AppFonts.productSansMedium,
                         fontSize: 15,
@@ -74,7 +75,7 @@ class StorageCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      ' / ${totalStorage.toInt()}GB',
+                      ' / ${FileSizeConverter.bytesToGb(totalStorage)}GB',
                       style: TextStyle(
                         fontFamily: AppFonts.productSansRegular,
                         fontWeight: FontWeight.w400,
@@ -95,7 +96,7 @@ class StorageCard extends StatelessWidget {
     );
   }
 
-  static Widget spaceIndicator(double used, double total) {
+  static Widget spaceIndicator(int used, int total) {
     final ratio = (used / total).clamp(0.0, 1.0);
 
     return LayoutBuilder(

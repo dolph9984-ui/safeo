@@ -1,18 +1,15 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:securite_mobile/model/auth/session_token.dart';
 import '../../model/auth/twofa_response.dart';
 import '../../services/auth/two_fa_service.dart';
 import '../../services/security/secure_storage_service.dart';
 
-enum TwoFAMode {
-  login,
-  signup,
-}
+enum TwoFAMode { login, signup }
 
 class TwoFAViewModel extends ChangeNotifier {
   final TwoFAService _twoFAService;
-  final SecureStorageService _storage;
 
   final String verificationToken;
   final TwoFAMode mode;
@@ -22,8 +19,7 @@ class TwoFAViewModel extends ChangeNotifier {
     this.mode = TwoFAMode.login,
     TwoFAService? twoFAService,
     SecureStorageService? storage,
-  })  : _twoFAService = twoFAService ?? TwoFAService(),
-        _storage = storage ?? SecureStorageService() {
+  }) : _twoFAService = twoFAService ?? TwoFAService() {
     _startResendTimer();
   }
 
@@ -36,12 +32,19 @@ class TwoFAViewModel extends ChangeNotifier {
   Timer? _resendTimer;
 
   String get code => _code;
+
   bool get isLoading => _isLoading;
+
   String? get errorMessage => _errorMessage;
+
   bool get isResending => _isResending;
+
   bool get canSubmit => _code.length == 6 && !_isLoading;
+
   String? get email => _email;
+
   int get resendCountdown => _resendCountdown;
+
   bool get canResend => _resendCountdown == 0 && !_isResending;
 
   @override
@@ -51,10 +54,9 @@ class TwoFAViewModel extends ChangeNotifier {
   }
 
   void setEmail(String? email) {
-  _email = email;
-  notifyListeners();
-}
-
+    _email = email;
+    notifyListeners();
+  }
 
   void updateCode(String value) {
     _code = value;
@@ -106,16 +108,19 @@ class TwoFAViewModel extends ChangeNotifier {
         );
       }
 
-      await _storage.saveAccessToken(response.accessToken);
-      await _storage.saveRefreshToken(response.refreshToken);
-
+      await SessionTokenModel.storeTokens(
+        SessionToken(
+          accessToken: response.accessToken,
+          refreshToken: response.refreshToken,
+        ),
+      );
       _setLoading(false);
       return true;
-
     } on DioException catch (e) {
       final statusCode = e.response?.statusCode;
-      final serverMessage =
-          e.response?.data is Map ? e.response?.data['message']?.toString() : null;
+      final serverMessage = e.response?.data is Map
+          ? e.response?.data['message']?.toString()
+          : null;
 
       if (statusCode == 400 || statusCode == 401) {
         _errorMessage = serverMessage ?? 'Code invalide ou expiré';
@@ -155,7 +160,6 @@ class TwoFAViewModel extends ChangeNotifier {
       _isResending = false;
       _startResendTimer();
       return true;
-
     } catch (_) {
       _errorMessage = 'Impossible de renvoyer le code';
       _isResending = false;
