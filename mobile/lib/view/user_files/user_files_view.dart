@@ -6,8 +6,11 @@ import 'package:securite_mobile/router/app_routes.dart';
 import 'package:securite_mobile/view/user_files/widgets/file_item.dart';
 import 'package:securite_mobile/view/user_files/widgets/files_list.dart';
 import 'package:securite_mobile/view/user_files/widgets/storage_card.dart';
+import 'package:securite_mobile/view/user_files/widgets/user_files_bottom_sheet.dart';
 import 'package:securite_mobile/view/widgets/app_bottom_sheet.dart';
+import 'package:securite_mobile/view/widgets/blurred_dialog.dart';
 import 'package:securite_mobile/view/widgets/bottom_sheet_item.dart';
+import 'package:securite_mobile/view/widgets/rename_file_dialog.dart';
 
 class UserFilesView extends StatelessWidget {
   const UserFilesView({super.key});
@@ -72,7 +75,7 @@ class UserFilesView extends StatelessWidget {
             useRootNavigator: true,
             context: context,
             builder: (context) {
-              return AppBottomSheet(items: bottomSheetItems);
+              return UserFilesBottomSheet();
             },
           );
         },

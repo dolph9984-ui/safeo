@@ -5,9 +5,8 @@ class ApiRequestKeys {
   static final authorizationCode = 'authorizationCode';
 
   static final googleAuthUrl = 'authUrl';
-  static final accessToken = 'access_token';
-  static final refreshToken = 'refresh_token';
-  static final expiresIn = 'token_expires_in';
+  static final accessToken = 'accessToken';
+  static final refreshToken = 'refreshToken';
 
   static final message = 'message';
 }

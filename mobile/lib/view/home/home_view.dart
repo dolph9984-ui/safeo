@@ -102,10 +102,10 @@ class _HomeViewState extends State<HomeView> {
 
                 // Message principal
                 Text(
-                  'Bienvenue ${_userEmail != null ? '$_userEmail' : '!' }',
+                  'Bienvenue ${_userEmail != null ? '$_userEmail' : '!'}',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
@@ -113,8 +113,8 @@ class _HomeViewState extends State<HomeView> {
                 Text(
                   'Votre espace sécurisé est prêt',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Colors.grey.shade700,
-                      ),
+                    color: Colors.grey.shade700,
+                  ),
                   textAlign: TextAlign.center,
                 ),
 

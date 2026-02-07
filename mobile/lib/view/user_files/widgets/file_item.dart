@@ -76,7 +76,7 @@ class FileItem extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontFamily: AppFonts.productSansMedium,
-                            fontSize: 14,
+                            fontSize: 15,
                             color: AppColors.foreground,
                           ),
                         ),
@@ -85,7 +85,7 @@ class FileItem extends StatelessWidget {
                           '$fileSize MB, ${formatDateTime(dateTime)}',
                           style: TextStyle(
                             fontFamily: AppFonts.productSansRegular,
-                            fontSize: 11,
+                            fontSize: 12,
                             color: AppColors.mutedForeground,
                           ),
                         ),

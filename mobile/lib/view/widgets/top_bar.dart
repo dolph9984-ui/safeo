@@ -4,8 +4,16 @@ import 'package:securite_mobile/constants/app_fonts.dart';
 
 class TopBar extends StatelessWidget implements PreferredSizeWidget {
   final String? imageUrl;
+  final String username;
 
-  const TopBar({super.key, this.imageUrl});
+  final Function() onImageTap;
+
+  const TopBar({
+    super.key,
+    this.imageUrl,
+    required this.onImageTap,
+    required this.username,
+  });
 
   @override
   Size get preferredSize => const Size.fromHeight(56);
@@ -31,13 +39,38 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
                 color: AppColors.primary,
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(4),
-              child: CircleAvatar(
-                radius: 17,
-                child: (imageUrl != null)
-                    ? Image.network(imageUrl!, height: 34, width: 34)
-                    : null,
+            InkWell(
+              borderRadius: BorderRadius.circular(50),
+              onTap: onImageTap,
+              child: Padding(
+                padding: const EdgeInsets.all(4),
+                child: CircleAvatar(
+                  radius: 17,
+                  child: (imageUrl != null)
+                      ? Image.network(
+                          imageUrl!,
+                          height: 34,
+                          width: 34,
+                          errorBuilder: (_, _, _) {
+                            return Text(
+                              username[0],
+                              style: TextStyle(
+                                fontFamily: AppFonts.zalandoSans,
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
+                            );
+                          },
+                        )
+                      : Text(
+                          username[0],
+                          style: TextStyle(
+                            fontFamily: AppFonts.zalandoSans,
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
+                ),
               ),
             ),
           ],

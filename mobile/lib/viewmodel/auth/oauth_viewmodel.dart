@@ -13,6 +13,7 @@ class OAuthViewModel extends ChangeNotifier {
   String? _errorMessage;
 
   bool get isLoading => _isLoading;
+
   String? get errorMessage => _errorMessage;
 
   void _setLoading(bool value) {
@@ -57,10 +58,7 @@ class OAuthViewModel extends ChangeNotifier {
         throw Exception('Code d\'autorisation manquant');
       }
 
-      final tokens = await _oAuthService.exchangeTokens(
-        codeVerifier,
-        authCode,
-      );
+      final tokens = await _oAuthService.exchangeTokens(codeVerifier, authCode);
 
       await _oAuthService.storeTokens(
         OAuthToken(
@@ -69,9 +67,10 @@ class OAuthViewModel extends ChangeNotifier {
         ),
       );
 
+      print('token: $tokens');
+
       _setLoading(false);
       return true;
-
     } on PlatformException catch (e) {
       _errorMessage = (e.code == 'CANCELED')
           ? 'Connexion annulée.'
@@ -79,7 +78,6 @@ class OAuthViewModel extends ChangeNotifier {
 
       _setLoading(false);
       return false;
-
     } catch (e) {
       _errorMessage = 'Authentification échouée.';
       _setLoading(false);

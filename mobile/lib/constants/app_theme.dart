@@ -28,14 +28,8 @@ class AppTheme {
         fontWeight: FontWeight.w600,
         color: AppColors.textPrimary,
       ),
-      bodyMedium: TextStyle(
-        fontSize: 15,
-        color: AppColors.textPrimary,
-      ),
-      bodySmall: TextStyle(
-        fontSize: 14,
-        color: AppColors.textSecondary,
-      ),
+      bodyMedium: TextStyle(fontSize: 15, color: AppColors.textPrimary),
+      bodySmall: TextStyle(fontSize: 14, color: AppColors.textSecondary),
     ),
 
     inputDecorationTheme: InputDecorationTheme(
@@ -47,7 +41,10 @@ class AppTheme {
 
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.inputBackground, width: 1),
+        borderSide: const BorderSide(
+          color: AppColors.inputBackground,
+          width: 1,
+        ),
       ),
 
       focusedBorder: OutlineInputBorder(
@@ -78,6 +75,18 @@ class AppTheme {
         padding: EdgeInsets.symmetric(horizontal: 18, vertical: 9),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         minimumSize: const Size(double.infinity, 56),
+        textStyle: TextStyle(
+          fontFamily: AppFonts.productSansRegular,
+          fontSize: 16,
+        ),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        backgroundColor: Colors.transparent,
+        foregroundColor: AppColors.foreground,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        side: BorderSide(color: Color(0xFFE2E2E2)),
         textStyle: TextStyle(
           fontFamily: AppFonts.productSansRegular,
           fontSize: 16,

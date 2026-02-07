@@ -9,4 +9,5 @@ class AppRoutes {
   static const String sharedFiles = '/shared-files';
   static const String createFile = '/create-file';
   static const String shareFile = '/share-file';
+  static const String authCallback = '/auth-callback';
 }

@@ -12,23 +12,37 @@ import 'package:securite_mobile/view/onboarding_view.dart';
 import 'package:securite_mobile/view/share_file/share_file_view.dart';
 import 'package:securite_mobile/view/shared_files/shared_files_view.dart';
 import 'package:securite_mobile/view/user_files/user_files_view.dart';
+import 'package:securite_mobile/view/widgets/app_drawer.dart';
 import 'package:securite_mobile/view/widgets/bottom_nav.dart';
+import 'package:securite_mobile/view/widgets/confirm_dialog.dart';
 import 'package:securite_mobile/view/widgets/top_bar.dart';
 import 'package:securite_mobile/viewmodel/auth/two_fa_viewmodel.dart';
+import 'package:securite_mobile/viewmodel/scaffold_view_model.dart';
+
+import '../constants/app_colors.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.root,
   redirect: (context, state) async {
-    if (state.matchedLocation == AppRoutes.root) {
-      final storage = SecureStorageService();
-      final isLoggedIn = await storage.isLoggedIn();
-      return isLoggedIn ? AppRoutes.home : AppRoutes.onboarding;
+    final currentLocation = state.matchedLocation;
+    final storage = SecureStorageService();
+    final isLoggedIn = await storage.isLoggedIn();
+
+    if (!isLoggedIn &&
+        !currentLocation.startsWith(AppRoutes.login) &&
+        !currentLocation.startsWith(AppRoutes.signup) &&
+        !currentLocation.startsWith(AppRoutes.onboarding)) {
+      return AppRoutes.onboarding;
     }
     return null;
   },
 
   routes: [
     GoRoute(path: AppRoutes.root, builder: (_, _) => const SizedBox.shrink()),
+    GoRoute(
+      path: AppRoutes.authCallback,
+      redirect: (context, state) => AppRoutes.root,
+    ),
 
     // Onboarding
     GoRoute(
@@ -90,7 +104,10 @@ final GoRouter appRouter = GoRouter(
 
     ShellRoute(
       builder: (context, state, child) {
+        final vm = context.watch<ScaffoldViewModel>();
+
         final location = state.uri.toString();
+        bool canPop = location.startsWith(AppRoutes.userFiles);
 
         final currentIndex = switch (location) {
           String l when l.startsWith(AppRoutes.userFiles) => 0,
@@ -98,25 +115,62 @@ final GoRouter appRouter = GoRouter(
           String l when l.startsWith(AppRoutes.sharedFiles) => 2,
           _ => 0,
         };
-        return Scaffold(
-          appBar: TopBar(),
-          bottomNavigationBar: BottomNav(
-            onTap: (index) {
-              switch (index) {
-                case 0:
-                  context.go(AppRoutes.userFiles);
-                  break;
-                case 1:
-                  context.pushNamed(AppRoutes.createFile);
-                  break;
-                case 2:
-                  context.go(AppRoutes.sharedFiles);
-                  break;
-              }
-            },
-            currentIndex: currentIndex,
+
+        return PopScope(
+          canPop: canPop,
+          onPopInvokedWithResult: (didPop, result) {
+            context.go(AppRoutes.userFiles);
+          },
+          child: Scaffold(
+            key: vm.scaffoldKey,
+            drawer: AppDrawer(
+              username: vm.userName,
+              email: vm.email,
+              filesNbr: vm.filesNumber,
+              sharedFilesNbr: vm.sharedFilesNumber,
+              onTrashTap: () {},
+              onLogoutTap: () {
+                showDialog(
+                  context: context,
+                  barrierColor: Colors.transparent,
+                  animationStyle: AnimationStyle(
+                    duration: Duration(milliseconds: 0),
+                  ),
+                  builder: (_) {
+                    return ConfirmDialog(
+                      title: 'Se déconnecter',
+                      description: 'Voulez-vous vraiment vous déconnecter',
+                      cancelLabel: 'Annuler',
+                      confirmLabel: 'Se déconnecter',
+                      confirmBgColor: AppColors.primary,
+                    );
+                  },
+                );
+              },
+            ),
+            appBar: TopBar(
+              onImageTap: () => vm.openDrawer(),
+              username: vm.userName,
+              imageUrl: vm.imageProfileUrl,
+            ),
+            bottomNavigationBar: BottomNav(
+              onTap: (index) {
+                switch (index) {
+                  case 0:
+                    context.go(AppRoutes.userFiles);
+                    break;
+                  case 1:
+                    context.pushNamed(AppRoutes.createFile);
+                    break;
+                  case 2:
+                    context.go(AppRoutes.sharedFiles);
+                    break;
+                }
+              },
+              currentIndex: currentIndex,
+            ),
+            body: child,
           ),
-          body: child,
         );
       },
       routes: [

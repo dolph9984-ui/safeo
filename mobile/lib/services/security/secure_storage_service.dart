@@ -8,6 +8,8 @@ class SecureStorageService {
 
   SecureStorageService._internal();
 
+  String? _accessToken;
+
   final FlutterSecureStorage _storage = const FlutterSecureStorage(
     aOptions: AndroidOptions(
       keyCipherAlgorithm:
@@ -81,7 +83,9 @@ class SecureStorageService {
   }
 
   Future<bool> isLoggedIn() async {
+    if (_accessToken != null && _accessToken!.isNotEmpty) return true;
     final token = await getAccessToken();
+    _accessToken = token;
     return token != null && token.isNotEmpty;
   }
 

@@ -3,14 +3,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
 
-class ConfidentialityCard extends StatelessWidget {
+class FileVisibilityCard extends StatelessWidget {
   final String label;
   final String description;
   final String iconPath;
   final bool selected;
   final Function() onTap;
 
-  const ConfidentialityCard({
+  const FileVisibilityCard({
     super.key,
     required this.label,
     required this.description,

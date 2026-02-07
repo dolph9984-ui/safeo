@@ -1,9 +1,17 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
+import 'package:securite_mobile/enum/file_visibility_enum.dart';
 
 class CreateFileViewModel extends ChangeNotifier {
   bool loading = false;
   FilePickerResult? selectedFile;
+  String _fileName = '';
+  FileVisibilityEnum fileVisibility = FileVisibilityEnum.private;
+
+  String get fileName => _fileName;
+
+  String get filePath =>
+      selectedFile != null ? selectedFile!.files.first.path ?? '' : '';
 
   double get fileSizeInMB => selectedFile != null
       ? double.parse(
@@ -11,14 +19,20 @@ class CreateFileViewModel extends ChangeNotifier {
         )
       : 0;
 
-  String get fileName =>
-      selectedFile != null ? selectedFile!.files.first.name : '';
-
-  String get filePath =>
-      selectedFile != null ? selectedFile!.files.first.path ?? '' : '';
+  void setFileVisibility(FileVisibilityEnum newVisibility) {
+    if (newVisibility == fileVisibility) return;
+    fileVisibility = newVisibility;
+    notifyListeners();
+  }
 
   void setLoading(bool val) {
     loading = val;
+    notifyListeners();
+  }
+
+  void setFileName(String newName) {
+    if (newName.trim().isEmpty) return;
+    _fileName = newName;
     notifyListeners();
   }
 
@@ -29,18 +43,14 @@ class CreateFileViewModel extends ChangeNotifier {
   }
 
   Future<void> selectFile() async {
-    setLoading(true);
-
     selectedFile = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['pdf', 'doc', 'docx', 'csv', 'jpg', 'jpeg'],
     );
 
-    setLoading(false);
-
     if (selectedFile != null) {
       Uint8List fileBytes = selectedFile!.files.first.bytes ?? Uint8List(0);
-      String fileName = selectedFile!.files.first.name;
+      setFileName(selectedFile!.files.first.name);
     }
   }
 }

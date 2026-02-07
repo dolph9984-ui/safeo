@@ -38,10 +38,12 @@ class OAuthService {
 
       //Conversion explicite en String
       final data = response.data as Map<String, dynamic>;
-      
+
       return {
-        ApiRequestKeys.accessToken: data[ApiRequestKeys.accessToken]?.toString() ?? '',
-        ApiRequestKeys.refreshToken: data[ApiRequestKeys.refreshToken]?.toString() ?? '',
+        ApiRequestKeys.accessToken:
+            data[ApiRequestKeys.accessToken]?.toString() ?? '',
+        ApiRequestKeys.refreshToken:
+            data[ApiRequestKeys.refreshToken]?.toString() ?? '',
       };
     } catch (e) {
       print('Erreur exchangeTokens: $e');
