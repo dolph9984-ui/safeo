@@ -107,6 +107,7 @@ class TwoFAViewModel extends ChangeNotifier {
       }
 
       await _storage.saveAccessToken(response.accessToken);
+      await _storage.saveRefreshToken(response.refreshToken);
 
       _setLoading(false);
       return true;

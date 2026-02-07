@@ -35,6 +35,15 @@ class TwoFAService {
     return TwoFAResponse.fromJson(response.data);
   }
 
+  Future<String> refreshAccessToken({required String refreshToken}) async {
+    final response = await _dio.post(
+      '/v1/api/auth/refresh-access-token',
+      data: {'refreshToken': refreshToken},
+    );
+
+    return response.data['accessToken'] as String;
+  }
+  
   Future<void> resendLoginCode({required String verificationToken}) async {
     await _dio.post(
       '/v1/api/auth/login/resend-otp',

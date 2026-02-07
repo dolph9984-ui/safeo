@@ -96,7 +96,6 @@ class FileItem extends StatelessWidget {
               ),
             ),
 
-            // trailing icon
             Transform.translate(
               offset: Offset(4, 0),
               child: Material(

@@ -9,14 +9,15 @@ import 'package:securite_mobile/view/auth/two_fa_view.dart';
 import 'package:securite_mobile/view/create_file/create_file_view.dart';
 import 'package:securite_mobile/view/home/home_view.dart';
 import 'package:securite_mobile/view/onboarding_view.dart';
-import 'package:securite_mobile/view/shared_files_view.dart';
+import 'package:securite_mobile/view/share_file/share_file_view.dart';
+import 'package:securite_mobile/view/shared_files/shared_files_view.dart';
 import 'package:securite_mobile/view/user_files/user_files_view.dart';
 import 'package:securite_mobile/view/widgets/bottom_nav.dart';
 import 'package:securite_mobile/view/widgets/top_bar.dart';
 import 'package:securite_mobile/viewmodel/auth/two_fa_viewmodel.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: AppRoutes.userFiles,
+  initialLocation: AppRoutes.root,
   redirect: (context, state) async {
     if (state.matchedLocation == AppRoutes.root) {
       final storage = SecureStorageService();
@@ -134,5 +135,10 @@ final GoRouter appRouter = GoRouter(
         ),
       ],
     ),
+    GoRoute(
+          path: AppRoutes.shareFile,
+          name: AppRoutes.shareFile,
+          builder: (context, state) => const ShareFileView(),
+        ),
   ],
 );

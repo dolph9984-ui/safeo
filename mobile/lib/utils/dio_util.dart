@@ -2,8 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
+import 'package:securite_mobile/utils/auth_interceptor.dart';
+import '../services/security/secure_storage_service.dart';
 
-
+/*
 class DioClient {
   static final Dio dio = Dio(
     BaseOptions(
@@ -18,93 +20,41 @@ class DioClient {
     ),
   );
 }
-/*
+*/
 
-const baseUrl = 'https://safeo.greny.app';
 
 
 class DioClient {
-  static final Dio dio = _createDio();
- 
-  static const String _certificateSHA256 = '724B4AF45AC5955912FD7EEB70662EF2504E66F829C849941B6E14ABB868417E'; 
-  static const bool _enableCertificatePinning = true; 
+  static late final Dio dio;
 
-  static Dio _createDio() {
-    final dio = Dio(
+  static const String baseUrl = 'https://safeo-api.greny.app/';
+
+  // certificat serveur
+  static const String certificateSHA256 =
+      '25161E8BD97A385E80866021CF2AA1712DD8C70B8C4C9E9202AE73208A3DB957';
+
+  static void initialize() {
+    dio = Dio(
       BaseOptions(
         baseUrl: baseUrl,
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {'Content-Type': 'application/json'},
       ),
     );
 
-    // Certificate Pinning
-    if (_enableCertificatePinning) {
-      (dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
-        return HttpClient()
-          ..badCertificateCallback = (X509Certificate cert, String host, int port) {
-            final certBytes = cert.der; 
-            final digest = sha256.convert(certBytes);
-            
-            final certFingerprint = digest
-                .toString()
-                .toUpperCase()
-                .replaceAll(':', '');
+ 
+    (dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
+      return HttpClient()
+        ..badCertificateCallback =
+            (X509Certificate cert, String host, int port) {
+          final fingerprint =
+              sha256.convert(cert.der).toString().toUpperCase();
+          return fingerprint == certificateSHA256;
+        };
+    };
 
-            final expectedFingerprint = _certificateSHA256
-                .toUpperCase()
-                .replaceAll(':', '');
-
-            final isValid = certFingerprint == expectedFingerprint;
-
-            if (!isValid) {
-              print('CERTIFICATE MISMATCH - POSSIBLE MITM ATTACK');
-              print('Expected : $expectedFingerprint');
-              print('Received : $certFingerprint');
-            } else {
-              print('Certificate validated successfully');
-            }
-
-            return isValid;
-          };
-      };
-    } else {
-      print('Certificate Pinning DÉSACTIVÉ - À UTILISER EN DEV SEULEMENT !');
-    }
-
-    dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
-          // Sanitisation des headers sensibles
-          final sanitizedHeaders = Map<String, dynamic>.from(options.headers);
-          sanitizedHeaders.remove('Authorization');
-          sanitizedHeaders.remove('X-API-Key');
-          sanitizedHeaders.remove('Cookie');
-
-          print('REQUEST[${options.method}] => PATH: ${options.path}');
-          print('Headers (sanitized): $sanitizedHeaders');
-          
-          return handler.next(options);
-        },
-        onResponse: (Response response, ResponseInterceptorHandler handler) {
-          print('RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}');
-          return handler.next(response);
-        },
-        onError: (DioException err, ErrorInterceptorHandler handler) async {
-          print('ERROR[${err.response?.statusCode}] => PATH: ${err.requestOptions.path}');
-          if (err.response != null) {
-            print('Data: ${err.response?.data}');
-          }
-          return handler.next(err);
-        },
-      ),
-    );
-
-    return dio;
+    final storage = SecureStorageService();
+    dio.interceptors.add(AuthInterceptor(storage, dio));
   }
 }
-
-*/
