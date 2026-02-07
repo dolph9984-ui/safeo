@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SharedFilesViewModel()),
         ChangeNotifierProvider(create: (_) => CreateFileViewModel()),
         ChangeNotifierProvider(create: (_) => ShareFileViewModel()),
+        
       ],
       child: MaterialApp.router(
         routerConfig: appRouter,

@@ -9,8 +9,10 @@ import 'package:securite_mobile/view/auth/two_fa_view.dart';
 import 'package:securite_mobile/view/create_file/create_file_view.dart';
 import 'package:securite_mobile/view/home/home_view.dart';
 import 'package:securite_mobile/view/onboarding_view.dart';
+import 'package:securite_mobile/view/search_page/search_page_view.dart';
 import 'package:securite_mobile/view/share_file/share_file_view.dart';
 import 'package:securite_mobile/view/shared_files/shared_files_view.dart';
+import 'package:securite_mobile/view/trash/trash_view.dart';
 import 'package:securite_mobile/view/user_files/user_files_view.dart';
 import 'package:securite_mobile/view/widgets/app_drawer.dart';
 import 'package:securite_mobile/view/widgets/bottom_nav.dart';
@@ -18,6 +20,7 @@ import 'package:securite_mobile/view/widgets/confirm_dialog.dart';
 import 'package:securite_mobile/view/widgets/top_bar.dart';
 import 'package:securite_mobile/viewmodel/auth/two_fa_viewmodel.dart';
 import 'package:securite_mobile/viewmodel/scaffold_view_model.dart';
+import 'package:securite_mobile/viewmodel/trash_viewmodel.dart';
 
 import '../constants/app_colors.dart';
 
@@ -128,7 +131,10 @@ final GoRouter appRouter = GoRouter(
               email: vm.email,
               filesNbr: vm.filesNumber,
               sharedFilesNbr: vm.sharedFilesNumber,
-              onTrashTap: () {},
+              onTrashTap: () {
+                Navigator.pop(context);
+                context.push(AppRoutes.trash); 
+              },
               onLogoutTap: () {
                 showDialog(
                   context: context,
@@ -194,5 +200,18 @@ final GoRouter appRouter = GoRouter(
           name: AppRoutes.shareFile,
           builder: (context, state) => const ShareFileView(),
         ),
+    GoRoute(
+      path: AppRoutes.trash,
+      name: AppRoutes.trash,
+      builder: (context, state) => ChangeNotifierProvider(
+        create: (_) => TrashViewModel(),
+        child: const TrashView(),
+      ),
+    ),
+    GoRoute(
+        path: '/search',
+        name: AppRoutes.searchPage,
+        builder: (context, state) => const SearchPageView(),
+      ),
   ],
 );

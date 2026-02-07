@@ -1,66 +1,81 @@
 import 'package:flutter/material.dart';
-import 'package:securite_mobile/enum/file_type_enum.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:securite_mobile/router/app_routes.dart';
+import 'package:securite_mobile/view/shared_files/wigdet/filter_bottom_sheet.dart';
 import 'package:securite_mobile/view/shared_files/wigdet/search_bar.dart';
 import 'package:securite_mobile/view/shared_files/wigdet/shardfiles_list.dart';
+import 'package:securite_mobile/view/shared_files/wigdet/shared_file_bottom_sheet.dart';
 import 'package:securite_mobile/view/shared_files/wigdet/sharedfiles_item.dart';
-import 'package:securite_mobile/view/user_files/widgets/user_files_bottom_sheet.dart';
+import 'package:securite_mobile/viewmodel/shared_files_viewmodel.dart';
 
-
-enum UserRole { owner, viewer }
-
-class SharedFilesView extends StatefulWidget {
+class SharedFilesView extends StatelessWidget {
   const SharedFilesView({super.key});
 
   @override
-  State<SharedFilesView> createState() => _SharedFilesViewState();
-}
-
-class _SharedFilesViewState extends State<SharedFilesView> {
-  final TextEditingController _searchController = TextEditingController();
-
-  final UserRole userRole = UserRole.owner;
-
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final ext = ['pdf', 'doc', 'docx', 'csv', 'jpg', 'jpeg'];
+    final vm = context.watch<SharedFilesViewModel>();
 
-    final files = List.generate(
-      8,
-      (index) => SharedFileItem(
-        id: index.toString(),
-        fileName: 'example_file_name.${ext[index % ext.length]}',
-        fileSize: 2.2,
-        dateTime: DateTime.now(),
-        fileType: FileTypeEnum.values[index % 4],
-        onButtonTap: (_) {
-          showModalBottomSheet(
-            useRootNavigator: true,
-            context: context,
-            builder: (context) {
-              return UserFilesBottomSheet();
-            },
-          );
+    final files = vm.sharedFiles.map((file) {
+      return SharedFileItem(
+        id: file.id,
+        fileName: file.fileName,
+        fileSize: file.fileSize,
+        dateTime: file.sharedAt,
+        fileType: file.fileType,
+        onButtonTap: (id) {
+          final selectedFile = vm.getFileById(id);
+          if (selectedFile != null) {
+            showModalBottomSheet(
+              useRootNavigator: true,
+              context: context,
+              backgroundColor: Colors.transparent,
+              builder: (context) {
+                return SharedFilesBottomSheet(file: selectedFile);
+              },
+            );
+          }
         },
-      ),
-    );
+      );
+    }).toList();
 
     return ListView(
       padding: const EdgeInsets.only(left: 24, right: 24, bottom: 40),
       children: [
-        SharedFileSearchBar(
-          controller: _searchController,
-          hintText: 'Rechercher un fichier...',
-          iconPath: 'assets/icons/search.svg',
+        GestureDetector(
+          onTap: () => context.pushNamed(AppRoutes.searchPage),
+          child: AbsorbPointer(
+            child: Hero(
+              tag: 'search_bar',
+              child: Material(
+                type: MaterialType.transparency,
+                child: SharedFileSearchBar(
+                  controller: vm.searchController,
+                  hintText: 'Rechercher un fichier...',
+                  iconPath: 'assets/icons/search.svg',
+                ),
+              ),
+            ),
+          ),
         ),
         const SizedBox(height: 24),
-        SharedFilesList(listTitle: 'Fichiers partagés', files: files),
+        SharedFilesList(
+          filterLabel: vm.currentFilter.label,
+          files: files,
+          onFilterTap: () {
+            showModalBottomSheet(
+              useRootNavigator: true,
+              context: context,
+              backgroundColor: Colors.transparent,
+              builder: (context) {
+                return FilterBottomSheet(
+                  currentFilter: vm.currentFilter,
+                  onFilterSelected: (filter) => vm.setFilter(filter),
+                );
+              },
+            );
+          },
+        ),
       ],
     );
   }

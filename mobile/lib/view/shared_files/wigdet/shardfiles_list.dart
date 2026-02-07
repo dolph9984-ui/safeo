@@ -4,13 +4,15 @@ import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
 
 class SharedFilesList extends StatelessWidget {
-  final String listTitle;
+  final String filterLabel;
   final List<Widget> files;
+  final VoidCallback onFilterTap;
 
   const SharedFilesList({
     super.key,
-    required this.listTitle,
+    required this.filterLabel,
     required this.files,
+    required this.onFilterTap,
   });
 
   @override
@@ -18,31 +20,57 @@ class SharedFilesList extends StatelessWidget {
     return Column(
       spacing: 24,
       children: [
-        _title(listTitle),
-        Column(spacing: 16, children: files),
+        _title(filterLabel, onFilterTap),
+        if (files.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 40),
+            child: Text(
+              'Aucun fichier trouvé',
+              style: TextStyle(
+                fontFamily: AppFonts.productSansRegular,
+                fontSize: 14,
+                color: AppColors.mutedForeground,
+              ),
+            ),
+          )
+        else
+          Column(spacing: 16, children: files),
       ],
     );
   }
 
-  static Widget _title(String title) {
+  static Widget _title(String filterLabel, VoidCallback onFilterTap) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontFamily: AppFonts.zalandoSans,
-            fontSize: 16,
-            color: AppColors.foreground,
-          ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 4,
+          children: [
+            Text(
+              'Fichiers partagés',
+              style: TextStyle(
+                fontFamily: AppFonts.zalandoSans,
+                fontSize: 16,
+                color: AppColors.foreground,
+              ),
+            ),
+            Text(
+              filterLabel,
+              style: TextStyle(
+                fontFamily: AppFonts.productSansRegular,
+                fontSize: 12,
+                color: AppColors.mutedForeground,
+              ),
+            ),
+          ],
         ),
-
         InkWell(
-          onTap: () {},
+          onTap: onFilterTap,
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
           hoverColor: Colors.transparent,
-          child: SvgPicture.asset('assets/icons/filter.svg'),
+          child: SvgPicture.asset('assets/icons/filter.svg', width: 37,height: 37,),
         ),
       ],
     );

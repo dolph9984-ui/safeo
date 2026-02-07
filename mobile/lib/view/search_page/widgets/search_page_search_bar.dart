@@ -1,0 +1,106 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:securite_mobile/constants/app_colors.dart';
+import 'package:securite_mobile/constants/app_fonts.dart';
+
+class SearchPageSearchBar extends StatefulWidget {
+  final TextEditingController controller;
+  final String hintText;
+  final VoidCallback onClear;
+
+  const SearchPageSearchBar({
+    super.key,
+    required this.controller,
+    required this.hintText,
+    required this.onClear,
+  });
+
+  @override
+  State<SearchPageSearchBar> createState() => _SearchPageSearchBarState();
+}
+
+class _SearchPageSearchBarState extends State<SearchPageSearchBar> {
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_onTextChanged);
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_onTextChanged);
+    super.dispose();
+  }
+
+  void _onTextChanged() {
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.foreground.withAlpha(10),
+            blurRadius: 6,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: widget.controller,
+        autofocus: true,
+        style: TextStyle(
+          fontSize: 14,
+          fontFamily: AppFonts.productSansMedium,
+          color: AppColors.foreground,
+        ),
+        decoration: InputDecoration(
+          hintText: widget.hintText,
+          hintStyle: TextStyle(
+            fontSize: 14,
+            fontFamily: AppFonts.productSansMedium,
+            color: AppColors.mutedForeground,
+          ),
+          prefixIcon: Padding(
+            padding: const EdgeInsets.all(10),
+            child: SvgPicture.asset(
+              'assets/icons/search.svg',
+              colorFilter: ColorFilter.mode(
+                AppColors.primary,
+                BlendMode.srcIn,
+              ),
+            ),
+          ),
+          suffixIcon: widget.controller.text.isNotEmpty
+              ? InkWell(
+                  onTap: widget.onClear,
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: SvgPicture.asset(
+                      'assets/icons/x.svg',
+                      colorFilter: ColorFilter.mode(
+                        AppColors.mutedForeground,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                  ),
+                )
+              : null,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: Colors.white,
+          contentPadding: EdgeInsets.symmetric(vertical: 12),
+        ),
+      ),
+    );
+  }
+}

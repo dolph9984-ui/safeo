@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
 import '../../constants/app_colors.dart';
 import '../../constants/app_fonts.dart';
 import 'blurred_dialog.dart';
@@ -64,14 +63,14 @@ class ConfirmDialog extends StatelessWidget {
                       minimumSize: Size(40, 40),
                       backgroundColor: confirmBgColor,
                     ),
-                    onPressed: () => context.pop(),
+                    onPressed: () => context.pop(true),
                     child: Text(confirmLabel),
                   ),
                 ),
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
-                    onPressed: () => context.pop(),
+                    onPressed: () => context.pop(false),
                     child: Text(cancelLabel),
                   ),
                 ),

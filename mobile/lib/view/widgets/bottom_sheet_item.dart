@@ -13,7 +13,7 @@ class BottomSheetItem extends StatelessWidget {
     required this.label,
     required this.assetName,
     required this.onTap,
-    required this.color,
+    required this.color, Icon? trailing,
   });
 
   @override
