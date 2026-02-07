@@ -30,7 +30,10 @@ class AppScaffold extends StatelessWidget {
         email: vm.email,
         filesNbr: vm.filesNumber,
         sharedFilesNbr: vm.sharedFilesNumber,
-        onTrashTap: () {},
+        onTrashTap: () {
+          Navigator.pop(context);
+          context.push(AppRoutes.trash);
+        },
         onLogoutTap: () {
           showDialog(
             context: context,

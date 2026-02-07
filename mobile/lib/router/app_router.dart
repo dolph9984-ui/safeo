@@ -10,11 +10,14 @@ import 'package:securite_mobile/view/auth/two_fa_view.dart';
 import 'package:securite_mobile/view/create_file/create_file_view.dart';
 import 'package:securite_mobile/view/home/home_view.dart';
 import 'package:securite_mobile/view/onboarding_view.dart';
+import 'package:securite_mobile/view/search_page/search_page_view.dart';
 import 'package:securite_mobile/view/share_file/share_file_view.dart';
 import 'package:securite_mobile/view/shared_files/shared_files_view.dart';
+import 'package:securite_mobile/view/trash/trash_view.dart';
 import 'package:securite_mobile/view/user_files/user_files_view.dart';
 import 'package:securite_mobile/viewmodel/auth/two_fa_viewmodel.dart';
 import 'package:securite_mobile/viewmodel/scaffold_viewmodel.dart';
+import 'package:securite_mobile/viewmodel/trash_viewmodel.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.userFiles,
@@ -137,9 +140,22 @@ final GoRouter appRouter = GoRouter(
       ],
     ),
     GoRoute(
-      path: AppRoutes.shareFile,
-      name: AppRoutes.shareFile,
-      builder: (context, state) => const ShareFileView(),
+          path: AppRoutes.shareFile,
+          name: AppRoutes.shareFile,
+          builder: (context, state) => const ShareFileView(),
+        ),
+    GoRoute(
+      path: AppRoutes.trash,
+      name: AppRoutes.trash,
+      builder: (context, state) => ChangeNotifierProvider(
+        create: (_) => TrashViewModel(),
+        child: const TrashView(),
+      ),
     ),
+    GoRoute(
+        path: '/search',
+        name: AppRoutes.searchPage,
+        builder: (context, state) => const SearchPageView(),
+      ),
   ],
 );
