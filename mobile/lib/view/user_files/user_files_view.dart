@@ -33,7 +33,7 @@ class _UserFilesViewState extends State<UserFilesView> {
       padding: EdgeInsets.only(left: 24, right: 24, bottom: 40),
       children: [
         SizedBox(height: 16),
-        StorageCard(used: vm.storageLimit, totalStorage: vm.storageUsed),
+        StorageCard(used: vm.storageUsed, totalStorage: vm.storageLimit),
         SizedBox(height: 32),
         FilesList(
           listTitle: 'Mes fichiers',

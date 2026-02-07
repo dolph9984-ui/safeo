@@ -115,7 +115,7 @@ final GoRouter appRouter = GoRouter(
           },
           child: AppScaffold(
             currentIndex: currentIndex,
-            vm: context.read<ScaffoldViewModel>(),
+            vm: context.watch<ScaffoldViewModel>(),
             child: child,
           ),
         );
