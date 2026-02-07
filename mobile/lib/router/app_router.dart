@@ -13,8 +13,12 @@ import 'package:securite_mobile/view/shared_files_view.dart';
 import 'package:securite_mobile/view/user_files/user_files_view.dart';
 import 'package:securite_mobile/view/widgets/app_drawer.dart';
 import 'package:securite_mobile/view/widgets/bottom_nav.dart';
+import 'package:securite_mobile/view/widgets/confirm_dialog.dart';
 import 'package:securite_mobile/view/widgets/top_bar.dart';
 import 'package:securite_mobile/viewmodel/auth/two_fa_viewmodel.dart';
+import 'package:securite_mobile/viewmodel/scaffold_view_model.dart';
+
+import '../constants/app_colors.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.userFiles,
@@ -22,8 +26,6 @@ final GoRouter appRouter = GoRouter(
     final currentLocation = state.matchedLocation;
     final storage = SecureStorageService();
     final isLoggedIn = await storage.isLoggedIn();
-
-    return null;
 
     if (!isLoggedIn &&
         !currentLocation.startsWith(AppRoutes.login) &&
@@ -101,6 +103,8 @@ final GoRouter appRouter = GoRouter(
 
     ShellRoute(
       builder: (context, state, child) {
+        final vm = context.watch<ScaffoldViewModel>();
+
         final location = state.uri.toString();
         bool canPop = location.startsWith(AppRoutes.userFiles);
 
@@ -111,20 +115,42 @@ final GoRouter appRouter = GoRouter(
           _ => 0,
         };
 
-        final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
         return PopScope(
           canPop: canPop,
           onPopInvokedWithResult: (didPop, result) {
             context.go(AppRoutes.userFiles);
           },
           child: Scaffold(
-            key: scaffoldKey,
-            drawer: AppDrawer(),
-            appBar: TopBar(
-              onImageTap: () {
-                scaffoldKey.currentState?.openDrawer();
+            key: vm.scaffoldKey,
+            drawer: AppDrawer(
+              username: vm.userName,
+              email: vm.email,
+              filesNbr: vm.filesNumber,
+              sharedFilesNbr: vm.sharedFilesNumber,
+              onTrashTap: () {},
+              onLogoutTap: () {
+                showDialog(
+                  context: context,
+                  barrierColor: Colors.transparent,
+                  animationStyle: AnimationStyle(
+                    duration: Duration(milliseconds: 0),
+                  ),
+                  builder: (_) {
+                    return ConfirmDialog(
+                      title: 'Se déconnecter',
+                      description: 'Voulez-vous vraiment vous déconnecter',
+                      cancelLabel: 'Annuler',
+                      confirmLabel: 'Se déconnecter',
+                      confirmBgColor: AppColors.primary,
+                    );
+                  },
+                );
               },
+            ),
+            appBar: TopBar(
+              onImageTap: () => vm.openDrawer(),
+              username: vm.userName,
+              imageUrl: vm.imageProfileUrl,
             ),
             bottomNavigationBar: BottomNav(
               onTap: (index) {

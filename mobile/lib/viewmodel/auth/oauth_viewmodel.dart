@@ -67,6 +67,8 @@ class OAuthViewModel extends ChangeNotifier {
         ),
       );
 
+      print('token: $tokens');
+
       _setLoading(false);
       return true;
     } on PlatformException catch (e) {

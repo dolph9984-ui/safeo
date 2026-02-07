@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
 
 class TopBar extends StatelessWidget implements PreferredSizeWidget {
   final String? imageUrl;
+  final String username;
+
   final Function() onImageTap;
 
-  const TopBar({super.key, this.imageUrl, required this.onImageTap});
+  const TopBar({
+    super.key,
+    this.imageUrl,
+    required this.onImageTap,
+    required this.username,
+  });
 
   @override
   Size get preferredSize => const Size.fromHeight(56);
@@ -46,13 +52,24 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
                           height: 34,
                           width: 34,
                           errorBuilder: (_, _, _) {
-                            return SvgPicture.asset(
-                              'assets/icons/user.svg',
-                              height: 20,
+                            return Text(
+                              username[0],
+                              style: TextStyle(
+                                fontFamily: AppFonts.zalandoSans,
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
                             );
                           },
                         )
-                      : SvgPicture.asset('assets/icons/user.svg', height: 20),
+                      : Text(
+                          username[0],
+                          style: TextStyle(
+                            fontFamily: AppFonts.zalandoSans,
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
                 ),
               ),
             ),

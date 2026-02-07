@@ -5,9 +5,22 @@ import 'package:securite_mobile/constants/app_fonts.dart';
 import 'package:securite_mobile/view/widgets/drawer_item.dart';
 
 class AppDrawer extends StatelessWidget {
-  final String? profileImgUrl;
+  final String username;
+  final String email;
+  final int filesNbr;
+  final int sharedFilesNbr;
+  final Function() onTrashTap;
+  final Function() onLogoutTap;
 
-  const AppDrawer({super.key, this.profileImgUrl});
+  const AppDrawer({
+    super.key,
+    required this.username,
+    required this.email,
+    required this.filesNbr,
+    required this.sharedFilesNbr,
+    required this.onTrashTap,
+    required this.onLogoutTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +37,12 @@ class AppDrawer extends StatelessWidget {
                 child: Column(
                   spacing: 16,
                   children: [
-                    profileInfo(),
+                    profileInfo(username, email),
                     Row(
                       spacing: 16,
                       children: [
-                        info('Fichier(s)', '0'),
-                        info('Partagé(s)', '0'),
+                        info('Fichier(s)', filesNbr.toString()),
+                        info('Partagé(s)', sharedFilesNbr.toString()),
                       ],
                     ),
                     Divider(color: AppColors.buttonDisabled),
@@ -48,14 +61,14 @@ class AppDrawer extends StatelessWidget {
               DrawerItem(
                 label: 'Consulter la corbeille',
                 assetName: 'assets/icons/trash.svg',
-                onTap: () {},
+                onTap: onTrashTap,
                 color: AppColors.foreground,
               ),
 
               DrawerItem(
                 label: 'Se déconnecter',
                 assetName: 'assets/icons/logout.svg',
-                onTap: () {},
+                onTap: onLogoutTap,
                 color: AppColors.destructive,
               ),
             ],
@@ -90,7 +103,8 @@ class AppDrawer extends StatelessWidget {
     );
   }
 
-  Widget profileInfo() {
+  Widget profileInfo(String username, String email) {
+    final String? profileImgUrl = null;
     return Row(
       spacing: 8,
       children: [
@@ -98,7 +112,7 @@ class AppDrawer extends StatelessWidget {
           radius: 24,
           child: (profileImgUrl != null)
               ? Image.network(
-                  profileImgUrl!,
+                  profileImgUrl,
                   height: 48,
                   width: 48,
                   errorBuilder: (_, _, _) {
@@ -108,7 +122,14 @@ class AppDrawer extends StatelessWidget {
                     );
                   },
                 )
-              : SvgPicture.asset('assets/icons/user.svg', height: 28),
+              : Text(
+                  username[0],
+                  style: TextStyle(
+                    fontFamily: AppFonts.zalandoSans,
+                    color: Colors.white,
+                    fontSize: 20,
+                  ),
+                ),
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,7 +143,7 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
             Text(
-              'mail@gmail.com',
+              email,
               style: TextStyle(
                 fontFamily: AppFonts.productSansRegular,
                 color: AppColors.mutedForeground,

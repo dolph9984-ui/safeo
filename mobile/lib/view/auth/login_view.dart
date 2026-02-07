@@ -104,7 +104,7 @@ class _LoginViewState extends State<LoginView> {
                     );
 
                     if (success && context.mounted) {
-                      context.go(AppRoutes.home);
+                      context.go(AppRoutes.userFiles);
                     }
                   },
                 ),
