@@ -61,9 +61,9 @@ class UserModel {
     user = User(
       uuid: '',
       fullName: 'Kirito EM',
-      email: 'test@gmail.com',
-      storageLimit: 100,
-      storageUsed: 100,
+      email: 'kirito@gmail.com',
+      storageLimit: 1024 * 1024 * 1024 * 5,
+      storageUsed: 1024 * 1024 * 1024 * 2,
       createdAt: DateTime.now(),
       imageUrl: null,
       filesNbr: 5,

@@ -24,11 +24,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) {
-          final vm = ScaffoldViewModel();
-          vm.init();
-          return vm;
-        }),
+        ChangeNotifierProvider(
+          create: (_) {
+            final vm = ScaffoldViewModel();
+            vm.init();
+            return vm;
+          },
+        ),
         ChangeNotifierProvider(create: (_) => UserFilesViewModel()),
         ChangeNotifierProvider(create: (_) => SharedFilesViewModel()),
         ChangeNotifierProvider(create: (_) => CreateFileViewModel()),
