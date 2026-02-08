@@ -65,15 +65,18 @@ class MemberTile extends StatelessWidget {
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
-                  Text(
-                    isOwner ? 'Propriétaire' : 'Lecteur',
-                    style: TextStyle(
-                      fontFamily: AppFonts.productSansMedium,
-                      fontSize: 12,
-                      color: AppColors.primary,
-                    ),
-                  ),
                 ],
+              ),
+            ),
+            
+            const SizedBox(width: 8),
+            
+            Text(
+              isOwner ? 'Propriétaire' : 'Lecteur',
+              style: TextStyle(
+                fontFamily: AppFonts.productSansMedium,
+                fontSize: 12,
+                color: AppColors.primary,
               ),
             ),
           ],
