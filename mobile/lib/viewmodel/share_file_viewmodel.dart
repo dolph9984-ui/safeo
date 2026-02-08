@@ -5,62 +5,37 @@ import 'package:securite_mobile/model/user_model.dart';
 
 class ShareFileViewModel extends ChangeNotifier {
   final FileModel _fileModel;
+  final UserModel _userModel;
+  final SessionModel _sessionModel;
   final TextEditingController searchController = TextEditingController();
-  final SessionModel sessionModel = SessionModel();
 
   AppFile? _currentFile;
   User? _currentUser;
+  List<User> _availableUsers = [];
   List<User> _sharedWith = [];
   List<User> _searchResults = [];
   bool _isLoading = false;
   bool _isSearching = false;
   String _emailToInvite = '';
 
-  final List<User> _availableUsers = [
-    User(
-      uuid: '2',
-      fullName: 'Wade Warren',
-      email: 'wade.warren@yahoo.fr',
-      filesNbr: 3,
-      sharedFilesNbr: 1,
-      storageLimit: 1024 * 1024 * 1024,
-      storageUsed: 500 * 1024 * 1024,
-      createdAt: DateTime.now(),
-      imageUrl: null,
-    ),
-    User(
-      uuid: '3',
-      fullName: 'Robert Fox',
-      email: 'robertfox@gmail.com',
-      filesNbr: 5,
-      sharedFilesNbr: 2,
-      storageLimit: 1024 * 1024 * 1024,
-      storageUsed: 300 * 1024 * 1024,
-      createdAt: DateTime.now(),
-      imageUrl: null,
-    ),
-  ];
-
   AppFile? get currentFile => _currentFile;
-
   User? get currentUser => _currentUser;
-
   List<User> get sharedWith => _sharedWith;
-
   List<User> get searchResults => _searchResults;
-
   bool get isLoading => _isLoading;
-
   bool get isSearching => _isSearching;
-
   String get emailToInvite => _emailToInvite;
-
   bool get canSendInvite => _isValidEmail(_emailToInvite);
-
   bool get hasSearchResults => _searchResults.isNotEmpty;
 
-  ShareFileViewModel({required String fileId, FileModel? fileModel})
-    : _fileModel = fileModel ?? FileModel() {
+  ShareFileViewModel({
+    required String fileId,
+    FileModel? fileModel,
+    UserModel? userModel,
+    SessionModel? sessionModel,
+  })  : _fileModel = fileModel ?? FileModel(),
+        _userModel = userModel ?? UserModel(),
+        _sessionModel = sessionModel ?? SessionModel() {
     searchController.addListener(_onSearchChanged);
     _init(fileId);
   }
@@ -70,17 +45,9 @@ class ShareFileViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      if (sessionModel.session == null) {
-        sessionModel.destroySession();
-        _currentUser = User.none();
-        return;
-      }
-      _currentUser = sessionModel.session!.user;
-      final files = await _fileModel.getUserFiles();
-      _currentFile = files?.firstWhere(
-        (f) => f.id == fileId,
-        orElse: () => files.first,
-      );
+      await _initUser();
+      await _loadAvailableUsers();
+      await _loadCurrentFile(fileId);
       await _loadSharedUsers();
     } catch (e) {
       debugPrint('Error initializing ShareFileViewModel: $e');
@@ -90,9 +57,50 @@ class ShareFileViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> _initUser() async {
+    if (_sessionModel.session == null) {
+      _sessionModel.destroySession();
+      _currentUser = User.none();
+      return;
+    }
+    _currentUser = _sessionModel.session!.user;
+    notifyListeners();
+  }
+
+  Future<void> _loadAvailableUsers() async {
+    try {
+      final users = await _userModel.getAllUsers();
+      if (users != null) {
+        _availableUsers = users;
+      }
+    } catch (e) {
+      debugPrint('Error loading available users: $e');
+    }
+  }
+
+  Future<void> _loadCurrentFile(String fileId) async {
+    try {
+      final files = await _fileModel.getUserFiles();
+      _currentFile = files?.firstWhere(
+        (f) => f.id == fileId,
+        orElse: () => files.first,
+      );
+    } catch (e) {
+      debugPrint('Error loading file: $e');
+    }
+  }
+
   Future<void> _loadSharedUsers() async {
     if (_currentFile == null) return;
+    
     _sharedWith = [];
+    
+    if (_currentFile!.viewersName != null && _currentFile!.viewersName!.isNotEmpty) {
+      _sharedWith = _availableUsers
+          .where((user) => _currentFile!.viewersName!.contains(user.email))
+          .toList();
+    }
+    
     notifyListeners();
   }
 
@@ -142,13 +150,11 @@ class ShareFileViewModel extends ChangeNotifier {
       return 'Email invalide';
     }
 
-    // Vérifier si l'utilisateur est le propriétaire
     if (_currentUser != null &&
         email.toLowerCase() == _currentUser!.email.toLowerCase()) {
       return 'Vous êtes déjà le propriétaire de ce fichier';
     }
 
-    // Vérifier si l'utilisateur existe dans le système
     final userExists = _availableUsers.any(
       (u) => u.email.toLowerCase() == email.toLowerCase(),
     );
@@ -157,7 +163,6 @@ class ShareFileViewModel extends ChangeNotifier {
       return 'Utilisateur non trouvé dans le système';
     }
 
-    // Vérifier si l'utilisateur a déjà accès
     final alreadyShared = _sharedWith.any(
       (u) => u.email.toLowerCase() == email.toLowerCase(),
     );
@@ -170,7 +175,6 @@ class ShareFileViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Trouver l'utilisateur dans la liste disponible
       final user = _availableUsers.firstWhere(
         (u) => u.email.toLowerCase() == email.toLowerCase(),
       );

@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:securite_mobile/enum/file_type_enum.dart';
 import 'package:securite_mobile/model/user_model.dart';
 
@@ -70,19 +69,40 @@ class FileModel {
     return null;
   }
 
-  Future<void> openFile(AppFile file) async {}
+  Future<void> openFile(AppFile file) async {
+  }
 
-  Future<void> shareFile(AppFile file, {required List<User> shareTo}) async {}
+  Future<void> shareFile(AppFile file, {required List<User> shareTo}) async {
+  }
 
-  Future<void> renameFile(AppFile file, {required String newName}) async {}
+  Future<void> renameFile(AppFile file, {required String newName}) async {
+  }
 
-  Future<void> downloadFile(AppFile file) async {}
+  Future<void> downloadFile(AppFile file) async {
+  }
 
   Future<void> uploadFile({
     required Uint8List bytes,
     required String fileName,
     required String visibility,
-  }) async {}
+  }) async {
+  }
 
-  Future<void> deleteFile(AppFile file) async {}
+  Future<void> deleteFile(AppFile file) async {
+  }
+
+  Future<void> restoreFile(AppFile file) async {
+  }
+
+  Future<void> deleteFilePermanently(AppFile file) async {
+  }
+
+  Future<void> restoreFiles(List<String> fileIds) async {
+  }
+
+  Future<void> deleteFilesPermanently(List<String> fileIds) async {
+  }
+
+  Future<void> emptyTrash() async {
+  }
 }

@@ -7,8 +7,8 @@ import 'package:securite_mobile/view/shared_files/wigdet/filter_bottom_sheet.dar
 import 'package:securite_mobile/view/user_files/widgets/file_item.dart';
 import 'package:securite_mobile/view/user_files/widgets/files_list.dart';
 import 'package:securite_mobile/view/user_files/widgets/storage_card.dart';
-import 'package:securite_mobile/view/user_files/widgets/user_files_bottom_sheet.dart';
 import 'package:securite_mobile/view/widgets/file_info_bottom_sheet.dart';
+import 'package:securite_mobile/view/widgets/user_bottom_sheet.dart';
 import 'package:securite_mobile/viewmodel/user_files_viewmodel.dart';
 
 class UserFilesView extends StatefulWidget {
@@ -73,37 +73,23 @@ class _UserFilesViewState extends State<UserFilesView> {
                   fileSize: file.size,
                   dateTime: file.createdAt,
                   onButtonTap: (String id) {
-                    showModalBottomSheet(
-                      useRootNavigator: true,
-                      context: context,
-                      builder: (context) {
-                        return UserFilesBottomSheet(
-                          fileId: file.id,
-                          fileName: file.name,
-                          onOpenTap: () => vm.openFile(file),
-                          onShareTap: () => (),
-                          onManageShareTap: () => (),
-                          onRenameTap: (newName) =>
-                              vm.renameFile(file, newName: newName),
-                          onDownloadTap: () => vm.downloadFile(file),
-                          onInfoTap: () {
-                            Navigator.of(context, rootNavigator: true).pop();
-
-                            Future.microtask(() {
-                              if (context.mounted) {
-                                showModalBottomSheet(
-                                  context: context,
-                                  useRootNavigator: true,
-                                  builder: (_) =>
-                                      FileInfoBottomSheet(file: file),
-                                );
-                              }
-                            });
-                          },
-                          onDeleteTap: () => vm.deleteFile(file),
-                        );
-                      },
-                    );
+                    if (vm.currentUser != null) { // MODIFICATION
+                      showModalBottomSheet(
+                        useRootNavigator: true,
+                        context: context,
+                        builder: (context) {
+                          return UnifiedFileBottomSheet(
+                            file: file,
+                            currentUser: vm.currentUser!,
+                            onOpenTap: () => vm.openFile(file),
+                            onRenameTap: (newName) =>
+                                vm.renameFile(file, newName: newName),
+                            onDownloadTap: () => vm.downloadFile(file),
+                            onDeleteTap: () => vm.deleteFile(file),
+                          );
+                        },
+                      );
+                    }
                   },
                   id: file.id,
                 ),

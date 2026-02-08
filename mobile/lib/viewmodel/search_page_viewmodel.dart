@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:securite_mobile/model/file_model.dart';
+import 'package:securite_mobile/model/session_model.dart';
+import 'package:securite_mobile/model/user_model.dart';
 
 class SearchPageViewModel extends ChangeNotifier {
   final FileModel _fileModel;
+  final SessionModel _sessionModel;
   final TextEditingController searchController = TextEditingController();
 
+  User? _currentUser;
   List<AppFile> _allFiles = [];
   List<AppFile> _searchResults = [];
   List<AppFile> _recentSearches = [];
@@ -16,16 +20,29 @@ class SearchPageViewModel extends ChangeNotifier {
   bool get isSearching => _isSearching;
   bool get isLoading => _isLoading;
   bool get hasQuery => searchController.text.trim().isNotEmpty;
+  User? get currentUser => _currentUser;
 
-  SearchPageViewModel({FileModel? fileModel}) 
-      : _fileModel = fileModel ?? FileModel() {
+  SearchPageViewModel({FileModel? fileModel, SessionModel? sessionModel}) 
+      : _fileModel = fileModel ?? FileModel(),
+        _sessionModel = sessionModel ?? SessionModel() {
     searchController.addListener(_onSearchChanged);
     _init();
   }
 
   Future<void> _init() async {
+    await initUser();
     await _loadAllFiles();
     await _loadRecentSearches();
+  }
+
+  Future<void> initUser() async {
+    if (_sessionModel.session == null) {
+      _sessionModel.destroySession();
+      _currentUser = User.none();
+      return;
+    }
+    _currentUser = _sessionModel.session!.user;
+    notifyListeners();
   }
 
   Future<void> _loadAllFiles() async {
@@ -33,10 +50,14 @@ class SearchPageViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final files = await _fileModel.getUserFiles();
-      if (files != null) {
-        _allFiles = files;
-      }
+      final userFiles = await _fileModel.getUserFiles();
+      final sharedFiles = await _fileModel.getSharedFiles();
+      
+      _allFiles = [
+        ...?userFiles,
+        ...?sharedFiles,
+      ];
+      
     } catch (e) {
       debugPrint('Error loading files: $e');
     } finally {
@@ -70,13 +91,10 @@ class SearchPageViewModel extends ChangeNotifier {
         .where((file) => file.name.toLowerCase().contains(lowerQuery))
         .toList();
     
-    // Sauvegarder dans les recherches récentes
     _saveToRecentSearches(_searchResults);
   }
 
   void _saveToRecentSearches(List<AppFile> results) {
-    // TODO: Implémenter la sauvegarde dans SharedPreferences
-    // Pour l'instant, on met à jour en mémoire
     if (results.isNotEmpty) {
       final newRecent = results.first;
       _recentSearches.removeWhere((f) => f.id == newRecent.id);
@@ -97,7 +115,6 @@ class SearchPageViewModel extends ChangeNotifier {
   void clearRecentSearches() {
     _recentSearches = [];
     notifyListeners();
-    // TODO: Aussi effacer du cache local
   }
 
   Future<void> refresh() async {

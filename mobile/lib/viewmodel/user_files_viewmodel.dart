@@ -18,12 +18,10 @@ class UserFilesViewModel extends ChangeNotifier {
   FileFilterEnum _currentFilter = FileFilterEnum.all;
 
   FileFilterEnum get currentFilter => _currentFilter;
-
   int get storageLimit => _user?.storageLimit ?? 5;
-
   int get storageUsed => _user?.storageUsed ?? 2;
-
   List<AppFile> get filteredFiles => _filteredFiles ?? [];
+  User? get currentUser => _user;
 
   void initUser() {
     if (sessionModel.session == null) {

@@ -6,8 +6,23 @@ import 'package:securite_mobile/constants/app_fonts.dart';
 import 'package:securite_mobile/view/trash/widgets/trash_list.dart';
 import 'package:securite_mobile/viewmodel/trash_viewmodel.dart';
 
-class TrashView extends StatelessWidget {
+class TrashView extends StatefulWidget {
   const TrashView({super.key});
+
+  @override
+  State<TrashView> createState() => _TrashViewState();
+}
+
+class _TrashViewState extends State<TrashView> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final vm = context.read<TrashViewModel>();
+      vm.initUser();
+      vm.initFiles();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,8 +60,9 @@ class TrashView extends StatelessWidget {
           ? _buildEmptyState()
           : Column(
               children: [
-                if (vm.isSelectionMode) _buildSelectionHeader(context, vm),
-
+                if (vm.isSelectionMode)
+                  _buildSelectionHeader(context, vm),
+                
                 Expanded(
                   child: TrashList(
                     trashedFiles: vm.trashedFiles,
@@ -97,47 +113,49 @@ class TrashView extends StatelessWidget {
 
   Widget _buildSelectionHeader(BuildContext context, TrashViewModel vm) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(color: AppColors.primary.withAlpha(20)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            spacing: 0,
-            children: [
-              IconButton(
-                onPressed: vm.exitSelectionMode,
-                icon: Icon(Icons.close, color: AppColors.foreground),
-                padding: EdgeInsets.zero,
-                constraints: BoxConstraints(),
-              ),
-              Text(
-                '${vm.selectedFileIds.length} sélectionné(s)',
-                style: TextStyle(
-                  fontFamily: AppFonts.productSansMedium,
-                  fontSize: 15,
-                  color: AppColors.foreground,
-                ),
-              ),
-            ],
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withAlpha(20),
+        border: Border(
+          bottom: BorderSide(
+            color: AppColors.buttonDisabled,
+            width: 1,
           ),
-
-          Row(
-            children: [
-              TextButton(
-                onPressed: () => vm.restoreSelectedFiles(context),
-                style: TextButton.styleFrom(foregroundColor: AppColors.primary),
-                child: Text('Restaurer'),
+        ),
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: vm.exitSelectionMode,
+            icon: Icon(Icons.close, color: AppColors.foreground),
+            padding: EdgeInsets.zero,
+            constraints: BoxConstraints(),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              '${vm.selectedFileIds.length} sélectionné(s)',
+              style: TextStyle(
+                fontFamily: AppFonts.productSansMedium,
+                fontSize: 15,
+                color: AppColors.foreground,
               ),
-              const SizedBox(width: 8),
-              TextButton(
-                onPressed: () => vm.deleteSelectedFiles(context),
-                style: TextButton.styleFrom(
-                  foregroundColor: AppColors.destructive,
-                ),
-                child: Text('Supprimer'),
-              ),
-            ],
+            ),
+          ),
+          TextButton(
+            onPressed: () => vm.restoreSelectedFiles(context),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.primary,
+            ),
+            child: Text('Restaurer'),
+          ),
+          const SizedBox(width: 8),
+          TextButton(
+            onPressed: () => vm.deleteSelectedFiles(context),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.destructive,
+            ),
+            child: Text('Supprimer'),
           ),
         ],
       ),

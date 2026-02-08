@@ -35,7 +35,7 @@ class User {
       storageLimit: json['storageLimit'] as int,
       storageUsed: json['storageUsed'] as int,
       createdAt: DateTime.parse(json['createdAt'] as String),
-      imageUrl: json['imageUrl'] as String,
+      imageUrl: json['imageUrl'] as String?,
     );
   }
 
@@ -54,16 +54,16 @@ class User {
   }
 
   factory User.none() => User(
-    uuid: '0',
-    fullName: '',
-    email: '',
-    filesNbr: 0,
-    sharedFilesNbr: 0,
-    storageLimit: 0,
-    storageUsed: 0,
-    createdAt: DateTime.now(),
-    imageUrl: null,
-  );
+        uuid: '0',
+        fullName: '',
+        email: '',
+        filesNbr: 0,
+        sharedFilesNbr: 0,
+        storageLimit: 0,
+        storageUsed: 0,
+        createdAt: DateTime.now(),
+        imageUrl: null,
+      );
 }
 
 class UserModel {
@@ -80,12 +80,12 @@ class UserModel {
       uuid: '0',
       fullName: 'Kirito EM',
       email: 'kirito@gmail.com',
+      filesNbr: 5,
+      sharedFilesNbr: 0,
       storageLimit: 1024 * 1024 * 1024 * 5,
       storageUsed: 1024 * 1024 * 1024 * 2,
       createdAt: DateTime.now(),
       imageUrl: null,
-      filesNbr: 5,
-      sharedFilesNbr: 0,
     );
   }
 
@@ -99,5 +99,21 @@ class UserModel {
 
   Future<void> clearUserFromCache() async {
     await _cacheService.clear();
+  }
+
+  Future<List<User>?> getAllUsers() async {
+    return [
+      User(
+        uuid: '1',
+        fullName: 'Kirito EM',
+        email: 'kirito@gmail.com',
+        filesNbr: 5,
+        sharedFilesNbr: 0,
+        storageLimit: 1024 * 1024 * 1024 * 5,
+        storageUsed: 1024 * 1024 * 1024 * 2,
+        createdAt: DateTime.now(),
+        imageUrl: null,
+      ),
+    ];
   }
 }

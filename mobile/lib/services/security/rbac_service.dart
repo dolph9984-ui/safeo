@@ -32,7 +32,7 @@ class RBACService {
     },
   };
 
-  // ✅ Vérifie si un user peut faire une action sur un fichier
+  // Vérifie si un user peut faire une action sur un fichier
   bool canAccess(AppFile file, User user, Permission permission) {
     final role = _getUserRoleForFile(file, user);
     if (role == null) return false;
@@ -48,12 +48,19 @@ class RBACService {
     return null;
   }
 }
-extension FilePermissionExtension on AppFile {
-  bool canRead(User user) => RBACService().canAccess(this, user, Permission.readDocument);
-  bool canModify(User user) => RBACService().canAccess(this, user, Permission.modifyDocument);
-  bool canDelete(User user) => RBACService().canAccess(this, user, Permission.deleteDocument);
-  bool canShare(User user) => RBACService().canAccess(this, user, Permission.shareDocument);
-  bool canDownload(User user) => RBACService().canAccess(this, user, Permission.downloadDocument);
 
-  Role? getUserRole(User user) => RBACService()._getUserRoleForFile(this, user);
+extension UserPermissionExtension on User {
+  bool canAccess(AppFile file, Permission permission) {
+    return RBACService().canAccess(file, this, permission);
+  }
+
+  bool canRead(AppFile file) => canAccess(file, Permission.readDocument);
+  bool canModify(AppFile file) => canAccess(file, Permission.modifyDocument);
+  bool canDelete(AppFile file) => canAccess(file, Permission.deleteDocument);
+  bool canShare(AppFile file) => canAccess(file, Permission.shareDocument);
+  bool canDownload(AppFile file) => canAccess(file, Permission.downloadDocument);
+
+  Role? getRole(AppFile file) {
+    return RBACService()._getUserRoleForFile(file, this);
+  }
 }
