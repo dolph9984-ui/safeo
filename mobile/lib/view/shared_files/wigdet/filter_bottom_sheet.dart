@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
 import 'package:securite_mobile/enum/file_filter_enum.dart';
-import 'package:securite_mobile/viewmodel/shared_files_viewmodel.dart';
 
 class FilterBottomSheet extends StatelessWidget {
   final FileFilterEnum currentFilter;
   final Function(FileFilterEnum) onFilterSelected;
+  final List<FileFilterEnum> allowedFilter;
 
   const FilterBottomSheet({
     super.key,
     required this.currentFilter,
     required this.onFilterSelected,
+    required this.allowedFilter,
   });
 
   @override
@@ -65,7 +66,7 @@ class FilterBottomSheet extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    ...FileFilterEnum.values.map((filter) {
+                    ...allowedFilter.map((filter) {
                       final isSelected = filter == currentFilter;
                       return InkWell(
                         onTap: () {

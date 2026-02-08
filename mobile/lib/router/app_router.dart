@@ -17,7 +17,6 @@ import 'package:securite_mobile/view/trash/trash_view.dart';
 import 'package:securite_mobile/view/user_files/user_files_view.dart';
 import 'package:securite_mobile/viewmodel/auth/two_fa_viewmodel.dart';
 import 'package:securite_mobile/viewmodel/scaffold_viewmodel.dart';
-import 'package:securite_mobile/viewmodel/trash_viewmodel.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.userFiles,
@@ -106,6 +105,13 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const TrashView(),
     ),
 
+    // search
+    GoRoute(
+      path: AppRoutes.searchFile,
+      name: AppRoutes.searchFile,
+      builder: (context, state) => const SearchPageView(),
+    ),
+
     ShellRoute(
       builder: (context, state, child) {
         final location = state.uri.toString();
@@ -150,11 +156,6 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.shareFile,
       name: AppRoutes.shareFile,
       builder: (context, state) => const ShareFileView(),
-    ),
-    GoRoute(
-      path: '/search',
-      name: AppRoutes.searchPage,
-      builder: (context, state) => const SearchPageView(),
     ),
   ],
 );

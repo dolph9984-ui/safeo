@@ -127,7 +127,7 @@ class SearchFileItem extends StatelessWidget {
           TextSpan(
             text: match,
             style: TextStyle(
-              backgroundColor: AppColors.primary,
+              backgroundColor: AppColors.blue400,
               color: AppColors.primaryLight,
               fontFamily: AppFonts.productSansMedium,
             ),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:securite_mobile/enum/file_filter_enum.dart';
 import 'package:securite_mobile/router/app_routes.dart';
+import 'package:securite_mobile/view/shared_files/wigdet/filter_bottom_sheet.dart';
 import 'package:securite_mobile/view/user_files/widgets/file_item.dart';
 import 'package:securite_mobile/view/user_files/widgets/files_list.dart';
 import 'package:securite_mobile/view/user_files/widgets/storage_card.dart';
@@ -38,8 +40,33 @@ class _UserFilesViewState extends State<UserFilesView> {
         StorageCard(used: vm.storageUsed, totalStorage: vm.storageLimit),
         SizedBox(height: 32),
         FilesList(
+          currentFilter: vm.currentFilter,
           listTitle: 'Mes fichiers',
-          files: vm.files
+          showSearchIcon: true,
+          onSearchTap: () => context.pushNamed(AppRoutes.searchFile),
+          onFilterTap: () {
+            showModalBottomSheet(
+              useRootNavigator: true,
+              context: context,
+              backgroundColor: Colors.transparent,
+              builder: (context) {
+                return FilterBottomSheet(
+                  currentFilter: vm.currentFilter,
+                  onFilterSelected: (newFilter) {
+                    vm.setCurrentFilter(newFilter);
+                  },
+                  allowedFilter: [
+                    FileFilterEnum.all,
+                    FileFilterEnum.image,
+                    FileFilterEnum.pdf,
+                    FileFilterEnum.document,
+                    FileFilterEnum.csv,
+                  ],
+                );
+              },
+            );
+          },
+          files: vm.filteredFiles
               .map(
                 (file) => FileItem(
                   fileName: file.name,
@@ -83,7 +110,6 @@ class _UserFilesViewState extends State<UserFilesView> {
                 ),
               )
               .toList(),
-          showSearchIcon: true,
         ),
       ],
     );

@@ -53,20 +53,19 @@ class SharedFilesList extends StatelessWidget {
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 4,
           children: [
             Text(
               'Fichiers partagés',
               style: TextStyle(
                 fontFamily: AppFonts.zalandoSans,
-                fontSize: 16,
+                fontSize: 18,
                 color: AppColors.foreground,
               ),
             ),
             Text(
               filterLabel,
               style: TextStyle(
-                fontFamily: AppFonts.productSansRegular,
+                fontFamily: AppFonts.zalandoSans,
                 fontSize: 12,
                 color: AppColors.mutedForeground,
               ),
@@ -79,11 +78,7 @@ class SharedFilesList extends StatelessWidget {
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
             hoverColor: Colors.transparent,
-            child: SvgPicture.asset(
-              'assets/icons/filter.svg',
-              width: 30,
-              height: 30,
-            ),
+            child: SvgPicture.asset('assets/icons/filter.svg'),
           ),
       ],
     );

@@ -1,6 +1,10 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
+import 'package:securite_mobile/enum/file_filter_enum.dart';
+import 'package:securite_mobile/enum/file_type_enum.dart';
 import 'package:securite_mobile/model/file_model.dart';
 import 'package:securite_mobile/model/user_model.dart';
+import 'package:securite_mobile/utils/file_name_util.dart';
 
 class UserFilesViewModel extends ChangeNotifier {
   final userModel = UserModel();
@@ -8,12 +12,17 @@ class UserFilesViewModel extends ChangeNotifier {
 
   User? _user;
   List<AppFile>? _files;
+  List<AppFile>? _filteredFiles;
+
+  FileFilterEnum _currentFilter = FileFilterEnum.all;
+
+  FileFilterEnum get currentFilter => _currentFilter;
 
   int get storageLimit => _user?.storageLimit ?? 5;
 
   int get storageUsed => _user?.storageUsed ?? 2;
 
-  List<AppFile> get files => _files ?? [];
+  List<AppFile> get filteredFiles => _filteredFiles ?? [];
 
   void initUser() {
     userModel.getCurrentUser().then((res) {
@@ -25,8 +34,38 @@ class UserFilesViewModel extends ChangeNotifier {
   void initFiles() {
     fileModel.getUserFiles().then((res) {
       _files = res;
+      _filteredFiles = res;
       notifyListeners();
     });
+  }
+
+  void setCurrentFilter(FileFilterEnum newFilter) {
+    _currentFilter = newFilter;
+    _filterFiles();
+    notifyListeners();
+  }
+
+  void _filterFiles() {
+    const filterMap = {
+      FileFilterEnum.pdf: FileTypeEnum.pdf,
+      FileFilterEnum.image: FileTypeEnum.image,
+      FileFilterEnum.document: FileTypeEnum.document,
+      FileFilterEnum.csv: FileTypeEnum.csv,
+    };
+
+    final targetType = filterMap[_currentFilter];
+
+    _filteredFiles = targetType == null
+        ? _files
+        : _files
+              ?.where(
+                (file) =>
+                    FileTypeEnum.fromExtension(
+                      FileNameUtil.getExtension(file.name),
+                    ) ==
+                    targetType,
+              )
+              .toList();
   }
 
   void openFile(AppFile file) async {

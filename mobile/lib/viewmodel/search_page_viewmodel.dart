@@ -4,14 +4,17 @@ import 'package:securite_mobile/viewmodel/shared_files_viewmodel.dart';
 
 class SearchPageViewModel extends ChangeNotifier {
   final TextEditingController searchController = TextEditingController();
-  
+
   List<SharedFileData> _searchResults = [];
   List<SharedFileData> _recentSearches = [];
   bool _isSearching = false;
 
   List<SharedFileData> get searchResults => _searchResults;
+
   List<SharedFileData> get recentSearches => _recentSearches;
+
   bool get isSearching => _isSearching;
+
   bool get hasQuery => searchController.text.trim().isNotEmpty;
 
   SearchPageViewModel() {
@@ -48,7 +51,7 @@ class SearchPageViewModel extends ChangeNotifier {
 
   void _onSearchChanged() {
     final query = searchController.text.trim();
-    
+
     if (query.isEmpty) {
       _searchResults = [];
       _isSearching = false;
@@ -106,7 +109,9 @@ class SearchPageViewModel extends ChangeNotifier {
     ];
 
     _searchResults = allFiles
-        .where((file) => file.fileName.toLowerCase().contains(query.toLowerCase()))
+        .where(
+          (file) => file.fileName.toLowerCase().contains(query.toLowerCase()),
+        )
         .toList();
   }
 

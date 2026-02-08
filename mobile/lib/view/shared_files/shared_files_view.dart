@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:securite_mobile/enum/file_filter_enum.dart';
 import 'package:securite_mobile/router/app_routes.dart';
 import 'package:securite_mobile/view/shared_files/wigdet/filter_bottom_sheet.dart';
 import 'package:securite_mobile/view/shared_files/wigdet/search_bar.dart';
 import 'package:securite_mobile/view/shared_files/wigdet/shardfiles_list.dart';
 import 'package:securite_mobile/view/shared_files/wigdet/shared_file_bottom_sheet.dart';
 import 'package:securite_mobile/view/shared_files/wigdet/sharedfiles_item.dart';
-import 'package:securite_mobile/view/user_files/widgets/user_files_bottom_sheet.dart';
 import 'package:securite_mobile/viewmodel/shared_files_viewmodel.dart';
 
 enum UserRole { owner, viewer }
@@ -43,7 +43,7 @@ class SharedFilesView extends StatelessWidget {
       padding: const EdgeInsets.only(left: 24, right: 24, bottom: 40),
       children: [
         GestureDetector(
-          onTap: () => context.pushNamed(AppRoutes.searchPage),
+          onTap: () => context.pushNamed(AppRoutes.searchFile),
           child: AbsorbPointer(
             child: Hero(
               tag: 'search_bar',
@@ -70,6 +70,7 @@ class SharedFilesView extends StatelessWidget {
               builder: (context) {
                 return FilterBottomSheet(
                   currentFilter: vm.currentFilter,
+                  allowedFilter: FileFilterEnum.values,
                   onFilterSelected: (filter) => vm.setFilter(filter),
                 );
               },
