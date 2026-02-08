@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:securite_mobile/router/app_routes.dart';
 import 'package:securite_mobile/view/widgets/app_bottom_sheet.dart';
 import 'package:securite_mobile/view/widgets/blurred_dialog.dart';
 import 'package:securite_mobile/view/widgets/confirm_dialog.dart';
@@ -10,7 +9,26 @@ import '../../../constants/app_colors.dart';
 import '../../widgets/bottom_sheet_item.dart';
 
 class UserFilesBottomSheet extends StatelessWidget {
-  const UserFilesBottomSheet({super.key});
+  final Function() onOpenTap;
+  final Function() onShareTap;
+  final Function() onManageShareTap;
+  final Function(String newName) onRenameTap;
+  final Function() onDownloadTap;
+  final Function() onInfoTap;
+  final Function() onDeleteTap;
+  final String fileName;
+
+  const UserFilesBottomSheet({
+    super.key,
+    required this.onOpenTap,
+    required this.onShareTap,
+    required this.onManageShareTap,
+    required this.onRenameTap,
+    required this.onDownloadTap,
+    required this.onInfoTap,
+    required this.onDeleteTap,
+    required this.fileName,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,14 +37,20 @@ class UserFilesBottomSheet extends StatelessWidget {
       BottomSheetItem(
         label: 'Ouvrir',
         assetName: 'assets/icons/open.svg',
-        onTap: () {},
+        onTap: () {
+          context.pop();
+          onOpenTap();
+        },
         color: AppColors.foreground,
       ),
       // share
       BottomSheetItem(
         label: 'Partager',
         assetName: 'assets/icons/share.svg',
-        onTap: () {},
+        onTap: () {
+          context.pop();
+          onShareTap();
+        },
         color: AppColors.foreground,
       ),
       // manage share
@@ -34,7 +58,8 @@ class UserFilesBottomSheet extends StatelessWidget {
         label: 'Gérer les partages',
         assetName: 'assets/icons/users_round.svg',
         onTap: () {
-          context.pushNamed(AppRoutes.shareFile);
+          context.pop();
+          onManageShareTap();
         },
         color: AppColors.foreground,
       ),
@@ -57,9 +82,14 @@ class UserFilesBottomSheet extends StatelessWidget {
                     }
                     return null;
                   },
-                  initialName: '',
-                  onCancelPress: () => context.pop(),
+                  initialName: fileName,
+                  onCancelPress: () {
+                    context.pop();
+                    context.pop();
+                  },
                   onConfirmPress: (newName) {
+                    onRenameTap(newName);
+                    context.pop();
                     context.pop();
                   },
                 ),
@@ -73,14 +103,19 @@ class UserFilesBottomSheet extends StatelessWidget {
       BottomSheetItem(
         label: 'Télécharger',
         assetName: 'assets/icons/download.svg',
-        onTap: () {},
+        onTap: () {
+          context.pop();
+          onDownloadTap();
+        },
         color: AppColors.foreground,
       ),
       // info
       BottomSheetItem(
         label: 'Informations sur le fichier',
         assetName: 'assets/icons/info.svg',
-        onTap: () {},
+        onTap: () {
+          onInfoTap();
+        },
         color: AppColors.foreground,
       ),
       // delete
@@ -94,13 +129,18 @@ class UserFilesBottomSheet extends StatelessWidget {
             context: context,
             builder: (context) {
               return ConfirmDialog(
-                title: 'Placer dans la corbeille',
+                title: 'Placer "$fileName" dans la corbeille ?',
                 description: null,
                 cancelLabel: 'Annuler',
                 confirmLabel: 'Déplacer vers la corbeille',
                 confirmBgColor: AppColors.destructive,
-                onConfirm: () {},
-                onCancel: () {},
+                onConfirm: () {
+                  onDeleteTap();
+                  context.pop();
+                },
+                onCancel: () {
+                  context.pop();
+                },
               );
             },
           );

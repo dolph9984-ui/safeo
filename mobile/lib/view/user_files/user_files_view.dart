@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:securite_mobile/enum/file_type_enum.dart';
+import 'package:securite_mobile/router/app_routes.dart';
 import 'package:securite_mobile/view/user_files/widgets/file_item.dart';
 import 'package:securite_mobile/view/user_files/widgets/files_list.dart';
 import 'package:securite_mobile/view/user_files/widgets/storage_card.dart';
 import 'package:securite_mobile/view/user_files/widgets/user_files_bottom_sheet.dart';
+import 'package:securite_mobile/view/widgets/file_info_bottom_sheet.dart';
 import 'package:securite_mobile/viewmodel/user_files_viewmodel.dart';
 
 class UserFilesView extends StatefulWidget {
@@ -48,7 +50,32 @@ class _UserFilesViewState extends State<UserFilesView> {
                       useRootNavigator: true,
                       context: context,
                       builder: (context) {
-                        return UserFilesBottomSheet();
+                        return UserFilesBottomSheet(
+                          fileName: file.name,
+                          onOpenTap: () => vm.openFile(file),
+                          onShareTap: () => (),
+                          onManageShareTap: () =>
+                              context.pushNamed(AppRoutes.shareFile),
+                          onRenameTap: (newName) =>
+                              vm.renameFile(file, newName: newName),
+                          onDownloadTap: () => vm.downloadFile(file),
+                          onInfoTap: () {
+                            Navigator.of(context, rootNavigator: true).pop();
+
+                            Future.microtask(() {
+                              if (context.mounted) {
+                                showModalBottomSheet(
+                                  context: context,
+                                  useRootNavigator: true,
+                                  builder: (_) =>
+                                      FileInfoBottomSheet(file: file),
+                                );
+                              }
+                            });
+                          },
+
+                          onDeleteTap: () => vm.deleteFile(file),
+                        );
                       },
                     );
                   },

@@ -7,7 +7,10 @@ import 'package:securite_mobile/view/shared_files/wigdet/search_bar.dart';
 import 'package:securite_mobile/view/shared_files/wigdet/shardfiles_list.dart';
 import 'package:securite_mobile/view/shared_files/wigdet/shared_file_bottom_sheet.dart';
 import 'package:securite_mobile/view/shared_files/wigdet/sharedfiles_item.dart';
+import 'package:securite_mobile/view/user_files/widgets/user_files_bottom_sheet.dart';
 import 'package:securite_mobile/viewmodel/shared_files_viewmodel.dart';
+
+enum UserRole { owner, viewer }
 
 class SharedFilesView extends StatelessWidget {
   const SharedFilesView({super.key});
@@ -15,14 +18,11 @@ class SharedFilesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<SharedFilesViewModel>();
-
     final files = vm.sharedFiles.map((file) {
       return SharedFileItem(
         id: file.id,
         fileName: file.fileName,
-        fileSize: file.fileSize,
         dateTime: file.sharedAt,
-        fileType: file.fileType,
         onButtonTap: (id) {
           final selectedFile = vm.getFileById(id);
           if (selectedFile != null) {
@@ -75,6 +75,8 @@ class SharedFilesView extends StatelessWidget {
               },
             );
           },
+          showFilterButton: true,
+          messageOnEmpty: 'Aucun fichier trouvé',
         ),
       ],
     );

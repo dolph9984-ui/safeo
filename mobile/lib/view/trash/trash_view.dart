@@ -45,9 +45,8 @@ class TrashView extends StatelessWidget {
           ? _buildEmptyState()
           : Column(
               children: [
-                if (vm.isSelectionMode)
-                  _buildSelectionHeader(context, vm),
-                
+                if (vm.isSelectionMode) _buildSelectionHeader(context, vm),
+
                 Expanded(
                   child: TrashList(
                     trashedFiles: vm.trashedFiles,
@@ -98,49 +97,47 @@ class TrashView extends StatelessWidget {
 
   Widget _buildSelectionHeader(BuildContext context, TrashViewModel vm) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      decoration: BoxDecoration(
-        color: AppColors.primary.withAlpha(20),
-        border: Border(
-          bottom: BorderSide(
-            color: AppColors.buttonDisabled,
-            width: 1,
-          ),
-        ),
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(color: AppColors.primary.withAlpha(20)),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(
-            onPressed: vm.exitSelectionMode,
-            icon: Icon(Icons.close, color: AppColors.foreground),
-            padding: EdgeInsets.zero,
-            constraints: BoxConstraints(),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              '${vm.selectedFileIds.length} sélectionné(s)',
-              style: TextStyle(
-                fontFamily: AppFonts.productSansMedium,
-                fontSize: 15,
-                color: AppColors.foreground,
+          Row(
+            spacing: 0,
+            children: [
+              IconButton(
+                onPressed: vm.exitSelectionMode,
+                icon: Icon(Icons.close, color: AppColors.foreground),
+                padding: EdgeInsets.zero,
+                constraints: BoxConstraints(),
               ),
-            ),
+              Text(
+                '${vm.selectedFileIds.length} sélectionné(s)',
+                style: TextStyle(
+                  fontFamily: AppFonts.productSansMedium,
+                  fontSize: 15,
+                  color: AppColors.foreground,
+                ),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => vm.restoreSelectedFiles(context),
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.primary,
-            ),
-            child: Text('Restaurer'),
-          ),
-          const SizedBox(width: 8),
-          TextButton(
-            onPressed: () => vm.deleteSelectedFiles(context),
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.destructive,
-            ),
-            child: Text('Supprimer'),
+
+          Row(
+            children: [
+              TextButton(
+                onPressed: () => vm.restoreSelectedFiles(context),
+                style: TextButton.styleFrom(foregroundColor: AppColors.primary),
+                child: Text('Restaurer'),
+              ),
+              const SizedBox(width: 8),
+              TextButton(
+                onPressed: () => vm.deleteSelectedFiles(context),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.destructive,
+                ),
+                child: Text('Supprimer'),
+              ),
+            ],
           ),
         ],
       ),

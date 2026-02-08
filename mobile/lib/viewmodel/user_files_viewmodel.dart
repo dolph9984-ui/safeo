@@ -23,8 +23,33 @@ class UserFilesViewModel extends ChangeNotifier {
   }
 
   void initFiles() {
-    fileModel.getFiles().then((res) {
+    fileModel.getUserFiles().then((res) {
       _files = res;
+      notifyListeners();
+    });
+  }
+
+  void openFile(AppFile file) async {
+    fileModel.openFile(file);
+  }
+
+  void renameFile(AppFile file, {required String newName}) async {
+    if (file.name == newName) return;
+
+    fileModel.renameFile(file, newName: newName).then((res) {
+      int index = _files?.indexOf(file) ?? -1;
+      if (index != -1) _files![index] = file.copyWith(name: newName);
+      notifyListeners();
+    });
+  }
+
+  void downloadFile(AppFile file) async {
+    fileModel.downloadFile(file);
+  }
+
+  void deleteFile(AppFile file) async {
+    fileModel.deleteFile(file).then((res) {
+      _files?.removeWhere((e) => e == file);
       notifyListeners();
     });
   }

@@ -31,8 +31,8 @@ class AppScaffold extends StatelessWidget {
         filesNbr: vm.filesNumber,
         sharedFilesNbr: vm.sharedFilesNumber,
         onTrashTap: () {
-          Navigator.pop(context);
-          context.push(AppRoutes.trash);
+          context.pop();
+          context.pushNamed(AppRoutes.trash);
         },
         onLogoutTap: () {
           showDialog(

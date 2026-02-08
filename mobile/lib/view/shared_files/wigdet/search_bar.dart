@@ -36,10 +36,7 @@ class SharedFileSearchBar extends StatelessWidget {
           ),
           prefixIcon: Padding(
             padding: const EdgeInsets.all(10),
-            child: SvgPicture.asset(
-              iconPath,
-              color: AppColors.primary,
-            ),
+            child: SvgPicture.asset(iconPath, color: AppColors.primary),
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),

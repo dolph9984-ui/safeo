@@ -99,6 +99,13 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const CreateFileView(),
     ),
 
+    // trash
+    GoRoute(
+      path: AppRoutes.trash,
+      name: AppRoutes.trash,
+      builder: (context, state) => const TrashView(),
+    ),
+
     ShellRoute(
       builder: (context, state, child) {
         final location = state.uri.toString();
@@ -140,22 +147,14 @@ final GoRouter appRouter = GoRouter(
       ],
     ),
     GoRoute(
-          path: AppRoutes.shareFile,
-          name: AppRoutes.shareFile,
-          builder: (context, state) => const ShareFileView(),
-        ),
-    GoRoute(
-      path: AppRoutes.trash,
-      name: AppRoutes.trash,
-      builder: (context, state) => ChangeNotifierProvider(
-        create: (_) => TrashViewModel(),
-        child: const TrashView(),
-      ),
+      path: AppRoutes.shareFile,
+      name: AppRoutes.shareFile,
+      builder: (context, state) => const ShareFileView(),
     ),
     GoRoute(
-        path: '/search',
-        name: AppRoutes.searchPage,
-        builder: (context, state) => const SearchPageView(),
-      ),
+      path: '/search',
+      name: AppRoutes.searchPage,
+      builder: (context, state) => const SearchPageView(),
+    ),
   ],
 );

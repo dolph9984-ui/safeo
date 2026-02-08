@@ -7,12 +7,16 @@ class SharedFilesList extends StatelessWidget {
   final String filterLabel;
   final List<Widget> files;
   final VoidCallback onFilterTap;
+  final bool showFilterButton;
+  final String messageOnEmpty;
 
   const SharedFilesList({
     super.key,
     required this.filterLabel,
     required this.files,
     required this.onFilterTap,
+    required this.showFilterButton,
+    required this.messageOnEmpty,
   });
 
   @override
@@ -20,12 +24,12 @@ class SharedFilesList extends StatelessWidget {
     return Column(
       spacing: 24,
       children: [
-        _title(filterLabel, onFilterTap),
+        _title(filterLabel, onFilterTap, showFilterButton),
         if (files.isEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 40),
             child: Text(
-              'Aucun fichier trouvé',
+              messageOnEmpty,
               style: TextStyle(
                 fontFamily: AppFonts.productSansRegular,
                 fontSize: 14,
@@ -39,7 +43,11 @@ class SharedFilesList extends StatelessWidget {
     );
   }
 
-  static Widget _title(String filterLabel, VoidCallback onFilterTap) {
+  static Widget _title(
+    String filterLabel,
+    VoidCallback onFilterTap,
+    showFilterButton,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -65,13 +73,18 @@ class SharedFilesList extends StatelessWidget {
             ),
           ],
         ),
-        InkWell(
-          onTap: onFilterTap,
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-          hoverColor: Colors.transparent,
-          child: SvgPicture.asset('assets/icons/filter.svg', width: 30,height: 30,),
-        ),
+        if (showFilterButton)
+          InkWell(
+            onTap: onFilterTap,
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            hoverColor: Colors.transparent,
+            child: SvgPicture.asset(
+              'assets/icons/filter.svg',
+              width: 30,
+              height: 30,
+            ),
+          ),
       ],
     );
   }

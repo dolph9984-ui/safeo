@@ -13,7 +13,9 @@ class TrashViewModel extends ChangeNotifier {
   bool _isSelectionMode = false;
 
   List<TrashedFile> get trashedFiles => _trashedFiles;
+
   Set<String> get selectedFileIds => _selectedFileIds;
+
   bool get isSelectionMode => _isSelectionMode;
 
   TrashViewModel() {
@@ -103,7 +105,7 @@ class TrashViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Menu global 
+  // Menu global
   void showTrashOptionsSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -188,7 +190,9 @@ class TrashViewModel extends ChangeNotifier {
         description: 'Le fichier sera restauré à son emplacement d\'origine.',
         cancelLabel: 'Annuler',
         confirmLabel: 'Restaurer',
-        confirmBgColor: AppColors.primary, onConfirm: () {  }, onCancel: () {  },
+        confirmBgColor: AppColors.primary,
+        onConfirm: () {},
+        onCancel: () {},
       ),
     );
 
@@ -206,10 +210,13 @@ class TrashViewModel extends ChangeNotifier {
       context: context,
       builder: (context) => ConfirmDialog(
         title: 'Supprimer définitivement ?',
-        description: 'Cette action est irréversible. Le fichier sera supprimé de manière permanente.',
+        description:
+            'Cette action est irréversible. Le fichier sera supprimé de manière permanente.',
         cancelLabel: 'Annuler',
         confirmLabel: 'Supprimer',
-        confirmBgColor: AppColors.destructive, onConfirm: () {}, onCancel: () {  },
+        confirmBgColor: AppColors.destructive,
+        onConfirm: () {},
+        onCancel: () {},
       ),
     );
 
@@ -228,10 +235,13 @@ class TrashViewModel extends ChangeNotifier {
       context: context,
       builder: (context) => ConfirmDialog(
         title: 'Restaurer ${_selectedFileIds.length} fichier(s) ?',
-        description: 'Les fichiers seront restaurés à leur emplacement d\'origine.',
+        description:
+            'Les fichiers seront restaurés à leur emplacement d\'origine.',
         cancelLabel: 'Annuler',
         confirmLabel: 'Restaurer',
-        confirmBgColor: AppColors.primary,onConfirm: () {  }, onCancel: () {  },
+        confirmBgColor: AppColors.primary,
+        onConfirm: () {},
+        onCancel: () {},
       ),
     );
 
@@ -248,11 +258,14 @@ class TrashViewModel extends ChangeNotifier {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => ConfirmDialog(
-        title: 'Supprimer ${_selectedFileIds.length} fichier(s) définitivement ?',
+        title:
+            'Supprimer ${_selectedFileIds.length} fichier(s) définitivement ?',
         description: 'Cette action est irréversible.',
         cancelLabel: 'Annuler',
         confirmLabel: 'Supprimer',
-        confirmBgColor: AppColors.destructive, onConfirm: () {  }, onCancel: () {  },
+        confirmBgColor: AppColors.destructive,
+        onConfirm: () {},
+        onCancel: () {},
       ),
     );
 
@@ -270,10 +283,13 @@ class TrashViewModel extends ChangeNotifier {
       context: context,
       builder: (context) => ConfirmDialog(
         title: 'Vider la corbeille ?',
-        description: 'Tous les fichiers de la corbeille seront supprimés définitivement. Cette action est irréversible.',
+        description:
+            'Tous les fichiers de la corbeille seront supprimés définitivement. Cette action est irréversible.',
         cancelLabel: 'Annuler',
         confirmLabel: 'Vider',
-        confirmBgColor: AppColors.destructive, onConfirm: () {  }, onCancel: () {  },
+        confirmBgColor: AppColors.destructive,
+        onConfirm: () {},
+        onCancel: () {},
       ),
     );
 

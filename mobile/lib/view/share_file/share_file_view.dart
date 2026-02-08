@@ -15,7 +15,10 @@ class ShareFileView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         backgroundColor: AppColors.background,
+        automaticallyImplyActions: false,
+        automaticallyImplyLeading: false,
         leading: const BackButton(),
         title: Text(
           'Partager ce document',
@@ -35,7 +38,7 @@ class ShareFileView extends StatelessWidget {
               controller: vm.searchController,
               hintText: 'Inviter un utilisateur par email',
               iconPath: 'assets/icons/user-plus.svg',
-               onChanged: vm.onInviteEmailChanged,
+              onChanged: vm.onInviteEmailChanged,
             ),
 
             const SizedBox(height: 16),
@@ -75,6 +78,3 @@ class ShareFileView extends StatelessWidget {
     );
   }
 }
-
-
-
