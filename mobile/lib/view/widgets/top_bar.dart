@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
 
@@ -52,24 +53,31 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
                           height: 34,
                           width: 34,
                           errorBuilder: (_, _, _) {
-                            return Text(
-                              username[0],
-                              style: TextStyle(
-                                fontFamily: AppFonts.zalandoSans,
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
-                            );
+                            return username.trim().isNotEmpty
+                                ? Text(
+                                    username[0],
+                                    style: TextStyle(
+                                      fontFamily: AppFonts.zalandoSans,
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                    ),
+                                  )
+                                : SvgPicture.asset(
+                                    'assets/icons/user.svg',
+                                    height: 18,
+                                  );
                           },
                         )
-                      : Text(
+                      : username.trim().isNotEmpty
+                      ? Text(
                           username[0],
                           style: TextStyle(
                             fontFamily: AppFonts.zalandoSans,
                             color: Colors.white,
-                            fontSize: 14,
+                            fontSize: 20,
                           ),
-                        ),
+                        )
+                      : SvgPicture.asset('assets/icons/user.svg', height: 18),
                 ),
               ),
             ),

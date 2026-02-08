@@ -70,7 +70,11 @@ class ShareFileViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      if (sessionModel.session == null) sessionModel.destroySession();
+      if (sessionModel.session == null) {
+        sessionModel.destroySession();
+        _currentUser = User.none();
+        return;
+      }
       _currentUser = sessionModel.session!.user;
       final files = await _fileModel.getUserFiles();
       _currentFile = files?.firstWhere(

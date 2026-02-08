@@ -117,7 +117,7 @@ class TwoFAViewModel extends ChangeNotifier {
       );
 
       // TODO: replace with user from server
-      sessionModel.createSession(User.none(), token);
+      await sessionModel.createSession(User.none(), token);
 
       _setLoading(false);
       return true;

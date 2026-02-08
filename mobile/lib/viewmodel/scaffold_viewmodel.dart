@@ -27,7 +27,11 @@ class ScaffoldViewModel extends ChangeNotifier {
   }
 
   void init() {
-    if (sessionModel.session == null) sessionModel.destroySession();
+    if (sessionModel.session == null) {
+      sessionModel.destroySession();
+      _user = User.none();
+      return;
+    }
     _user = sessionModel.session!.user;
   }
 

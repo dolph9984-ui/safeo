@@ -25,16 +25,44 @@ class User {
     required this.imageUrl,
   });
 
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      uuid: json['uuid'] as String,
+      fullName: json['fullName'] as String,
+      email: json['email'] as String,
+      filesNbr: json['filesNbr'] as int,
+      sharedFilesNbr: json['sharedFilesNbr'] as int,
+      storageLimit: json['storageLimit'] as int,
+      storageUsed: json['storageUsed'] as int,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      imageUrl: json['imageUrl'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'uuid': uuid,
+      'fullName': fullName,
+      'email': email,
+      'filesNbr': filesNbr,
+      'sharedFilesNbr': sharedFilesNbr,
+      'storageLimit': storageLimit,
+      'storageUsed': storageUsed,
+      'createdAt': createdAt.toIso8601String(),
+      'imageUrl': imageUrl,
+    };
+  }
+
   factory User.none() => User(
     uuid: '',
-    fullName: 'Kirito EM',
-    email: 'mail@example.com',
-    filesNbr: 5,
+    fullName: '',
+    email: '',
+    filesNbr: 0,
     sharedFilesNbr: 0,
     storageLimit: 0,
     storageUsed: 0,
     createdAt: DateTime.now(),
-    imageUrl: '',
+    imageUrl: null,
   );
 }
 

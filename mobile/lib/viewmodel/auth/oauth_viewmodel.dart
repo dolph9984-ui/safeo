@@ -34,7 +34,7 @@ class OAuthViewModel extends ChangeNotifier {
     try {
       final token = await _oAuthService.login();
       // TODO : replace with user from server
-      sessionModel.createSession(User.none(), token);
+      await sessionModel.createSession(User.none(), token);
       return true;
     } on PlatformException catch (e) {
       _errorMessage = (e.code == 'CANCELED')

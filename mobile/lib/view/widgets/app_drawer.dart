@@ -122,14 +122,16 @@ class AppDrawer extends StatelessWidget {
                     );
                   },
                 )
-              : Text(
+              : username.trim().isNotEmpty
+              ? Text(
                   username[0],
                   style: TextStyle(
                     fontFamily: AppFonts.zalandoSans,
                     color: Colors.white,
                     fontSize: 20,
                   ),
-                ),
+                )
+              : SvgPicture.asset('assets/icons/user.svg', height: 28),
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -31,7 +31,11 @@ class ShareHandlingViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      if (_sessionModel.session == null) _sessionModel.destroySession();
+      if (_sessionModel.session == null) {
+        _sessionModel.destroySession();
+        _currentUser = User.none();
+        return;
+      }
       _currentUser = _sessionModel.session!.user;
 
       final files = await _fileModel.getUserFiles();

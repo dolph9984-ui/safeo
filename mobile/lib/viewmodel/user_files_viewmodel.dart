@@ -26,7 +26,12 @@ class UserFilesViewModel extends ChangeNotifier {
   List<AppFile> get filteredFiles => _filteredFiles ?? [];
 
   void initUser() {
-    if (sessionModel.session == null) sessionModel.destroySession();
+    if (sessionModel.session == null) {
+      print("la session est nulle!!");
+      sessionModel.destroySession();
+      _user = User.none();
+      return;
+    }
     _user = sessionModel.session!.user;
     notifyListeners();
   }

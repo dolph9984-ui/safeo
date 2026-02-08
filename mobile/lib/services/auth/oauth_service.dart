@@ -1,8 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
-import 'package:securite_mobile/constants/oauth_constants.dart';
 import 'package:securite_mobile/constants/api_request_keys.dart';
-import 'package:securite_mobile/constants/storage_keys.dart';
+import 'package:securite_mobile/constants/oauth_constants.dart';
 import 'package:securite_mobile/model/auth/session_token.dart';
 import 'package:securite_mobile/utils/dio_util.dart';
 
@@ -77,8 +76,6 @@ class OAuthService {
     }
 
     final tokens = await exchangeTokens(codeVerifier, authCode);
-    print(tokens);
-    print('debug ${tokens[StorageKeys.accessToken]}');
     return SessionToken(
       accessToken: tokens[ApiRequestKeys.accessToken]!,
       refreshToken: tokens[ApiRequestKeys.refreshToken]!,
