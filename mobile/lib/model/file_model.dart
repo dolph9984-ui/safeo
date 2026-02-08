@@ -82,7 +82,7 @@ class FileModel {
         isShared: index % 2 == 0,
         type: FileTypeEnum.csv,
         owner: User(
-          uuid: '',
+          uuid: index % 2 == 0 ? '0' : '1',
           fullName: '',
           email: '',
           filesNbr: 0,

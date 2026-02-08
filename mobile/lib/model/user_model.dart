@@ -54,7 +54,7 @@ class User {
   }
 
   factory User.none() => User(
-    uuid: '',
+    uuid: '0',
     fullName: '',
     email: '',
     filesNbr: 0,
