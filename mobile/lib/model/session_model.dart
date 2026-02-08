@@ -38,12 +38,13 @@ class SessionModel {
   Future<void> resumeSession() async {
     final sessionToken = await SessionTokenModel.getTokens();
 
+    if (sessionToken == null) {
+      return;
+    }
+
     User? user = await _userModel.getUserFromServer();
     user ??= await _userModel.getUserFromCache();
-
-    if (user == null || sessionToken == null) {
-      throw Exception('No session to resume.');
-    }
+    user ??= User.none();
 
     session = Session(user: user, token: sessionToken);
   }
