@@ -117,7 +117,7 @@ class CreateFileView extends StatelessWidget {
 
             Spacer(),
             ElevatedButton(
-              onPressed: vm.selectedFile == null ? null : () {},
+              onPressed: vm.selectedFile == null ? null : vm.uploadFile,
               child: Text('Importer'),
             ),
           ],

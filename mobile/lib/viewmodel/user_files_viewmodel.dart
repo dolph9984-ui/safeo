@@ -27,7 +27,6 @@ class UserFilesViewModel extends ChangeNotifier {
 
   void initUser() {
     if (sessionModel.session == null) {
-      print("la session est nulle!!");
       sessionModel.destroySession();
       _user = User.none();
       return;

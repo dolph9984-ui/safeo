@@ -78,11 +78,11 @@ class _UserFilesViewState extends State<UserFilesView> {
                       context: context,
                       builder: (context) {
                         return UserFilesBottomSheet(
-                          fileId: file.id,  
+                          fileId: file.id,
                           fileName: file.name,
                           onOpenTap: () => vm.openFile(file),
                           onShareTap: () => (),
-                          onManageShareTap: () => (),  
+                          onManageShareTap: () => (),
                           onRenameTap: (newName) =>
                               vm.renameFile(file, newName: newName),
                           onDownloadTap: () => vm.downloadFile(file),

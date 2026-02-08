@@ -4,7 +4,6 @@ import 'package:securite_mobile/model/auth/login_credentials.dart';
 import 'package:securite_mobile/model/auth/login_response.dart';
 import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/services/auth/form_auth_service.dart';
-import 'package:securite_mobile/services/auth/oauth_service.dart';
 
 class LoginViewModel extends ChangeNotifier {
   final model = SessionModel();

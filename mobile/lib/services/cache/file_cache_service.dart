@@ -13,36 +13,12 @@ class FileCacheService {
     return await _loadCachedFiles();
   }
 
-  Future<void> syncFiles(
-    List<AppFile>? cachedFiles,
-    List<AppFile> serverFiles,
-  ) async {
-    if (cachedFiles == null) {
-      await _saveNewFiles(serverFiles);
-      return;
-    }
-
-    final Map<String, AppFile> cacheMap = {for (var f in cachedFiles) f.id: f};
-
+  Future<void> syncFiles(List<AppFile> serverFiles) async {
     final List<AppFile> newFiles = [];
-    final List<AppFile> filesToUpdate = [];
-
-    for (var serverFile in serverFiles) {
-      final localFile = cacheMap[serverFile.id];
-      if (localFile == null) {
-        newFiles.add(serverFile);
-      } else if (localFile.updatedAt != serverFile.updatedAt) {
-        filesToUpdate.add(serverFile);
-      }
-    }
-
     await _saveNewFiles(newFiles);
-    await _updateFiles(filesToUpdate);
   }
 
   Future<void> _saveNewFiles(List<AppFile> files) async {}
-
-  Future<void> _updateFiles(List<AppFile> files) async {}
 
   Future<void> clear() async {}
 

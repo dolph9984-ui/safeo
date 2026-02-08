@@ -77,7 +77,7 @@ class UserModel {
 
   Future<User?> getUserFromServer() async {
     return User(
-      uuid: '',
+      uuid: '0',
       fullName: 'Kirito EM',
       email: 'kirito@gmail.com',
       storageLimit: 1024 * 1024 * 1024 * 5,

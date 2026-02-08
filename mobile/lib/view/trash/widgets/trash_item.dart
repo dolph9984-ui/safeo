@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
-import 'package:securite_mobile/enum/month_enum.dart';
 import 'package:securite_mobile/view/trash/widgets/trashed_file.dart';
 import 'package:securite_mobile/view/widgets/file_thumbnail.dart';
 
@@ -159,9 +158,5 @@ class TrashItem extends StatelessWidget {
         : 'imminente';
 
     return deletionText;
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.day} ${MonthEnum.values[date.month - 1].name} ${date.year}';
   }
 }

@@ -3,7 +3,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
-import 'package:securite_mobile/enum/file_type_enum.dart';
 import 'package:securite_mobile/enum/month_enum.dart';
 import 'package:securite_mobile/view/widgets/file_thumbnail.dart';
 

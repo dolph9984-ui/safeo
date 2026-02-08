@@ -1,8 +1,10 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:securite_mobile/enum/file_visibility_enum.dart';
+import 'package:securite_mobile/model/file_model.dart';
 
 class CreateFileViewModel extends ChangeNotifier {
+  final model = FileModel();
   bool loading = false;
   FilePickerResult? selectedFile;
   String _fileName = '';
@@ -49,8 +51,18 @@ class CreateFileViewModel extends ChangeNotifier {
     );
 
     if (selectedFile != null) {
-      Uint8List fileBytes = selectedFile!.files.first.bytes ?? Uint8List(0);
       setFileName(selectedFile!.files.first.name);
+    }
+  }
+
+  Future<void> uploadFile() async {
+    Uint8List? fileBytes = selectedFile?.files.first.bytes;
+    if (fileBytes != null) {
+      model.uploadFile(
+        bytes: fileBytes,
+        fileName: _fileName,
+        visibility: fileVisibility.name,
+      );
     }
   }
 }

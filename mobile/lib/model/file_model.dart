@@ -1,6 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:securite_mobile/enum/file_type_enum.dart';
 import 'package:securite_mobile/model/user_model.dart';
-import 'package:securite_mobile/services/cache/file_cache_service.dart';
 
 class AppFile {
   final String id;
@@ -55,47 +56,10 @@ class AppFile {
 }
 
 class FileModel {
-  FileModel({FileCacheService? cacheService})
-    : _cacheService = cacheService ?? FileCacheService(ttl: null);
-
-  final FileCacheService _cacheService;
+  FileModel();
 
   Future<List<AppFile>?> getUserFiles() async {
-    final cachedFiles = await _cacheService.getFilesOrNull();
-
-    final serverFiles = await _getFilesFromServer();
-    if (serverFiles != null) {
-      await _cacheService.syncFiles(cachedFiles, serverFiles);
-      return serverFiles;
-    }
-
-    final ext = ['pdf', 'doc', 'docx', 'csv', 'jpg', 'jpeg'];
-    return List.generate(
-      8,
-      (index) => AppFile(
-        id: '${index + 1}',
-        name: 'file_name_example.${ext[index % ext.length]}',
-        size: 10000,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        category: 'test',
-        isShared: index % 2 == 0,
-        type: FileTypeEnum.csv,
-        owner: User(
-          uuid: index % 2 == 0 ? '0' : '1',
-          fullName: '',
-          email: '',
-          filesNbr: 0,
-          sharedFilesNbr: 0,
-          storageLimit: 0,
-          storageUsed: 0,
-          createdAt: DateTime.now(),
-          imageUrl: '',
-        ),
-      ),
-    );
-
-    return cachedFiles;
+    return null;
   }
 
   Future<List<AppFile>?> getSharedFiles() async {
@@ -103,10 +67,6 @@ class FileModel {
   }
 
   Future<List<AppFile>?> getTrashFiles() async {
-    return null;
-  }
-
-  Future<List<AppFile>?> _getFilesFromServer() async {
     return null;
   }
 
@@ -119,8 +79,9 @@ class FileModel {
   Future<void> downloadFile(AppFile file) async {}
 
   Future<void> uploadFile({
-    required AppFile file,
-    required String path,
+    required Uint8List bytes,
+    required String fileName,
+    required String visibility,
   }) async {}
 
   Future<void> deleteFile(AppFile file) async {}
