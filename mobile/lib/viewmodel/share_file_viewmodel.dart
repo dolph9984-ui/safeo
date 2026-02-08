@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:securite_mobile/model/file_model.dart';
+import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/model/user_model.dart';
 
 class ShareFileViewModel extends ChangeNotifier {
   final FileModel _fileModel;
-  final UserModel _userModel;
   final TextEditingController searchController = TextEditingController();
+  final SessionModel sessionModel = SessionModel();
 
   AppFile? _currentFile;
   User? _currentUser;
@@ -41,21 +42,25 @@ class ShareFileViewModel extends ChangeNotifier {
   ];
 
   AppFile? get currentFile => _currentFile;
+
   User? get currentUser => _currentUser;
+
   List<User> get sharedWith => _sharedWith;
+
   List<User> get searchResults => _searchResults;
+
   bool get isLoading => _isLoading;
+
   bool get isSearching => _isSearching;
+
   String get emailToInvite => _emailToInvite;
+
   bool get canSendInvite => _isValidEmail(_emailToInvite);
+
   bool get hasSearchResults => _searchResults.isNotEmpty;
 
-  ShareFileViewModel({
-    required String fileId,
-    FileModel? fileModel,
-    UserModel? userModel,
-  })  : _fileModel = fileModel ?? FileModel(),
-        _userModel = userModel ?? UserModel() {
+  ShareFileViewModel({required String fileId, FileModel? fileModel})
+    : _fileModel = fileModel ?? FileModel() {
     searchController.addListener(_onSearchChanged);
     _init(fileId);
   }
@@ -65,7 +70,8 @@ class ShareFileViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _currentUser = await _userModel.getCurrentUser();
+      if (sessionModel.session == null) sessionModel.destroySession();
+      _currentUser = sessionModel.session!.user;
       final files = await _fileModel.getUserFiles();
       _currentFile = files?.firstWhere(
         (f) => f.id == fileId,
@@ -104,9 +110,11 @@ class ShareFileViewModel extends ChangeNotifier {
     await Future.delayed(Duration(milliseconds: 300));
 
     _searchResults = _availableUsers
-        .where((user) =>
-            user.email.toLowerCase().contains(query.toLowerCase()) ||
-            user.fullName.toLowerCase().contains(query.toLowerCase()))
+        .where(
+          (user) =>
+              user.email.toLowerCase().contains(query.toLowerCase()) ||
+              user.fullName.toLowerCase().contains(query.toLowerCase()),
+        )
         .toList();
 
     notifyListeners();
@@ -131,7 +139,8 @@ class ShareFileViewModel extends ChangeNotifier {
     }
 
     // Vérifier si l'utilisateur est le propriétaire
-    if (_currentUser != null && email.toLowerCase() == _currentUser!.email.toLowerCase()) {
+    if (_currentUser != null &&
+        email.toLowerCase() == _currentUser!.email.toLowerCase()) {
       return 'Vous êtes déjà le propriétaire de ce fichier';
     }
 
@@ -162,10 +171,7 @@ class ShareFileViewModel extends ChangeNotifier {
         (u) => u.email.toLowerCase() == email.toLowerCase(),
       );
 
-      await _fileModel.shareFile(
-        _currentFile!,
-        shareTo: [user],
-      );
+      await _fileModel.shareFile(_currentFile!, shareTo: [user]);
 
       _sharedWith.add(user);
       searchController.clear();
@@ -173,7 +179,7 @@ class ShareFileViewModel extends ChangeNotifier {
       _isSearching = false;
       _emailToInvite = '';
 
-      return null; 
+      return null;
     } catch (e) {
       debugPrint('Error sharing via email: $e');
       return 'Erreur lors du partage';
@@ -191,7 +197,7 @@ class ShareFileViewModel extends ChangeNotifier {
 
     try {
       _sharedWith.removeWhere((u) => u.uuid == user.uuid);
-      return null; 
+      return null;
     } catch (e) {
       debugPrint('Error removing user access: $e');
       return 'Erreur lors de la suppression';

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:securite_mobile/model/file_model.dart';
+import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/model/user_model.dart';
 
 class ShareHandlingViewModel extends ChangeNotifier {
   final FileModel _fileModel;
-  final UserModel _userModel;
+  final _sessionModel = SessionModel();
 
   AppFile? _currentFile;
   User? _currentUser;
@@ -12,15 +13,16 @@ class ShareHandlingViewModel extends ChangeNotifier {
   bool _isLoading = false;
 
   AppFile? get currentFile => _currentFile;
+
   List<Map<String, dynamic>> get allMembers => _members;
+
   bool get isLoading => _isLoading;
 
   ShareHandlingViewModel({
     required String fileId,
     FileModel? fileModel,
     UserModel? userModel,
-  })  : _fileModel = fileModel ?? FileModel(),
-        _userModel = userModel ?? UserModel() {
+  }) : _fileModel = fileModel ?? FileModel() {
     _init(fileId);
   }
 
@@ -29,7 +31,9 @@ class ShareHandlingViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _currentUser = await _userModel.getCurrentUser();
+      if (_sessionModel.session == null) _sessionModel.destroySession();
+      _currentUser = _sessionModel.session!.user;
+
       final files = await _fileModel.getUserFiles();
       _currentFile = files?.firstWhere(
         (f) => f.id == fileId,
@@ -83,9 +87,9 @@ class ShareHandlingViewModel extends ChangeNotifier {
 
     try {
       // TODO: Appel API pour retirer l'accès
-      
+
       _members.removeWhere((m) => m['id'] == userId && m['isOwner'] == true);
-      
+
       return null; // Succès
     } catch (e) {
       debugPrint('Error removing user access: $e');
