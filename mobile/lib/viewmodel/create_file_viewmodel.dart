@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
@@ -18,6 +19,10 @@ class CreateFileViewModel extends ChangeNotifier {
   String? _errorMessage;
 
   CancelToken? cancelToken;
+  
+  bool _isCancelling = false;
+
+  Timer? _debounceTimer;
 
   String get fileName => _fileName;
 
@@ -32,6 +37,7 @@ class CreateFileViewModel extends ChangeNotifier {
 
   int get uploadProgress => _uploadProgress;
   String? get errorMessage => _errorMessage;
+  bool get isCancelling => _isCancelling;
 
   void setFileVisibility(FileVisibilityEnum newVisibility) {
     if (newVisibility == fileVisibility) return;
@@ -52,12 +58,37 @@ class CreateFileViewModel extends ChangeNotifier {
 
   void _setUploadProgress(int progress) {
     _uploadProgress = progress;
-    notifyListeners();
+    
+    _debounceTimer?.cancel();
+    
+    if (progress == 0 || progress == 100) {
+      notifyListeners();
+      return;
+    }
+    
+
+    _debounceTimer = Timer(Duration(milliseconds: 50), () {
+      notifyListeners();
+    });
   }
 
   void _setErrorMessage(String? message) {
     _errorMessage = message;
     notifyListeners();
+  }
+
+  void cancelUpload() {
+    if (_isCancelling) return; 
+    if (cancelToken == null || cancelToken!.isCancelled) return;
+    
+    _isCancelling = true;
+    notifyListeners();
+    
+    try {
+      cancelToken!.cancel("Annulé par l'utilisateur");
+    } catch (e) {
+      debugPrint('Erreur lors de l\'annulation: $e');
+    }
   }
 
   void unselectFile() {
@@ -66,6 +97,8 @@ class CreateFileViewModel extends ChangeNotifier {
     _uploadProgress = 0;
     _errorMessage = null;
     cancelToken = null;
+    _isCancelling = false;
+    _debounceTimer?.cancel();
     FilePicker.platform.clearTemporaryFiles();
     notifyListeners();
   }
@@ -82,8 +115,9 @@ class CreateFileViewModel extends ChangeNotifier {
         setFileName(selectedFile!.files.first.name);
         _setErrorMessage(null);
       }
-    } catch (_) {
+    } catch (e) {
       _setErrorMessage('Erreur lors de la sélection du fichier');
+      debugPrint('Erreur selectFile: $e');
     }
   }
 
@@ -97,7 +131,8 @@ class CreateFileViewModel extends ChangeNotifier {
       try {
         final file = File(platformFile.path!);
         return await file.readAsBytes();
-      } catch (_) {
+      } catch (e) {
+        debugPrint('Erreur lecture fichier: $e');
         return null;
       }
     }
@@ -125,6 +160,7 @@ class CreateFileViewModel extends ChangeNotifier {
       setLoading(true);
       _setUploadProgress(0);
       _setErrorMessage(null);
+      _isCancelling = false; 
 
       cancelToken = CancelToken();
 
@@ -146,20 +182,26 @@ class CreateFileViewModel extends ChangeNotifier {
       if (CancelToken.isCancel(e)) {
         _setErrorMessage('Upload annulé');
       } else {
-        _setErrorMessage('Erreur lors de l’upload');
+        _setErrorMessage('Erreur lors de l\'upload');
+        debugPrint('DioException uploadFile: $e');
       }
       setLoading(false);
       _setUploadProgress(0);
       return false;
-    } catch (_) {
+    } catch (e) {
       setLoading(false);
       _setUploadProgress(0);
       _setErrorMessage('Erreur inattendue');
+      debugPrint('Exception uploadFile: $e');
       return false;
+    } finally {
+      _isCancelling = false;
     }
   }
 
   void reset() {
+    _debounceTimer?.cancel();
+    _isCancelling = false;
     unselectFile();
     fileVisibility = FileVisibilityEnum.private;
     setLoading(false);
@@ -169,6 +211,8 @@ class CreateFileViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
+    cancelToken?.cancel();
     FilePicker.platform.clearTemporaryFiles();
     super.dispose();
   }

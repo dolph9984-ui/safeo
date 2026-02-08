@@ -182,10 +182,10 @@ class CreateFileView extends StatelessWidget {
           builder: (context, child) {
             return ProgressDialog(
               percent: vm.uploadProgress,
-              label: 'Upload en cours...',
+              label: vm.isCancelling ? 'Annulation...' : 'Upload en cours...',
               onCancel: () {
-                if (vm.cancelToken != null && !vm.cancelToken!.isCancelled) {
-                  vm.cancelToken!.cancel("Annulé par l'utilisateur");
+                if (!vm.isCancelling) {
+                  vm.cancelUpload();
                 }
               },
             );
@@ -200,10 +200,13 @@ class CreateFileView extends StatelessWidget {
       Navigator.of(context, rootNavigator: true).pop();
     }
 
-    if (!success) return;
 
     if (context.mounted) {
-      showSuccessSnackbar(context, 'Fichier uploadé avec succès');
+      if (success) {
+        showSuccessSnackbar(context, 'Fichier uploadé avec succès');
+      } else {
+        showSuccessSnackbar(context, 'Upload annulé');
+      }
     }
 
     if (context.mounted) {

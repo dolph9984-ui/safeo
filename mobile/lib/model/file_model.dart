@@ -1,3 +1,4 @@
+// lib/model/file_model.dart
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -92,6 +93,10 @@ class FileModel {
     CancelToken? cancelToken,
   }) async {
     try {
+      DateTime? lastUpdate;
+      int lastPercent = 0;
+      const throttleDuration = Duration(milliseconds: 100);
+
       final response = await _uploadService.uploadFile(
         fileBytes: bytes,
         fileName: fileName,
@@ -101,7 +106,18 @@ class FileModel {
             ? (sent, total) {
                 if (total > 0) {
                   final percent = ((sent / total) * 100).round();
-                  onProgress(percent);
+                  final now = DateTime.now();
+                  final shouldUpdate = lastUpdate == null ||
+                      now.difference(lastUpdate!).inMilliseconds >= 
+                          throttleDuration.inMilliseconds ||
+                      (percent - lastPercent).abs() >= 1 ||
+                      percent == 100;
+
+                  if (shouldUpdate) {
+                    lastUpdate = now;
+                    lastPercent = percent;
+                    onProgress(percent);
+                  }
                 }
               }
             : null,
