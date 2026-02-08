@@ -2,10 +2,13 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:securite_mobile/model/auth/login_credentials.dart';
 import 'package:securite_mobile/model/auth/login_response.dart';
-import 'package:securite_mobile/model/user_model.dart';
+import 'package:securite_mobile/model/session_model.dart';
+import 'package:securite_mobile/services/auth/form_auth_service.dart';
+import 'package:securite_mobile/services/auth/oauth_service.dart';
 
 class LoginViewModel extends ChangeNotifier {
-  final model = UserModel();
+  final model = SessionModel();
+  final _formAuthService = FormAuthService();
 
   String _email = '';
   String _password = '';
@@ -58,7 +61,7 @@ class LoginViewModel extends ChangeNotifier {
     _clearError();
 
     try {
-      return await model.loginWithCredentials(
+      return await _formAuthService.login(
         LoginCredentials(email: _email, password: _password),
       );
     } on DioException catch (e) {

@@ -135,7 +135,7 @@ class AppDrawer extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Kirito EM',
+              username,
               style: TextStyle(
                 fontFamily: AppFonts.zalandoSans,
                 color: AppColors.foreground,

@@ -67,7 +67,10 @@ class ConfirmDialog extends StatelessWidget {
                       minimumSize: Size(40, 40),
                       backgroundColor: confirmBgColor,
                     ),
-                    onPressed: () => context.pop(true),
+                    onPressed: () {
+                      onConfirm();
+                      context.pop(true);
+                    },
                     child: Text(confirmLabel),
                   ),
                 ),

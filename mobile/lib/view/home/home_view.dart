@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:securite_mobile/constants/storage_keys.dart';
+import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/router/app_routes.dart';
-import 'package:securite_mobile/services/auth/session_service.dart';
 import 'package:securite_mobile/services/security/secure_storage_service.dart';
 
 class HomeView extends StatefulWidget {
@@ -16,7 +16,6 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   final SecureStorageService _authStorage = SecureStorageService();
-  final sessionService = SessionService();
   String? _userEmail;
 
   @override
@@ -57,7 +56,7 @@ class _HomeViewState extends State<HomeView> {
     );
 
     if (confirm == true && mounted) {
-      await sessionService.endSession();
+      await SessionModel().destroySession();
 
       context.go(AppRoutes.login);
 

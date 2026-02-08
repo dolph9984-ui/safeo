@@ -1,6 +1,6 @@
 import 'dart:math';
 
-class FileSizeConverter {
+class FileSizeUtil {
   static double bytesToMb(int bytes, [int decimals = 2]) {
     final mb = bytes / (1024 * 1024);
     final mod = pow(10, decimals);

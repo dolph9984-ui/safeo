@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/router/app_routes.dart';
-import 'package:securite_mobile/services/auth/session_service.dart';
 import 'package:securite_mobile/view/app_scaffold.dart';
 import 'package:securite_mobile/view/auth/login_view.dart';
 import 'package:securite_mobile/view/auth/signup_view.dart';
@@ -24,7 +24,8 @@ final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.userFiles,
   redirect: (context, state) async {
     final currentLocation = state.matchedLocation;
-    final isLoggedIn = await SessionService().isLoggedIn;
+    final isLoggedIn = await SessionModel().isLoggedIn;
+    print('isloggedIn : $isLoggedIn');
 
     if (!isLoggedIn &&
         !currentLocation.startsWith(AppRoutes.login) &&

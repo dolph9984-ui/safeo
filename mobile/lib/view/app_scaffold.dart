@@ -47,9 +47,7 @@ class AppScaffold extends StatelessWidget {
                 confirmLabel: 'Se déconnecter',
                 confirmBgColor: AppColors.primary,
                 onCancel: () {},
-                onConfirm: () {
-                  vm.logout();
-                },
+                onConfirm: () async => await vm.logout(),
               );
             },
           );

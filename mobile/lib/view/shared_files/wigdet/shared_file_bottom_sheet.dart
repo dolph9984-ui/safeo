@@ -2,23 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
+import 'package:securite_mobile/enum/file_type_enum.dart';
 import 'package:securite_mobile/enum/month_enum.dart';
+import 'package:securite_mobile/model/file_model.dart';
 import 'package:securite_mobile/router/app_routes.dart';
 import 'package:securite_mobile/view/widgets/app_bottom_sheet.dart';
 import 'package:securite_mobile/view/widgets/blurred_dialog.dart';
 import 'package:securite_mobile/view/widgets/bottom_sheet_item.dart';
 import 'package:securite_mobile/view/widgets/confirm_dialog.dart';
+import 'package:securite_mobile/view/widgets/file_info.dart';
 import 'package:securite_mobile/view/widgets/rename_file_dialog.dart';
 import 'package:securite_mobile/view/widgets/success_snackbar.dart';
 import 'package:securite_mobile/viewmodel/shared_files_viewmodel.dart';
 
+import '../../../model/user_model.dart';
+
 class SharedFilesBottomSheet extends StatelessWidget {
   final SharedFileData file;
 
-  const SharedFilesBottomSheet({
-    super.key,
-    required this.file,
-  });
+  const SharedFilesBottomSheet({super.key, required this.file});
 
   @override
   Widget build(BuildContext context) {
@@ -88,13 +90,10 @@ class SharedFilesBottomSheet extends StatelessWidget {
 
     // Construction de la liste finale
     final allItems = [
-      commonItems[0], 
-      if (isOwner) ...[
-        ownerOnlyItems[0],
-        ownerOnlyItems[1], 
-      ],
-      commonItems[1], 
-      commonItems[2], 
+      commonItems[0],
+      if (isOwner) ...[ownerOnlyItems[0], ownerOnlyItems[1]],
+      commonItems[1],
+      commonItems[2],
       if (isOwner) ownerOnlyItems[2],
     ];
 
@@ -107,83 +106,31 @@ class SharedFilesBottomSheet extends StatelessWidget {
       barrierColor: Colors.transparent,
       animationStyle: AnimationStyle(duration: Duration(milliseconds: 0)),
       builder: (context) {
-        return BlurredDialog(
-          child: Container(
-            padding: EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
+        return FileInfo(
+          file: AppFile(
+            id: '',
+            name: file.fileName,
+            size: file.fileSize.toInt(),
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+            category: '',
+            owner: User(
+              uuid: '',
+              fullName: file.ownerName,
+              email: file.ownerEmail,
+              filesNbr: 0,
+              sharedFilesNbr: 0,
+              storageLimit: 0,
+              storageUsed: 0,
+              createdAt: DateTime.now(),
+              imageUrl: '',
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              spacing: 16,
-              children: [
-                Text(
-                  'Informations sur le fichier',
-                  style: TextStyle(
-                    color: AppColors.foreground,
-                    fontSize: 16,
-                    fontFamily: AppFonts.productSansMedium,
-                  ),
-                ),
-
-                Divider(color: AppColors.buttonDisabled),
-
-                _buildInfoRow('Nom', file.fileName),
-                _buildInfoRow('Taille', '${file.fileSize} MB'),
-                _buildInfoRow('Type', file.fileType.name.toUpperCase()),
-                _buildInfoRow('Partagé le', _formatDate(file.sharedAt)),
-                _buildInfoRow('Propriétaire', file.ownerName),
-                _buildInfoRow('Email', file.ownerEmail),
-                _buildInfoRow('Votre rôle', file.userRole == UserRole.owner ? 'Propriétaire' : 'Lecteur'),
-
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () => context.pop(),
-                    child: Text('Fermer'),
-                  ),
-                ),
-              ],
-            ),
+            type: file.fileType,
+            isShared: true,
           ),
         );
       },
     );
-  }
-
-  Widget _buildInfoRow(String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 100,
-          child: Text(
-            label,
-            style: TextStyle(
-              fontFamily: AppFonts.productSansMedium,
-              fontSize: 14,
-              color: AppColors.mutedForeground,
-            ),
-          ),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            style: TextStyle(
-              fontFamily: AppFonts.productSansRegular,
-              fontSize: 14,
-              color: AppColors.foreground,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.day} ${MonthEnum.values[date.month - 1].name} ${date.year}';
   }
 
   void _showRenameDialog(BuildContext context) {
@@ -221,11 +168,12 @@ class SharedFilesBottomSheet extends StatelessWidget {
       builder: (context) {
         return ConfirmDialog(
           title: 'Placer dans la corbeille',
-          description: 'Le fichier "${file.fileName}" sera déplacé vers la corbeille.',
+          description:
+              'Le fichier "${file.fileName}" sera déplacé vers la corbeille.',
           cancelLabel: 'Annuler',
           confirmLabel: 'Déplacer vers la corbeille',
-          confirmBgColor: AppColors.destructive, 
-          onConfirm: () {}, 
+          confirmBgColor: AppColors.destructive,
+          onConfirm: () {},
           onCancel: () {},
         );
       },

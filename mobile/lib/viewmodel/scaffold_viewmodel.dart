@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/model/user_model.dart';
 
 class ScaffoldViewModel extends ChangeNotifier {
-  final model = UserModel();
+  final userModel = UserModel();
+  final sessionModel = SessionModel();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -25,13 +27,11 @@ class ScaffoldViewModel extends ChangeNotifier {
   }
 
   void init() {
-    model.getCurrentUser().then((user) {
-      _user = user;
-      notifyListeners();
-    });
+    if (sessionModel.session == null) sessionModel.destroySession();
+    _user = sessionModel.session!.user;
   }
 
-  void logout() {
-    model.logUserOut();
+  Future<void> logout() async {
+    sessionModel.destroySession();
   }
 }

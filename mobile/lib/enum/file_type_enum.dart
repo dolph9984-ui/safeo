@@ -22,7 +22,7 @@ enum FileTypeEnum {
     assetName: 'assets/icons/document.svg',
   ),
   other(
-    name: 'other',
+    name: 'autre',
     bgColor: Color(0xFFC7D7FE),
     assetName: 'assets/icons/document.svg',
   );

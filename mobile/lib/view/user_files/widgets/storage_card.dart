@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
-import 'package:securite_mobile/utils/file_size_converter.dart';
+import 'package:securite_mobile/utils/file_size_util.dart';
 
 class StorageCard extends StatelessWidget {
   final int used;
@@ -67,7 +67,7 @@ class StorageCard extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      '${FileSizeConverter.bytesToGb(used)}GB',
+                      '${FileSizeUtil.bytesToGb(used)}GB',
                       style: TextStyle(
                         fontFamily: AppFonts.productSansMedium,
                         fontSize: 15,
@@ -75,7 +75,7 @@ class StorageCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      ' / ${FileSizeConverter.bytesToGb(totalStorage)}GB',
+                      ' / ${FileSizeUtil.bytesToGb(totalStorage)}GB',
                       style: TextStyle(
                         fontFamily: AppFonts.productSansRegular,
                         fontWeight: FontWeight.w400,

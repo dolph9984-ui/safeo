@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:securite_mobile/model/auth/session_token.dart';
+import 'package:securite_mobile/model/session_model.dart';
+import 'package:securite_mobile/model/user_model.dart';
 import '../../model/auth/twofa_response.dart';
 import '../../services/auth/two_fa_service.dart';
 import '../../services/security/secure_storage_service.dart';
@@ -10,6 +12,7 @@ enum TwoFAMode { login, signup }
 
 class TwoFAViewModel extends ChangeNotifier {
   final TwoFAService _twoFAService;
+  final sessionModel = SessionModel();
 
   final String verificationToken;
   final TwoFAMode mode;
@@ -108,12 +111,14 @@ class TwoFAViewModel extends ChangeNotifier {
         );
       }
 
-      await SessionTokenModel.storeTokens(
-        SessionToken(
-          accessToken: response.accessToken,
-          refreshToken: response.refreshToken,
-        ),
+      final token = SessionToken(
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
       );
+
+      // TODO: replace with user from server
+      sessionModel.createSession(User.none(), token);
+
       _setLoading(false);
       return true;
     } on DioException catch (e) {

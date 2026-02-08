@@ -1,9 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/model/user_model.dart';
+import 'package:securite_mobile/services/auth/oauth_service.dart';
 
 class OAuthViewModel extends ChangeNotifier {
-  final model = UserModel();
+  final sessionModel = SessionModel();
+  final _oAuthService = OAuthService();
 
   bool _isLoading = false;
   String? _errorMessage;
@@ -29,7 +32,9 @@ class OAuthViewModel extends ChangeNotifier {
     _clearError();
 
     try {
-      await model.loginWithOAuth();
+      final token = await _oAuthService.login();
+      // TODO : replace with user from server
+      sessionModel.createSession(User.none(), token);
       return true;
     } on PlatformException catch (e) {
       _errorMessage = (e.code == 'CANCELED')

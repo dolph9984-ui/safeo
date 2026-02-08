@@ -9,11 +9,12 @@ class SessionToken {
 
   @override
   String toString() {
-    return 'OAuthToken(accessToken: $accessToken, refreshToken: $refreshToken)';
+    return 'SessionToken(accessToken: $accessToken, refreshToken: $refreshToken)';
   }
 }
 
 class SessionTokenModel {
+
   static Future<void> storeAccessToken(String accessToken) async {
     await SecureStorageService().write(StorageKeys.accessToken, accessToken);
   }
@@ -29,5 +30,21 @@ class SessionTokenModel {
 
   static Future<void> deleteTokens() async {
     await SecureStorageService().delete(StorageKeys.accessToken);
+    await SecureStorageService().delete(StorageKeys.refreshToken);
+  }
+
+  static Future<String?> getAccessToken() async {
+    return await SecureStorageService().read(StorageKeys.accessToken);
+  }
+
+  static Future<String?> getRefreshToken() async {
+    return await SecureStorageService().read(StorageKeys.refreshToken);
+  }
+
+  static Future<SessionToken?> getTokens() async {
+    final accessToken = await getAccessToken();
+    final refreshToken = await getRefreshToken();
+    if (accessToken == null || refreshToken == null) return null;
+    return SessionToken(accessToken: accessToken, refreshToken: refreshToken);
   }
 }

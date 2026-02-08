@@ -1,14 +1,15 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:securite_mobile/enum/file_filter_enum.dart';
 import 'package:securite_mobile/enum/file_type_enum.dart';
 import 'package:securite_mobile/model/file_model.dart';
+import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/model/user_model.dart';
 import 'package:securite_mobile/utils/file_name_util.dart';
 
 class UserFilesViewModel extends ChangeNotifier {
   final userModel = UserModel();
   final fileModel = FileModel();
+  final sessionModel = SessionModel();
 
   User? _user;
   List<AppFile>? _files;
@@ -25,10 +26,9 @@ class UserFilesViewModel extends ChangeNotifier {
   List<AppFile> get filteredFiles => _filteredFiles ?? [];
 
   void initUser() {
-    userModel.getCurrentUser().then((res) {
-      _user = res;
-      notifyListeners();
-    });
+    if (sessionModel.session == null) sessionModel.destroySession();
+    _user = sessionModel.session!.user;
+    notifyListeners();
   }
 
   void initFiles() {

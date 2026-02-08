@@ -6,7 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
 import 'package:securite_mobile/enum/month_enum.dart';
-import 'package:securite_mobile/utils/file_size_converter.dart';
+import 'package:securite_mobile/utils/file_size_util.dart';
 import 'package:securite_mobile/view/widgets/file_thumbnail.dart';
 
 class FileItem extends StatelessWidget {
@@ -80,7 +80,7 @@ class FileItem extends StatelessWidget {
                         ),
 
                         Text(
-                          '${FileSizeConverter.bytesToMb(fileSize)} MB, ${formatDateTime(dateTime)}',
+                          '${FileSizeUtil.bytesToMb(fileSize)} MB, ${formatDateTime(dateTime)}',
                           style: TextStyle(
                             fontFamily: AppFonts.productSansRegular,
                             fontSize: 12,

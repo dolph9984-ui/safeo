@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
-import 'package:securite_mobile/services/auth/session_service.dart';
 import 'package:securite_mobile/utils/auth_interceptor.dart';
 
 /*
@@ -52,7 +51,6 @@ class DioClient {
             };
     };
 
-    final sessionService = SessionService();
-    dio.interceptors.add(AuthInterceptor(sessionService, dio));
+    dio.interceptors.add(AuthInterceptor(dio));
   }
 }

@@ -1,3 +1,4 @@
+import 'package:securite_mobile/enum/file_type_enum.dart';
 import 'package:securite_mobile/model/user_model.dart';
 import 'package:securite_mobile/services/cache/file_cache_service.dart';
 
@@ -11,6 +12,7 @@ class AppFile {
   final User owner;
   final bool isShared;
   final List<String>? viewersName;
+  final FileTypeEnum type;
 
   const AppFile({
     required this.id,
@@ -22,6 +24,7 @@ class AppFile {
     required this.owner,
     required this.isShared,
     this.viewersName,
+    required this.type,
   });
 
   AppFile copyWith({
@@ -34,6 +37,7 @@ class AppFile {
     User? owner,
     bool? isShared,
     List<String>? viewersName,
+    FileTypeEnum? type,
   }) {
     return AppFile(
       id: id ?? this.id,
@@ -45,6 +49,7 @@ class AppFile {
       owner: owner ?? this.owner,
       isShared: isShared ?? this.isShared,
       viewersName: viewersName ?? this.viewersName,
+      type: type ?? this.type,
     );
   }
 }
@@ -75,6 +80,7 @@ class FileModel {
         updatedAt: DateTime.now(),
         category: 'test',
         isShared: index % 2 == 0,
+        type: FileTypeEnum.csv,
         owner: User(
           uuid: '',
           fullName: '',

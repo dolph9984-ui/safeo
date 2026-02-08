@@ -1,14 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:securite_mobile/model/auth/session_token.dart';
-import 'package:securite_mobile/services/auth/session_service.dart';
+import 'package:securite_mobile/model/session_model.dart';
 
 class AuthInterceptor extends Interceptor {
-  final SessionService sessionService;
   final Dio dio;
 
   bool _isRefreshing = false;
 
-  AuthInterceptor(this.sessionService, this.dio);
+  AuthInterceptor(this.dio);
 
   @override
   void onRequest(
@@ -16,7 +15,7 @@ class AuthInterceptor extends Interceptor {
     RequestInterceptorHandler handler,
   ) async {
     if (!options.path.contains('/auth/')) {
-      final accessToken = await sessionService.getAccessToken();
+      final accessToken = await SessionTokenModel.getAccessToken();
 
       if (accessToken != null && accessToken.isNotEmpty) {
         options.headers['Authorization'] = 'Bearer $accessToken';
@@ -33,10 +32,10 @@ class AuthInterceptor extends Interceptor {
       _isRefreshing = true;
 
       try {
-        final refreshToken = await sessionService.getRefreshToken();
+        final refreshToken = await SessionTokenModel.getRefreshToken();
 
         if (refreshToken == null || refreshToken.isEmpty) {
-          await SessionService().endSession();
+          await SessionModel().destroySession();
           _isRefreshing = false;
           return handler.next(err);
         }
@@ -51,7 +50,7 @@ class AuthInterceptor extends Interceptor {
         final newAccessToken = response.data['accessToken'];
 
         if (newAccessToken == null) {
-          await sessionService.endSession();
+          await SessionModel().destroySession();
           _isRefreshing = false;
           return handler.next(err);
         }
@@ -75,7 +74,7 @@ class AuthInterceptor extends Interceptor {
         return handler.resolve(retryResponse);
       } catch (_) {
         _isRefreshing = false;
-        await sessionService.endSession();
+        await SessionModel().destroySession();
       }
     }
 
