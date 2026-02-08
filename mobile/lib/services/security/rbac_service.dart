@@ -1,3 +1,6 @@
+import 'package:securite_mobile/model/file_model.dart';
+import 'package:securite_mobile/model/user_model.dart';
+
 enum Role { viewer, owner }
 
 enum Permission {
@@ -9,76 +12,48 @@ enum Permission {
   downloadDocument,
 }
 
-/// Module 2, pages 40-49
 class RBACService {
   static final RBACService _instance = RBACService._internal();
-
   factory RBACService() => _instance;
-
   RBACService._internal();
 
   static final Map<Role, Set<Permission>> _permissions = {
     Role.owner: {
       Permission.addDocument,
       Permission.readDocument,
-      Permission.deleteDocument,
       Permission.modifyDocument,
+      Permission.deleteDocument,
       Permission.shareDocument,
       Permission.downloadDocument,
     },
-    Role.viewer: {Permission.readDocument},
+    Role.viewer: {
+      Permission.readDocument,
+      Permission.downloadDocument,
+    },
   };
 
-  bool hasPermission(Role role, Permission permission) {
+  //Vérifie si un user peut faire une action sur le fichier
+  bool canAccess(AppFile file, User user, Permission permission) {
+    final role = _getUserRoleForFile(file, user);
+    if (role == null) return false;
     return _permissions[role]?.contains(permission) ?? false;
   }
 
-  bool canAccess(Role userRole, Permission permission) {
-    final rolePermissions = _permissions[userRole] ?? {};
-    return rolePermissions.contains(permission);
-  }
-
-  Set<Permission> getPermissions(Role role) {
-    return _permissions[role] ?? {};
-  }
-
-  bool hasAllPermissions(Role role, List<Permission> requiredPermissions) {
-    final rolePermissions = _permissions[role] ?? {};
-    return requiredPermissions.every((p) => rolePermissions.contains(p));
-  }
-
-  bool hasAnyPermission(Role role, List<Permission> requiredPermissions) {
-    final rolePermissions = _permissions[role] ?? {};
-    return requiredPermissions.any((p) => rolePermissions.contains(p));
-  }
-
-  Role? roleFromString(String roleStr) {
-    switch (roleStr.toLowerCase()) {
-      case 'owner':
-        return Role.owner;
-      case 'viewer':
-        return Role.viewer;
-      default:
-        return null;
+  //Détermine le rôle du user sur le fichier
+  Role? _getUserRoleForFile(AppFile file, User user) {
+    if (file.owner.uuid == user.uuid) return Role.owner;
+    if (file.isShared && file.viewersName?.contains(user.email) == true) {
+      return Role.viewer;
     }
-  }
-
-  String roleToString(Role role) {
-    return role.toString().split('.').last;
+    return null;
   }
 }
-
-extension RoleExtension on Role {
-  bool can(Permission permission) {
-    return RBACService().hasPermission(this, permission);
+extension FilePermissionExtension on AppFile {
+  bool userCan(User user, Permission permission) {
+    return RBACService().canAccess(this, user, permission);
   }
-
-  String get displayName {
-    switch (this) {
-      case Role.owner:
-        return 'Propriétaire';
-      case Role.viewer:
-        return 'Lecteur';
-    }
+  
+  Role? getUserRole(User user) {
+    return RBACService()._getUserRoleForFile(this, user);
   }
 }

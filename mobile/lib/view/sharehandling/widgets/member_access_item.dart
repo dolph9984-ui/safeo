@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
-import 'package:securite_mobile/view/widgets/blurred_dialog.dart';
 import 'package:securite_mobile/view/widgets/confirm_dialog.dart';
 import 'package:securite_mobile/view/widgets/success_snackbar.dart';
 
@@ -38,18 +37,16 @@ class MemberAccessItem extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Avatar
           _buildAvatar(),
           
           const SizedBox(width: 12),
-          
-          // Nom, email et rôle (colonne)
+        
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: 2,
               children: [
-                // Nom
+ 
                 Text(
                   name,
                   style: TextStyle(
@@ -58,7 +55,7 @@ class MemberAccessItem extends StatelessWidget {
                     color: AppColors.foreground,
                   ),
                 ),
-                // Email
+
                 Text(
                   email,
                   style: TextStyle(
@@ -68,7 +65,7 @@ class MemberAccessItem extends StatelessWidget {
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
-                // Rôle
+
                 Text(
                   isOwner ? 'Propriétaire' : 'Lecteur',
                   style: TextStyle(
@@ -80,8 +77,7 @@ class MemberAccessItem extends StatelessWidget {
               ],
             ),
           ),
-          
-          // Icône de suppression (croix)
+
           if (!isOwner)
             InkWell(
               onTap: () => _showRemoveConfirmation(context),
