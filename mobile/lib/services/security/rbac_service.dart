@@ -6,8 +6,8 @@ enum Role { viewer, owner }
 enum Permission {
   addDocument,
   readDocument,
-  deleteDocument,
   modifyDocument,
+  deleteDocument,
   shareDocument,
   downloadDocument,
 }
@@ -32,14 +32,14 @@ class RBACService {
     },
   };
 
-  //Vérifie si un user peut faire une action sur le fichier
+  // ✅ Vérifie si un user peut faire une action sur un fichier
   bool canAccess(AppFile file, User user, Permission permission) {
     final role = _getUserRoleForFile(file, user);
     if (role == null) return false;
     return _permissions[role]?.contains(permission) ?? false;
   }
 
-  //Détermine le rôle du user sur le fichier
+  // Détermine le rôle du user sur ce fichier
   Role? _getUserRoleForFile(AppFile file, User user) {
     if (file.owner.uuid == user.uuid) return Role.owner;
     if (file.isShared && file.viewersName?.contains(user.email) == true) {
@@ -49,11 +49,11 @@ class RBACService {
   }
 }
 extension FilePermissionExtension on AppFile {
-  bool userCan(User user, Permission permission) {
-    return RBACService().canAccess(this, user, permission);
-  }
-  
-  Role? getUserRole(User user) {
-    return RBACService()._getUserRoleForFile(this, user);
-  }
+  bool canRead(User user) => RBACService().canAccess(this, user, Permission.readDocument);
+  bool canModify(User user) => RBACService().canAccess(this, user, Permission.modifyDocument);
+  bool canDelete(User user) => RBACService().canAccess(this, user, Permission.deleteDocument);
+  bool canShare(User user) => RBACService().canAccess(this, user, Permission.shareDocument);
+  bool canDownload(User user) => RBACService().canAccess(this, user, Permission.downloadDocument);
+
+  Role? getUserRole(User user) => RBACService()._getUserRoleForFile(this, user);
 }
