@@ -82,7 +82,6 @@ class TrashItem extends StatelessWidget {
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 4,
                         children: [
                           Text(
                             trashedFile.fileName,
@@ -93,13 +92,25 @@ class TrashItem extends StatelessWidget {
                               color: AppColors.foreground,
                             ),
                           ),
-                          Text(
-                            _buildSubtitle(),
-                            style: TextStyle(
-                              fontFamily: AppFonts.productSansRegular,
-                              fontSize: 12,
-                              color: AppColors.mutedForeground,
-                            ),
+                          Row(
+                            children: [
+                              Text(
+                                'Suppression dans ',
+                                style: TextStyle(
+                                  fontFamily: AppFonts.productSansRegular,
+                                  fontSize: 12,
+                                  color: AppColors.mutedForeground,
+                                ),
+                              ),
+                              Text(
+                                _getSuppressionDate(),
+                                style: TextStyle(
+                                  fontFamily: AppFonts.productSansRegular,
+                                  fontSize: 12,
+                                  color: AppColors.primaryDark,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -138,16 +149,16 @@ class TrashItem extends StatelessWidget {
     );
   }
 
-  String _buildSubtitle() {
+  String _getSuppressionDate() {
     final daysRemaining = trashedFile.deletionDate
         .difference(DateTime.now())
         .inDays;
-    
-    String deletionText = daysRemaining > 0
-        ? 'Suppression dans $daysRemaining jour${daysRemaining > 1 ? 's' : ''}'
-        : 'Suppression imminente';
 
-    return 'Placé dans la corbeille le ${_formatDate(trashedFile.deletedAt)} • $deletionText';
+    String deletionText = daysRemaining > 0
+        ? '$daysRemaining jour${daysRemaining > 1 ? 's' : ''}'
+        : 'imminente';
+
+    return deletionText;
   }
 
   String _formatDate(DateTime date) {

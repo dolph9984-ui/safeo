@@ -1,20 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:securite_mobile/enum/file_filter_enum.dart';
 import 'package:securite_mobile/enum/file_type_enum.dart';
 
 enum UserRole { owner, viewer }
-
-enum FileFilter {
-  all('Tous les fichiers'),
-  owner('Mes fichiers'),
-  viewer('Fichiers partagés avec moi'),
-  pdf('PDF'),
-  image('Images'),
-  document('Documents'),
-  csv('Tableurs');
-
-  final String label;
-  const FileFilter(this.label);
-}
 
 class SharedFileData {
   final String id;
@@ -40,13 +28,14 @@ class SharedFileData {
 
 class SharedFilesViewModel extends ChangeNotifier {
   final TextEditingController searchController = TextEditingController();
-  
+
   List<SharedFileData> _sharedFiles = [];
   List<SharedFileData> _filteredFiles = [];
-  FileFilter _currentFilter = FileFilter.all;
+  FileFilterEnum _currentFilter = FileFilterEnum.all;
 
   List<SharedFileData> get sharedFiles => _filteredFiles;
-  FileFilter get currentFilter => _currentFilter;
+
+  FileFilterEnum get currentFilter => _currentFilter;
 
   SharedFilesViewModel() {
     _loadMockData();
@@ -121,37 +110,49 @@ class SharedFilesViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setFilter(FileFilter filter) {
+  void setFilter(FileFilterEnum filter) {
     _currentFilter = filter;
     _applyFilters();
   }
 
   void _applyFilters() {
     final query = searchController.text.toLowerCase();
-    
+
     // Appliquer le filtre de type
     List<SharedFileData> filtered = _sharedFiles;
 
     switch (_currentFilter) {
-      case FileFilter.owner:
-        filtered = filtered.where((file) => file.userRole == UserRole.owner).toList();
+      case FileFilterEnum.owner:
+        filtered = filtered
+            .where((file) => file.userRole == UserRole.owner)
+            .toList();
         break;
-      case FileFilter.viewer:
-        filtered = filtered.where((file) => file.userRole == UserRole.viewer).toList();
+      case FileFilterEnum.viewer:
+        filtered = filtered
+            .where((file) => file.userRole == UserRole.viewer)
+            .toList();
         break;
-      case FileFilter.pdf:
-        filtered = filtered.where((file) => file.fileType == FileTypeEnum.pdf).toList();
+      case FileFilterEnum.pdf:
+        filtered = filtered
+            .where((file) => file.fileType == FileTypeEnum.pdf)
+            .toList();
         break;
-      case FileFilter.image:
-        filtered = filtered.where((file) => file.fileType == FileTypeEnum.image).toList();
+      case FileFilterEnum.image:
+        filtered = filtered
+            .where((file) => file.fileType == FileTypeEnum.image)
+            .toList();
         break;
-      case FileFilter.document:
-        filtered = filtered.where((file) => file.fileType == FileTypeEnum.document).toList();
+      case FileFilterEnum.document:
+        filtered = filtered
+            .where((file) => file.fileType == FileTypeEnum.document)
+            .toList();
         break;
-      case FileFilter.csv:
-        filtered = filtered.where((file) => file.fileType == FileTypeEnum.csv).toList();
+      case FileFilterEnum.csv:
+        filtered = filtered
+            .where((file) => file.fileType == FileTypeEnum.csv)
+            .toList();
         break;
-      case FileFilter.all:
+      case FileFilterEnum.all:
         break;
     }
 

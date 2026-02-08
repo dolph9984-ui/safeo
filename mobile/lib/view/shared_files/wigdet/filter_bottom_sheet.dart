@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
+import 'package:securite_mobile/enum/file_filter_enum.dart';
 import 'package:securite_mobile/viewmodel/shared_files_viewmodel.dart';
 
 class FilterBottomSheet extends StatelessWidget {
-  final FileFilter currentFilter;
-  final Function(FileFilter) onFilterSelected;
+  final FileFilterEnum currentFilter;
+  final Function(FileFilterEnum) onFilterSelected;
 
   const FilterBottomSheet({
     super.key,
@@ -29,7 +30,7 @@ class FilterBottomSheet extends StatelessWidget {
           children: [
             // Header
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 16, 16, 16),
+              padding: const EdgeInsets.fromLTRB(24, 8, 8, 0),
               child: Row(
                 children: [
                   Text(
@@ -51,7 +52,12 @@ class FilterBottomSheet extends StatelessWidget {
               ),
             ),
 
-            Divider(height: 1, color: AppColors.buttonDisabled),
+            Divider(
+              height: 16,
+              color: AppColors.buttonDisabled,
+              indent: 16,
+              endIndent: 16,
+            ),
 
             // Liste des filtres avec scroll
             Flexible(
@@ -59,7 +65,7 @@ class FilterBottomSheet extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    ...FileFilter.values.map((filter) {
+                    ...FileFilterEnum.values.map((filter) {
                       final isSelected = filter == currentFilter;
                       return InkWell(
                         onTap: () {
@@ -76,12 +82,12 @@ class FilterBottomSheet extends StatelessWidget {
                                   child: Text(
                                     filter.label,
                                     style: TextStyle(
-                                      fontFamily: isSelected 
-                                          ? AppFonts.productSansMedium 
+                                      fontFamily: isSelected
+                                          ? AppFonts.productSansMedium
                                           : AppFonts.productSansRegular,
                                       fontSize: 15,
-                                      color: isSelected 
-                                          ? AppColors.primary 
+                                      color: isSelected
+                                          ? AppColors.primary
                                           : AppColors.foreground,
                                     ),
                                   ),
@@ -97,7 +103,7 @@ class FilterBottomSheet extends StatelessWidget {
                           ),
                         ),
                       );
-                    }).toList(),
+                    }),
                     SizedBox(height: 16),
                   ],
                 ),
