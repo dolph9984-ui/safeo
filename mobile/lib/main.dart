@@ -6,7 +6,6 @@ import 'package:securite_mobile/services/security/secure_storage_service.dart';
 import 'package:securite_mobile/utils/dio_util.dart';
 import 'package:securite_mobile/viewmodel/create_file_viewmodel.dart';
 import 'package:securite_mobile/viewmodel/scaffold_viewmodel.dart';
-import 'package:securite_mobile/viewmodel/share_file_viewmodel.dart';
 import 'package:securite_mobile/viewmodel/shared_files_viewmodel.dart';
 import 'package:securite_mobile/viewmodel/user_files_viewmodel.dart';
 
@@ -34,8 +33,6 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => UserFilesViewModel()),
         ChangeNotifierProvider(create: (_) => SharedFilesViewModel()),
         ChangeNotifierProvider(create: (_) => CreateFileViewModel()),
-        ChangeNotifierProvider(create: (_) => ShareFileViewModel()),
-        
       ],
       child: MaterialApp.router(
         routerConfig: appRouter,

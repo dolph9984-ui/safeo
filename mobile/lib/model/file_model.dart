@@ -45,7 +45,7 @@ class FileModel {
     return List.generate(
       8,
       (index) => AppFile(
-        id: '',
+        id: '${index + 1}',
         name: 'file_name_example.${ext[index % ext.length]}',
         size: 10000,
         createdAt: DateTime.now(),

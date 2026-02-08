@@ -12,4 +12,5 @@ class AppRoutes {
   static const String authCallback = '/auth-callback';
   static const String trash = '/trash';
   static const String searchPage = 'searchPage';
+   static const String shareHandling = '/share-handling';
 }

@@ -48,7 +48,9 @@ class _UserFilesViewState extends State<UserFilesView> {
                       useRootNavigator: true,
                       context: context,
                       builder: (context) {
-                        return UserFilesBottomSheet();
+                        return UserFilesBottomSheet(
+                          fileId: id,  
+                        );
                       },
                     );
                   },

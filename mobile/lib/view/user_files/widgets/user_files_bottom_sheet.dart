@@ -10,7 +10,12 @@ import '../../../constants/app_colors.dart';
 import '../../widgets/bottom_sheet_item.dart';
 
 class UserFilesBottomSheet extends StatelessWidget {
-  const UserFilesBottomSheet({super.key});
+  final String fileId; 
+  
+  const UserFilesBottomSheet({
+    super.key,
+    required this.fileId,  
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +31,10 @@ class UserFilesBottomSheet extends StatelessWidget {
       BottomSheetItem(
         label: 'Partager',
         assetName: 'assets/icons/share.svg',
-        onTap: () {},
+        onTap: () {
+          Navigator.pop(context); 
+          context.push('${AppRoutes.shareFile}/$fileId'); 
+        },
         color: AppColors.foreground,
       ),
       // manage share
@@ -34,7 +42,9 @@ class UserFilesBottomSheet extends StatelessWidget {
         label: 'Gérer les partages',
         assetName: 'assets/icons/users_round.svg',
         onTap: () {
-          context.pushNamed(AppRoutes.shareFile);
+          Navigator.pop(context);
+          context.push('${AppRoutes.shareHandling}/$fileId'); 
+           
         },
         color: AppColors.foreground,
       ),
