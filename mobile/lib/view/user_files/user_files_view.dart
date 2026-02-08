@@ -43,7 +43,7 @@ class _UserFilesViewState extends State<UserFilesView> {
           currentFilter: vm.currentFilter,
           listTitle: 'Mes fichiers',
           showSearchIcon: true,
-          onSearchTap: () => context.pushNamed(AppRoutes.searchFile),
+          onSearchTap: () => context.pushNamed(AppRoutes.searchPage),
           onFilterTap: () {
             showModalBottomSheet(
               useRootNavigator: true,
@@ -78,11 +78,11 @@ class _UserFilesViewState extends State<UserFilesView> {
                       context: context,
                       builder: (context) {
                         return UserFilesBottomSheet(
+                          fileId: file.id,  
                           fileName: file.name,
                           onOpenTap: () => vm.openFile(file),
                           onShareTap: () => (),
-                          onManageShareTap: () =>
-                              context.pushNamed(AppRoutes.shareFile),
+                          onManageShareTap: () => (),  
                           onRenameTap: (newName) =>
                               vm.renameFile(file, newName: newName),
                           onDownloadTap: () => vm.downloadFile(file),
@@ -100,7 +100,6 @@ class _UserFilesViewState extends State<UserFilesView> {
                               }
                             });
                           },
-
                           onDeleteTap: () => vm.deleteFile(file),
                         );
                       },

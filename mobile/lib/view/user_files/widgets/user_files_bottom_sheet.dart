@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:securite_mobile/router/app_routes.dart';
 import 'package:securite_mobile/view/widgets/app_bottom_sheet.dart';
 import 'package:securite_mobile/view/widgets/blurred_dialog.dart';
 import 'package:securite_mobile/view/widgets/confirm_dialog.dart';
@@ -17,6 +18,7 @@ class UserFilesBottomSheet extends StatelessWidget {
   final Function() onInfoTap;
   final Function() onDeleteTap;
   final String fileName;
+  final String fileId; 
 
   const UserFilesBottomSheet({
     super.key,
@@ -28,6 +30,7 @@ class UserFilesBottomSheet extends StatelessWidget {
     required this.onInfoTap,
     required this.onDeleteTap,
     required this.fileName,
+    required this.fileId,  
   });
 
   @override
@@ -49,6 +52,7 @@ class UserFilesBottomSheet extends StatelessWidget {
         assetName: 'assets/icons/share.svg',
         onTap: () {
           context.pop();
+          context.push('${AppRoutes.shareFile}/$fileId');
           onShareTap();
         },
         color: AppColors.foreground,
@@ -59,6 +63,7 @@ class UserFilesBottomSheet extends StatelessWidget {
         assetName: 'assets/icons/users_round.svg',
         onTap: () {
           context.pop();
+          context.push('${AppRoutes.shareHandling}/$fileId'); 
           onManageShareTap();
         },
         color: AppColors.foreground,

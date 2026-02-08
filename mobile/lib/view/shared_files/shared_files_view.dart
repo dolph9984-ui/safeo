@@ -43,7 +43,7 @@ class SharedFilesView extends StatelessWidget {
       padding: const EdgeInsets.only(left: 24, right: 24, bottom: 40),
       children: [
         GestureDetector(
-          onTap: () => context.pushNamed(AppRoutes.searchFile),
+          onTap: () => context.pushNamed(AppRoutes.searchPage),
           child: AbsorbPointer(
             child: Hero(
               tag: 'search_bar',

@@ -1,51 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:securite_mobile/enum/file_type_enum.dart';
-import 'package:securite_mobile/viewmodel/shared_files_viewmodel.dart';
+import 'package:securite_mobile/model/file_model.dart';
 
 class SearchPageViewModel extends ChangeNotifier {
+  final FileModel _fileModel;
   final TextEditingController searchController = TextEditingController();
 
-  List<SharedFileData> _searchResults = [];
-  List<SharedFileData> _recentSearches = [];
+  List<AppFile> _allFiles = [];
+  List<AppFile> _searchResults = [];
+  List<AppFile> _recentSearches = [];
   bool _isSearching = false;
+  bool _isLoading = false;
 
-  List<SharedFileData> get searchResults => _searchResults;
-
-  List<SharedFileData> get recentSearches => _recentSearches;
-
+  List<AppFile> get searchResults => _searchResults;
+  List<AppFile> get recentSearches => _recentSearches;
   bool get isSearching => _isSearching;
-
+  bool get isLoading => _isLoading;
   bool get hasQuery => searchController.text.trim().isNotEmpty;
 
-  SearchPageViewModel() {
+  SearchPageViewModel({FileModel? fileModel}) 
+      : _fileModel = fileModel ?? FileModel() {
     searchController.addListener(_onSearchChanged);
-    _loadRecentSearches();
+    _init();
   }
 
-  void _loadRecentSearches() {
-    final now = DateTime.now();
-    _recentSearches = [
-      SharedFileData(
-        id: 'r1',
-        fileName: 'Rapport_Q4.pdf',
-        fileSize: 2.5,
-        sharedAt: now.subtract(Duration(hours: 2)),
-        fileType: FileTypeEnum.pdf,
-        userRole: UserRole.owner,
-        ownerName: 'Vous',
-        ownerEmail: 'you@example.com',
-      ),
-      SharedFileData(
-        id: 'r2',
-        fileName: 'Budget_2024.xlsx',
-        fileSize: 1.8,
-        sharedAt: now.subtract(Duration(days: 1)),
-        fileType: FileTypeEnum.csv,
-        userRole: UserRole.viewer,
-        ownerName: 'Marie Martin',
-        ownerEmail: 'marie@example.com',
-      ),
-    ];
+  Future<void> _init() async {
+    await _loadAllFiles();
+    await _loadRecentSearches();
+  }
+
+  Future<void> _loadAllFiles() async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final files = await _fileModel.getUserFiles();
+      if (files != null) {
+        _allFiles = files;
+      }
+    } catch (e) {
+      debugPrint('Error loading files: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> _loadRecentSearches() async {
+    _recentSearches = _allFiles.take(3).toList();
     notifyListeners();
   }
 
@@ -63,56 +64,27 @@ class SearchPageViewModel extends ChangeNotifier {
   }
 
   void _performSearch(String query) {
-    // Mock search
-    final now = DateTime.now();
-    final allFiles = [
-      SharedFileData(
-        id: '1',
-        fileName: 'Rapport_Annual_2024.pdf',
-        fileSize: 3.2,
-        sharedAt: now.subtract(Duration(days: 2)),
-        fileType: FileTypeEnum.pdf,
-        userRole: UserRole.owner,
-        ownerName: 'Jean Dupont',
-        ownerEmail: 'jean.dupont@example.com',
-      ),
-      SharedFileData(
-        id: '2',
-        fileName: 'Budget_Marketing.xlsx',
-        fileSize: 1.5,
-        sharedAt: now.subtract(Duration(days: 5)),
-        fileType: FileTypeEnum.csv,
-        userRole: UserRole.viewer,
-        ownerName: 'Marie Martin',
-        ownerEmail: 'marie.martin@example.com',
-      ),
-      SharedFileData(
-        id: '3',
-        fileName: 'Presentation_Produit.pptx',
-        fileSize: 8.7,
-        sharedAt: now.subtract(Duration(days: 1)),
-        fileType: FileTypeEnum.document,
-        userRole: UserRole.owner,
-        ownerName: 'Pierre Leblanc',
-        ownerEmail: 'pierre.leblanc@example.com',
-      ),
-      SharedFileData(
-        id: '4',
-        fileName: 'Logo_Entreprise.png',
-        fileSize: 2.1,
-        sharedAt: now.subtract(Duration(hours: 3)),
-        fileType: FileTypeEnum.image,
-        userRole: UserRole.owner,
-        ownerName: 'Luc Bernard',
-        ownerEmail: 'luc.bernard@example.com',
-      ),
-    ];
-
-    _searchResults = allFiles
-        .where(
-          (file) => file.fileName.toLowerCase().contains(query.toLowerCase()),
-        )
+    final lowerQuery = query.toLowerCase();
+    
+    _searchResults = _allFiles
+        .where((file) => file.name.toLowerCase().contains(lowerQuery))
         .toList();
+    
+    // Sauvegarder dans les recherches récentes
+    _saveToRecentSearches(_searchResults);
+  }
+
+  void _saveToRecentSearches(List<AppFile> results) {
+    // TODO: Implémenter la sauvegarde dans SharedPreferences
+    // Pour l'instant, on met à jour en mémoire
+    if (results.isNotEmpty) {
+      final newRecent = results.first;
+      _recentSearches.removeWhere((f) => f.id == newRecent.id);
+      _recentSearches.insert(0, newRecent);
+      if (_recentSearches.length > 10) {
+        _recentSearches = _recentSearches.take(10).toList();
+      }
+    }
   }
 
   void clearSearch() {
@@ -125,6 +97,11 @@ class SearchPageViewModel extends ChangeNotifier {
   void clearRecentSearches() {
     _recentSearches = [];
     notifyListeners();
+    // TODO: Aussi effacer du cache local
+  }
+
+  Future<void> refresh() async {
+    await _loadAllFiles();
   }
 
   @override

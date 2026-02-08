@@ -1,17 +1,20 @@
+// search_results_section.dart
 import 'package:flutter/material.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
+import 'package:securite_mobile/model/file_model.dart';
 import 'package:securite_mobile/view/search_page/widgets/search_file_item.dart';
-import 'package:securite_mobile/viewmodel/shared_files_viewmodel.dart';
 
 class SearchResultsSection extends StatelessWidget {
-  final List<SharedFileData> results;
+  final List<AppFile> results;
   final String searchQuery;
+  final Function(AppFile)? onFileTap;
 
   const SearchResultsSection({
     super.key,
     required this.results,
     required this.searchQuery,
+    this.onFileTap,
   });
 
   @override
@@ -56,12 +59,9 @@ class SearchResultsSection extends StatelessWidget {
           spacing: 16,
           children: results
               .map((file) => SearchFileItem(
-                    id: file.id,
-                    fileName: file.fileName,
-                    fileSize: file.fileSize,
-                    dateTime: file.sharedAt,
-                    fileType: file.fileType,
+                    file: file,
                     searchQuery: searchQuery,
+                    onTap: onFileTap != null ? () => onFileTap!(file) : null,
                   ))
               .toList(),
         ),

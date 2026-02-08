@@ -1,81 +1,85 @@
 import 'dart:typed_data';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
 import 'package:securite_mobile/enum/file_type_enum.dart';
 import 'package:securite_mobile/enum/month_enum.dart';
+import 'package:securite_mobile/model/file_model.dart';
 import 'package:securite_mobile/view/widgets/file_thumbnail.dart';
 
 class SearchFileItem extends StatelessWidget {
-  final String id;
-  final String fileName;
-  final double fileSize;
-  final DateTime dateTime;
-  final FileTypeEnum fileType;
+  final AppFile file;
   final String? searchQuery;
+  final VoidCallback? onTap;
 
   const SearchFileItem({
     super.key,
-    required this.fileName,
-    required this.fileSize,
-    required this.dateTime,
-    required this.fileType,
-    required this.id,
+    required this.file,
     this.searchQuery,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.foreground.withAlpha(10),
-            blurRadius: 6,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          spacing: 10,
-          children: [
-            FileThumbnail(
-              file: PlatformFile.fromMap({
-                "name": fileName,
-                "path": "",
-                "bytes": Uint8List(0),
-                "size": 0,
-              }),
-              height: 40,
-              width: 40,
-              padding: EdgeInsets.all(10),
-              radius: 10,
-            ),
-            Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 4,
-                children: [
-                  _buildHighlightedText(),
-                  Text(
-                    formatDateTime(dateTime),
-                    style: TextStyle(
-                      fontFamily: AppFonts.productSansRegular,
-                      fontSize: 12,
-                      color: AppColors.mutedForeground,
-                    ),
-                  ),
-                ],
-              ),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.foreground.withAlpha(10),
+              blurRadius: 6,
+              offset: Offset(0, 4),
             ),
           ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            spacing: 10,
+            children: [
+              FileThumbnail(
+                file: PlatformFile.fromMap({
+                  "name": file.name,
+                  "path": "",
+                  "bytes": Uint8List(0),
+                  "size": file.size,
+                }),
+                height: 40,
+                width: 40,
+                padding: EdgeInsets.all(10),
+                radius: 10,
+              ),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 4,
+                  children: [
+                    _buildHighlightedText(),
+                    Text(
+                      formatDateTime(file.updatedAt),
+                      style: TextStyle(
+                        fontFamily: AppFonts.productSansRegular,
+                        fontSize: 12,
+                        color: AppColors.mutedForeground,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (file.isShared)
+                Icon(
+                  Icons.people_outline,
+                  size: 16,
+                  color: AppColors.primary,
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -84,7 +88,7 @@ class SearchFileItem extends StatelessWidget {
   Widget _buildHighlightedText() {
     if (searchQuery == null || searchQuery!.isEmpty) {
       return Text(
-        fileName,
+        file.name,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
           fontFamily: AppFonts.productSansMedium,
@@ -94,13 +98,13 @@ class SearchFileItem extends StatelessWidget {
       );
     }
 
-    final lowerFileName = fileName.toLowerCase();
+    final lowerFileName = file.name.toLowerCase();
     final lowerQuery = searchQuery!.toLowerCase();
     final index = lowerFileName.indexOf(lowerQuery);
 
     if (index == -1) {
       return Text(
-        fileName,
+        file.name,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
           fontFamily: AppFonts.productSansMedium,
@@ -110,9 +114,9 @@ class SearchFileItem extends StatelessWidget {
       );
     }
 
-    final beforeMatch = fileName.substring(0, index);
-    final match = fileName.substring(index, index + searchQuery!.length);
-    final afterMatch = fileName.substring(index + searchQuery!.length);
+    final beforeMatch = file.name.substring(0, index);
+    final match = file.name.substring(index, index + searchQuery!.length);
+    final afterMatch = file.name.substring(index + searchQuery!.length);
 
     return RichText(
       overflow: TextOverflow.ellipsis,

@@ -13,10 +13,12 @@ import 'package:securite_mobile/view/onboarding_view.dart';
 import 'package:securite_mobile/view/search_page/search_page_view.dart';
 import 'package:securite_mobile/view/share_file/share_file_view.dart';
 import 'package:securite_mobile/view/shared_files/shared_files_view.dart';
+import 'package:securite_mobile/view/sharehandling/sharehandling_view.dart';
 import 'package:securite_mobile/view/trash/trash_view.dart';
 import 'package:securite_mobile/view/user_files/user_files_view.dart';
 import 'package:securite_mobile/viewmodel/auth/two_fa_viewmodel.dart';
 import 'package:securite_mobile/viewmodel/scaffold_viewmodel.dart';
+import 'package:securite_mobile/viewmodel/trash_viewmodel.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.userFiles,
@@ -102,13 +104,16 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.trash,
       name: AppRoutes.trash,
-      builder: (context, state) => const TrashView(),
+      builder: (context, state) => ChangeNotifierProvider(
+        create: (_) => TrashViewModel(),
+        child: const TrashView(),
+      ),
     ),
 
     // search
     GoRoute(
-      path: AppRoutes.searchFile,
-      name: AppRoutes.searchFile,
+      path: AppRoutes.searchPage,
+      name: AppRoutes.searchPage,
       builder: (context, state) => const SearchPageView(),
     ),
 
@@ -131,7 +136,7 @@ final GoRouter appRouter = GoRouter(
           },
           child: AppScaffold(
             currentIndex: currentIndex,
-            vm: context.watch<ScaffoldViewModel>(),
+            vm: context.read<ScaffoldViewModel>(),
             child: child,
           ),
         );
@@ -152,10 +157,38 @@ final GoRouter appRouter = GoRouter(
         ),
       ],
     ),
+
+    //share-file
     GoRoute(
-      path: AppRoutes.shareFile,
+      path: '${AppRoutes.shareFile}/:fileId',
       name: AppRoutes.shareFile,
-      builder: (context, state) => const ShareFileView(),
+      builder: (context, state) {
+        final fileId = state.pathParameters['fileId'] ?? '';
+        final autoFocus = state.uri.queryParameters['autoFocus'] == 'true';
+
+        if (fileId.isEmpty) {
+          return const UserFilesView();
+        }
+
+        return ShareFileView(
+          fileId: fileId,
+          autoFocus: autoFocus,
+        );
+      },
+    ),
+
+    GoRoute(
+      path: '${AppRoutes.shareHandling}/:fileId',
+      name: AppRoutes.shareHandling,
+      builder: (context, state) {
+        final fileId = state.pathParameters['fileId'] ?? '';
+
+        if (fileId.isEmpty) {
+          return const UserFilesView();
+        }
+
+        return ShareHandlingView(fileId: fileId);
+      },
     ),
   ],
 );

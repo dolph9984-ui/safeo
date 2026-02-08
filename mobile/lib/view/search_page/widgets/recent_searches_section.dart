@@ -1,18 +1,21 @@
+// recent_searches_section.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
+import 'package:securite_mobile/model/file_model.dart';
 import 'package:securite_mobile/view/search_page/widgets/search_file_item.dart';
-import 'package:securite_mobile/viewmodel/shared_files_viewmodel.dart';
 
 class RecentSearchesSection extends StatelessWidget {
-  final List<SharedFileData> recentFiles;
+  final List<AppFile> recentFiles;
   final VoidCallback onClearAll;
+  final Function(AppFile)? onFileTap;
 
   const RecentSearchesSection({
     super.key,
     required this.recentFiles,
     required this.onClearAll,
+    this.onFileTap,
   });
 
   @override
@@ -79,11 +82,8 @@ class RecentSearchesSection extends StatelessWidget {
           spacing: 16,
           children: recentFiles
               .map((file) => SearchFileItem(
-                    id: file.id,
-                    fileName: file.fileName,
-                    fileSize: file.fileSize,
-                    dateTime: file.sharedAt,
-                    fileType: file.fileType,
+                    file: file,
+                    onTap: onFileTap != null ? () => onFileTap!(file) : null,
                   ))
               .toList(),
         ),
