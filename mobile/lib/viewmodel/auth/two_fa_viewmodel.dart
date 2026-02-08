@@ -116,8 +116,13 @@ class TwoFAViewModel extends ChangeNotifier {
         refreshToken: response.refreshToken,
       );
 
-      // TODO: replace with user from server
-      await sessionModel.createSession(User.none(), token);
+      // Stocker le token
+      await SessionTokenModel.storeTokens(token);
+
+      final user = User.none();
+      
+      // Créer la session
+      await sessionModel.createSession(user, token);
 
       _setLoading(false);
       return true;
@@ -138,7 +143,7 @@ class TwoFAViewModel extends ChangeNotifier {
 
       _setLoading(false);
       return false;
-    } catch (_) {
+    } catch (e) {
       _errorMessage = 'Erreur inattendue';
       _setLoading(false);
       return false;
@@ -165,7 +170,7 @@ class TwoFAViewModel extends ChangeNotifier {
       _isResending = false;
       _startResendTimer();
       return true;
-    } catch (_) {
+    } catch (e) {
       _errorMessage = 'Impossible de renvoyer le code';
       _isResending = false;
       notifyListeners();

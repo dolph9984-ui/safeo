@@ -14,8 +14,8 @@ import 'package:securite_mobile/viewmodel/user_files_viewmodel.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SecureStorageService().initialize();
-  await SessionModel().resumeSession();
   DioClient.initialize();
+  await SessionModel().resumeSession();
 
   runApp(const MyApp());
 }

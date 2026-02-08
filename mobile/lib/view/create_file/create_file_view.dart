@@ -9,6 +9,8 @@ import 'package:securite_mobile/view/widgets/rename_file_dialog.dart';
 import 'package:securite_mobile/view/widgets/blurred_dialog.dart';
 import 'package:securite_mobile/view/widgets/file_preview.dart';
 import 'package:securite_mobile/view/widgets/file_uploader.dart';
+import 'package:securite_mobile/view/widgets/progress_dialog.dart';
+import 'package:securite_mobile/view/widgets/success_snackbar.dart';
 import 'package:securite_mobile/viewmodel/create_file_viewmodel.dart';
 
 class CreateFileView extends StatelessWidget {
@@ -44,6 +46,33 @@ class CreateFileView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 28,
           children: [
+            // Affichage de l'erreur
+            if (vm.errorMessage != null)
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.red.shade200),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.error_outline, color: Colors.red, size: 20),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        vm.errorMessage!,
+                        style: TextStyle(
+                          fontFamily: AppFonts.productSansRegular,
+                          fontSize: 14,
+                          color: Colors.red.shade900,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
             vm.selectedFile == null
                 ? FileUploader(
                     onTap: () {
@@ -97,7 +126,6 @@ class CreateFileView extends StatelessWidget {
                     color: AppColors.foreground,
                   ),
                 ),
-
                 FileVisibilityCard(
                   selected: vm.fileVisibility == FileVisibilityEnum.private,
                   onTap: () => vm.setFileVisibility(FileVisibilityEnum.private),
@@ -116,13 +144,72 @@ class CreateFileView extends StatelessWidget {
             ),
 
             Spacer(),
+
+            // Upload Button
             ElevatedButton(
-              onPressed: vm.selectedFile == null ? null : vm.uploadFile,
-              child: Text('Importer'),
+              onPressed: vm.selectedFile == null || vm.loading
+                  ? null
+                  : () => _handleUpload(context, vm),
+              child: vm.loading
+                  ? SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  : Text('Importer'),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _handleUpload(
+    BuildContext context,
+    CreateFileViewModel vm,
+  ) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.transparent,
+      animationStyle: AnimationStyle(duration: Duration(milliseconds: 0)),
+      builder: (dialogContext) {
+        return ListenableBuilder(
+          listenable: vm,
+          builder: (context, child) {
+            return ProgressDialog(
+              percent: vm.uploadProgress,
+              label: 'Upload en cours...',
+              onCancel: () {
+                if (vm.cancelToken != null && !vm.cancelToken!.isCancelled) {
+                  vm.cancelToken!.cancel("Annulé par l'utilisateur");
+                }
+              },
+            );
+          },
+        );
+      },
+    );
+
+    final success = await vm.uploadFile();
+
+    if (context.mounted) {
+      Navigator.of(context, rootNavigator: true).pop();
+    }
+
+    if (!success) return;
+
+    if (context.mounted) {
+      showSuccessSnackbar(context, 'Fichier uploadé avec succès');
+    }
+
+    if (context.mounted) {
+      context.go('/user-files');
+    }
+
+    vm.reset();
   }
 }

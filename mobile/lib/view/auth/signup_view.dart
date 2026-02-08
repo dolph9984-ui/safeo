@@ -113,12 +113,15 @@ class _SignupViewState extends State<SignupView> {
                   onPressed: signupVm.canSubmit
                       ? () async {
                           final response = await signupVm.submit();
-                          if (response != null && context.mounted) {
+                          
+                          if (response != null && 
+                              response.verificationToken.isNotEmpty && 
+                              context.mounted) {
+                            
                             context.go(
                               AppRoutes.twoFA,
                               extra: {
-                                'verificationToken':
-                                    response.verificationToken,
+                                'verificationToken': response.verificationToken,
                                 'mode': TwoFAMode.signup,
                                 'email': signupVm.email,
                               },

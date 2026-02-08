@@ -30,6 +30,7 @@ final GoRouter appRouter = GoRouter(
     if (!isLoggedIn &&
         !currentLocation.startsWith(AppRoutes.login) &&
         !currentLocation.startsWith(AppRoutes.signup) &&
+        !currentLocation.startsWith(AppRoutes.twoFA) && 
         !currentLocation.startsWith(AppRoutes.onboarding)) {
       return AppRoutes.onboarding;
     }

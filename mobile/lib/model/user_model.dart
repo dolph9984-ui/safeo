@@ -1,6 +1,7 @@
 import 'package:securite_mobile/services/auth/form_auth_service.dart';
 import 'package:securite_mobile/services/auth/oauth_service.dart';
 import 'package:securite_mobile/services/cache/user_cache_service.dart';
+import 'package:securite_mobile/services/user_service.dart';
 
 class User {
   final String uuid;
@@ -22,7 +23,7 @@ class User {
     required this.storageLimit,
     required this.storageUsed,
     required this.createdAt,
-    required this.imageUrl,
+    this.imageUrl,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -54,39 +55,38 @@ class User {
   }
 
   factory User.none() => User(
-        uuid: '0',
-        fullName: '',
-        email: '',
-        filesNbr: 0,
-        sharedFilesNbr: 0,
-        storageLimit: 0,
-        storageUsed: 0,
-        createdAt: DateTime.now(),
-        imageUrl: null,
-      );
+    uuid: '0',
+    fullName: '',
+    email: '',
+    filesNbr: 0,
+    sharedFilesNbr: 0,
+    storageLimit: 0,
+    storageUsed: 0,
+    createdAt: DateTime.now(),
+    imageUrl: null,
+  );
 }
 
 class UserModel {
   final UserCacheService _cacheService;
+  final UserService _userService;
 
   UserModel({
     UserCacheService? cacheService,
+    UserService? userService,
     OAuthService? oAuthService,
     FormAuthService? formAuthService,
-  }) : _cacheService = cacheService ?? UserCacheService(ttl: null);
+  })  : _cacheService = cacheService ?? UserCacheService(ttl: null),
+        _userService = userService ?? UserService();
+
 
   Future<User?> getUserFromServer() async {
-    return User(
-      uuid: '0',
-      fullName: 'Kirito EM',
-      email: 'kirito@gmail.com',
-      filesNbr: 5,
-      sharedFilesNbr: 0,
-      storageLimit: 1024 * 1024 * 1024 * 5,
-      storageUsed: 1024 * 1024 * 1024 * 2,
-      createdAt: DateTime.now(),
-      imageUrl: null,
-    );
+    try {
+      return await _userService.getCurrentUser();
+    } catch (e) {
+      print('Erreur lors de la récupération de l\'utilisateur: $e');
+      return null;
+    }
   }
 
   Future<User?> getUserFromCache() async {
@@ -101,19 +101,13 @@ class UserModel {
     await _cacheService.clear();
   }
 
+  //Récupérer tous les utilisateurs
   Future<List<User>?> getAllUsers() async {
-    return [
-      User(
-        uuid: '1',
-        fullName: 'Kirito EM',
-        email: 'kirito@gmail.com',
-        filesNbr: 5,
-        sharedFilesNbr: 0,
-        storageLimit: 1024 * 1024 * 1024 * 5,
-        storageUsed: 1024 * 1024 * 1024 * 2,
-        createdAt: DateTime.now(),
-        imageUrl: null,
-      ),
-    ];
+    try {
+      return await _userService.getAllUsers();
+    } catch (e) {
+      print('Erreur lors de la récupération des utilisateurs: $e');
+      return null;
+    }
   }
 }

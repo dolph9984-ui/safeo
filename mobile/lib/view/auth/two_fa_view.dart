@@ -199,7 +199,7 @@ class _TwoFAViewState extends State<TwoFAView> {
                           FocusScope.of(context).unfocus();
                           final success = await vm.verifyAndPersist();
                           if (success && context.mounted) {
-                            context.go(AppRoutes.home);
+                            context.go(AppRoutes.userFiles);
                           }
                         }
                       : null,
