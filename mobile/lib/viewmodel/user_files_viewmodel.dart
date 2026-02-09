@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:securite_mobile/enum/file_filter_enum.dart';
 import 'package:securite_mobile/enum/file_type_enum.dart';
+import 'package:securite_mobile/model/auth/session_token.dart';
 import 'package:securite_mobile/model/document_model.dart';
 import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/model/user_model.dart';
@@ -27,10 +28,12 @@ class UserFilesViewModel extends ChangeNotifier {
 
   User? get currentUser => _user;
 
-  void initUser() {
+  void initUser() async {
+    final token = await SessionTokenModel.getAccessToken();
+    print("acces: $token");
+
     if (sessionModel.session == null) {
       sessionModel.destroySession();
-      _user = User.none();
       return;
     }
     _user = sessionModel.session!.user;
@@ -38,7 +41,7 @@ class UserFilesViewModel extends ChangeNotifier {
   }
 
   void initFiles() {
-    fileModel.getUserFiles().then((res) {
+    fileModel.getUserDocuments().then((res) {
       _files = res;
       _filteredFiles = res;
       notifyListeners();

@@ -1,5 +1,6 @@
 import 'package:securite_mobile/model/auth/session_token.dart';
 import 'package:securite_mobile/model/user_model.dart';
+import 'package:securite_mobile/services/user_service.dart';
 
 class Session {
   final User user;
@@ -37,13 +38,18 @@ class SessionModel {
 
   Future<void> resumeSession() async {
     final sessionToken = await SessionTokenModel.getTokens();
-
     if (sessionToken == null) {
       return;
     }
 
-    User? user = await _userModel.getUserFromServer();
-    user ??= await _userModel.getUserFromCache();
+    UserServiceResponse userResponse = await _userModel.getUserFromServer();
+    if (userResponse.statusCode == 404) {
+      SessionTokenModel.deleteTokens();
+      _userModel.clearUserFromCache();
+      return;
+    }
+
+    User? user = await _userModel.getUserFromCache();
     user ??= User.none();
 
     session = Session(user: user, token: sessionToken);

@@ -57,7 +57,7 @@ class TrashViewModel extends ChangeNotifier {
   }
 
   void initFiles() {
-    documentModel.getTrashFiles().then((res) {
+    documentModel.getTrashDocuments().then((res) {
       _trashFiles = res;
       _filteredFiles = res;
       notifyListeners();

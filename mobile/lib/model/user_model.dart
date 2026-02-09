@@ -28,12 +28,12 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      uuid: json['uuid'] as String,
+      uuid: json['id'] as String,
       fullName: json['fullName'] as String,
       email: json['email'] as String,
-      filesNbr: json['filesNbr'] as int,
-      sharedFilesNbr: json['sharedFilesNbr'] as int,
-      storageLimit: json['storageLimit'] as int,
+      filesNbr: (json['filesNbr'] ?? 0) as int,
+      sharedFilesNbr: (json['sharedFilesNbr'] ?? 0) as int,
+      storageLimit: json['storageLimits'] as int,
       storageUsed: json['storageUsed'] as int,
       createdAt: DateTime.parse(json['createdAt'] as String),
       imageUrl: json['imageUrl'] as String?,
@@ -76,17 +76,11 @@ class UserModel {
     UserService? userService,
     OAuthService? oAuthService,
     FormAuthService? formAuthService,
-  })  : _cacheService = cacheService ?? UserCacheService(ttl: null),
-        _userService = userService ?? UserService();
+  }) : _cacheService = cacheService ?? UserCacheService(ttl: null),
+       _userService = userService ?? UserService();
 
-
-  Future<User?> getUserFromServer() async {
-    try {
-      return await _userService.getCurrentUser();
-    } catch (e) {
-      print('Erreur lors de la récupération de l\'utilisateur: $e');
-      return null;
-    }
+  Future<UserServiceResponse> getUserFromServer() async {
+    return await _userService.getMe();
   }
 
   Future<User?> getUserFromCache() async {
@@ -101,13 +95,7 @@ class UserModel {
     await _cacheService.clear();
   }
 
-  //Récupérer tous les utilisateurs
-  Future<List<User>?> getAllUsers() async {
-    try {
-      return await _userService.getAllUsers();
-    } catch (e) {
-      print('Erreur lors de la récupération des utilisateurs: $e');
-      return null;
-    }
+  Future<UserServiceResponse> getAllUsers() async {
+    return await _userService.getAllUsers();
   }
 }

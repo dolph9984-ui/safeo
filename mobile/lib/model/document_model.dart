@@ -78,7 +78,6 @@ class Document {
     );
   }
 
-  /// Crée une copie du Document avec des champs optionnellement modifiés
   Document copyWith({
     String? id,
     String? originalName,
@@ -107,7 +106,6 @@ class Document {
       username: username ?? this.username,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      // Crée une nouvelle liste si viewers est fourni sinon garde l’ancienne
       viewers: viewers ?? this.viewers?.map((v) => v).toList(),
     );
   }
@@ -116,15 +114,15 @@ class Document {
 class DocumentModel {
   final _uploadService = FileUploadService();
 
-  Future<List<Document>?> getUserFiles() async {
+  Future<List<Document>?> getUserDocuments() async {
     return null;
   }
 
-  Future<List<Document>?> getSharedFiles() async {
+  Future<List<Document>?> getSharedDocuments() async {
     return null;
   }
 
-  Future<List<Document>?> getTrashFiles() async {
+  Future<List<Document>?> getTrashDocuments() async {
     return null;
   }
 

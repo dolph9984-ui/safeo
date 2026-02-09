@@ -40,7 +40,7 @@ class SharedFilesViewModel extends ChangeNotifier {
   }
 
   void initFiles() {
-    fileModel.getSharedFiles().then((res) {
+    fileModel.getSharedDocuments().then((res) {
       _sharedFiles = res;
       _filteredFiles = res;
       notifyListeners();

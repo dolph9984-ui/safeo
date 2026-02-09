@@ -57,8 +57,8 @@ class SearchPageViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final userFiles = await documentModel.getUserFiles();
-      final sharedFiles = await documentModel.getSharedFiles();
+      final userFiles = await documentModel.getUserDocuments();
+      final sharedFiles = await documentModel.getSharedDocuments();
 
       _allFiles = [...?userFiles, ...?sharedFiles];
     } catch (e) {

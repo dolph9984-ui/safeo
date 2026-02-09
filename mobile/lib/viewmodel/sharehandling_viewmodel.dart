@@ -60,7 +60,8 @@ class ShareHandlingViewModel extends ChangeNotifier {
 
   Future<void> _loadAvailableUsers() async {
     try {
-      final users = await _userModel.getAllUsers();
+      final usersResponse = await _userModel.getAllUsers();
+      final users = usersResponse.data;
       if (users != null) {
         _availableUsers = users;
       }
@@ -71,7 +72,7 @@ class ShareHandlingViewModel extends ChangeNotifier {
 
   Future<void> _loadCurrentFile(String fileId) async {
     try {
-      final files = await _documentModel.getUserFiles();
+      final files = await _documentModel.getUserDocuments();
       _currentFile = files?.firstWhere(
         (f) => f.id == fileId,
         orElse: () => files.first,
