@@ -109,7 +109,7 @@ class SharedFilesViewModel extends ChangeNotifier {
   void renameFile(Document file, {required String newName}) async {
     if (file.originalName == newName) return;
 
-    fileModel.renameFile(file, newName: newName).then((res) {
+    fileModel.renameDocument(file, newName: newName).then((res) {
       int index = _sharedFiles?.indexOf(file) ?? -1;
       if (index != -1) {
         _sharedFiles![index] = file.copyWith(originalName: newName);
@@ -123,7 +123,7 @@ class SharedFilesViewModel extends ChangeNotifier {
   }
 
   void deleteFile(Document file) async {
-    fileModel.deleteFile(file).then((res) {
+    fileModel.deleteDocument(file).then((res) {
       _sharedFiles?.removeWhere((e) => e == file);
       notifyListeners();
     });

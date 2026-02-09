@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:securite_mobile/constants/storage_keys.dart';
 import 'package:securite_mobile/services/security/secure_storage_service.dart';
 
@@ -14,8 +15,8 @@ class SessionToken {
 }
 
 class SessionTokenModel {
-
   static Future<void> storeAccessToken(String accessToken) async {
+    debugPrint('Access token : $accessToken');
     await SecureStorageService().write(StorageKeys.accessToken, accessToken);
   }
 

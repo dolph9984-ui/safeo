@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:securite_mobile/model/user_model.dart';
 import 'package:securite_mobile/model/viewer_model.dart';
 import 'package:securite_mobile/services/file_upload_service.dart';
@@ -118,9 +119,7 @@ class DocumentModel {
   final _dio = DioClient.dio;
 
   Future<List<Document>> getUserDocuments() async {
-    return [];
-
-    final response = await _dio.get('v1/api/document');
+    final response = await _dio.get('/v1/api/document');
 
     final List data = response.data['documents'];
 
@@ -143,8 +142,6 @@ class DocumentModel {
     Document document, {
     required List<User> shareTo,
   }) async {}
-
-  Future<void> renameFile(Document document, {required String newName}) async {}
 
   Future<void> downloadFile(Document document) async {}
 
@@ -190,13 +187,35 @@ class DocumentModel {
       final uploadResponse = UploadDocumentResponse.fromJson(response);
       return uploadResponse.document;
     } on DioException catch (e) {
+      debugPrint(e.toString());
       rethrow;
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<void> deleteFile(Document document) async {}
+  Future<bool> renameDocument(
+    Document document, {
+    required String newName,
+  }) async {
+    try {
+      final response = await _dio.patch('/v1/api/document/${document.id}');
+      return (response.data['statusCode'] as int) == 200;
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> deleteDocument(Document document) async {
+    try {
+      final response = await _dio.delete('/v1/api/document/${document.id}');
+      return (response.data['statusCode'] as int) == 200;
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
+    }
+  }
 
   Future<void> restoreFile(Document document) async {}
 

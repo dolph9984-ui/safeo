@@ -80,7 +80,7 @@ class UserFilesViewModel extends ChangeNotifier {
   void renameFile(Document file, {required String newName}) async {
     if (file.originalName == newName) return;
 
-    fileModel.renameFile(file, newName: newName).then((res) {
+    fileModel.renameDocument(file, newName: newName).then((res) {
       int index = _files?.indexOf(file) ?? -1;
       if (index != -1) _files![index] = file.copyWith(originalName: newName);
       notifyListeners();
@@ -92,7 +92,7 @@ class UserFilesViewModel extends ChangeNotifier {
   }
 
   void deleteFile(Document file) async {
-    fileModel.deleteFile(file).then((res) {
+    fileModel.deleteDocument(file).then((res) {
       _files?.removeWhere((e) => e == file);
       notifyListeners();
     });

@@ -67,7 +67,10 @@ class StorageCard extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      '${FileSizeUtil.bytesToGb(used)}GB',
+                      totalStorage >= 1024 * 1024 * 1024
+                          ? '${FileSizeUtil.bytesToGb(used)}GB'
+                          : '${FileSizeUtil.bytesToMb(used)}MB',
+
                       style: TextStyle(
                         fontFamily: AppFonts.productSansMedium,
                         fontSize: 15,
@@ -75,7 +78,10 @@ class StorageCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      ' / ${FileSizeUtil.bytesToGb(totalStorage)}GB',
+                      totalStorage >= 1024 * 1024 * 1024
+                          ? ' / ${FileSizeUtil.bytesToGb(totalStorage)}GB'
+                          : ' / ${FileSizeUtil.bytesToMb(totalStorage)}MB',
+
                       style: TextStyle(
                         fontFamily: AppFonts.productSansRegular,
                         fontWeight: FontWeight.w400,
@@ -98,11 +104,11 @@ class StorageCard extends StatelessWidget {
 
   static Widget spaceIndicator(int used, int total) {
     double ratio = (used / total).clamp(0.0, 1.0);
-    if (ratio < 0.1) ratio = 0;
 
     return LayoutBuilder(
       builder: (context, constraints) {
         return Container(
+          clipBehavior: Clip.hardEdge,
           height: 10,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(50),
