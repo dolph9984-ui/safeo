@@ -4,36 +4,28 @@ import 'package:flutter/services.dart';
 class BiometricAuthService {
   final LocalAuthentication _auth = LocalAuthentication();
 
-  // Vérifier si la biométrie est disponible
-  Future<bool> canCheckBiometrics() async {
+  // Vérifie si la biométrie est utilisable
+  Future<bool> canAuthenticate() async {
     try {
       return await _auth.canCheckBiometrics;
-    } on PlatformException {
+    } on PlatformException catch (e) {
+      print('Erreur biométrie: $e');
       return false;
     }
   }
 
-  // Obtenir les types de biométrie disponibles
-  Future<List<BiometricType>> getAvailableBiometrics() async {
-    try {
-      return await _auth.getAvailableBiometrics();
-    } on PlatformException {
-      return <BiometricType>[];
-    }
-  }
-
-  // Authentifier avec biométrie
+  // Authentification biométrique
   Future<bool> authenticate() async {
     try {
-      final bool canAuthenticateWithBiometrics = await _auth.canCheckBiometrics;
-      final bool canAuthenticate = canAuthenticateWithBiometrics || await _auth.isDeviceSupported();
+      final bool canAuth = await _auth.canCheckBiometrics;
 
-      if (!canAuthenticate) {
+      if (!canAuth) {
+        print('Biométrie non disponible');
         return false;
       }
 
       return await _auth.authenticate(
-        localizedReason: 'Authentifiez-vous pour accéder',
+        localizedReason: 'Authentifiez-vous pour continuer',
       );
     } on PlatformException catch (e) {
       print('Erreur d\'authentification: $e');

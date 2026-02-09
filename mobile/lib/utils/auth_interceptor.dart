@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:securite_mobile/model/auth/session_token.dart';
 import 'package:securite_mobile/model/session_model.dart';
 
@@ -14,7 +15,7 @@ class AuthInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    print('REQUEST: ${options.uri}');
+    debugPrint('REQUEST: ${options.uri}');
     if (!options.path.contains('/auth/')) {
       final accessToken = await SessionTokenModel.getAccessToken();
 
@@ -28,7 +29,7 @@ class AuthInterceptor extends Interceptor {
 
   @override
   onResponse(response, handler) {
-    print('RESPONSE: ${response.data}');
+    debugPrint('RESPONSE: ${response.data}');
     return handler.next(response);
   }
 

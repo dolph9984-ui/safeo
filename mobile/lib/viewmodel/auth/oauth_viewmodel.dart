@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:securite_mobile/main.dart'; // AJOUTEZ CETTE LIGNE
+import 'package:securite_mobile/model/auth/session_token.dart';
 import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/model/user_model.dart';
 import 'package:securite_mobile/services/auth/oauth_service.dart';
@@ -35,6 +35,8 @@ class OAuthViewModel extends ChangeNotifier {
 
     try {
       final token = await _oAuthService.login();
+      SessionTokenModel.storeTokens(token);
+
       final userResponse = await userModel.getUserFromServer();
 
       await sessionModel.createSession(

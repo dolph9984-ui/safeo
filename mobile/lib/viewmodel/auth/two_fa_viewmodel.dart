@@ -120,7 +120,7 @@ class TwoFAViewModel extends ChangeNotifier {
       await SessionTokenModel.storeTokens(token);
 
       final user = User.none();
-      
+
       // Créer la session
       await sessionModel.createSession(user, token);
 
