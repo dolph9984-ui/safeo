@@ -44,7 +44,6 @@ class OAuthService {
             data[ApiRequestKeys.refreshToken]?.toString() ?? '',
       };
     } catch (e) {
-      print('Erreur exchangeTokens: $e');
       rethrow;
     }
   }

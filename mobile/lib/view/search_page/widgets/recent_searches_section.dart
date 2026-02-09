@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
-import 'package:securite_mobile/model/file_model.dart';
+import 'package:securite_mobile/model/document_model.dart';
 import 'package:securite_mobile/view/search_page/widgets/search_file_item.dart';
 
 class RecentSearchesSection extends StatelessWidget {
-  final List<AppFile> recentFiles;
+  final List<Document> recentFiles;
   final VoidCallback onClearAll;
-  final Function(AppFile)? onFileTap;
+  final Function(Document)? onFileTap;
 
   const RecentSearchesSection({
     super.key,

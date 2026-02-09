@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
 import 'package:securite_mobile/enum/month_enum.dart';
-import 'package:securite_mobile/model/file_model.dart';
+import 'package:securite_mobile/model/document_model.dart';
 import 'package:securite_mobile/view/widgets/file_thumbnail.dart';
 
 class SearchFileItem extends StatelessWidget {
-  final AppFile file;
+  final Document file;
   final String? searchQuery;
   final VoidCallback? onTap;
 
@@ -44,10 +44,10 @@ class SearchFileItem extends StatelessWidget {
             children: [
               FileThumbnail(
                 file: PlatformFile.fromMap({
-                  "name": file.name,
+                  "name": file.originalName,
                   "path": "",
                   "bytes": Uint8List(0),
-                  "size": file.size,
+                  "size": file.fileSize,
                 }),
                 height: 40,
                 width: 40,
@@ -72,7 +72,7 @@ class SearchFileItem extends StatelessWidget {
                   ],
                 ),
               ),
-              if (file.isShared)
+              if (file.accessLevel == 'shareable')
                 Icon(
                   Icons.people_outline,
                   size: 16,
@@ -88,7 +88,7 @@ class SearchFileItem extends StatelessWidget {
   Widget _buildHighlightedText() {
     if (searchQuery == null || searchQuery!.isEmpty) {
       return Text(
-        file.name,
+        file.originalName,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
           fontFamily: AppFonts.productSansMedium,
@@ -98,13 +98,13 @@ class SearchFileItem extends StatelessWidget {
       );
     }
 
-    final lowerFileName = file.name.toLowerCase();
+    final lowerFileName = file.originalName.toLowerCase();
     final lowerQuery = searchQuery!.toLowerCase();
     final index = lowerFileName.indexOf(lowerQuery);
 
     if (index == -1) {
       return Text(
-        file.name,
+        file.originalName,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
           fontFamily: AppFonts.productSansMedium,
@@ -114,9 +114,9 @@ class SearchFileItem extends StatelessWidget {
       );
     }
 
-    final beforeMatch = file.name.substring(0, index);
-    final match = file.name.substring(index, index + searchQuery!.length);
-    final afterMatch = file.name.substring(index + searchQuery!.length);
+    final beforeMatch = file.originalName.substring(0, index);
+    final match = file.originalName.substring(index, index + searchQuery!.length);
+    final afterMatch = file.originalName.substring(index + searchQuery!.length);
 
     return RichText(
       overflow: TextOverflow.ellipsis,

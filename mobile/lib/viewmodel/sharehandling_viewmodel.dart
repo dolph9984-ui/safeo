@@ -1,31 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:securite_mobile/model/file_model.dart';
+import 'package:securite_mobile/model/document_model.dart';
 import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/model/user_model.dart';
 
 class ShareHandlingViewModel extends ChangeNotifier {
-  final FileModel _fileModel;
+  final DocumentModel _documentModel;
   final UserModel _userModel;
   final SessionModel _sessionModel;
 
-  AppFile? _currentFile;
+  Document? _currentFile;
   User? _currentUser;
   List<User> _availableUsers = [];
   List<Map<String, dynamic>> _members = [];
   bool _isLoading = false;
 
-  AppFile? get currentFile => _currentFile;
+  Document? get currentFile => _currentFile;
+
   List<Map<String, dynamic>> get allMembers => _members;
+
   bool get isLoading => _isLoading;
 
   ShareHandlingViewModel({
     required String fileId,
-    FileModel? fileModel,
+    DocumentModel? fileModel,
     UserModel? userModel,
     SessionModel? sessionModel,
-  })  : _fileModel = fileModel ?? FileModel(),
-        _userModel = userModel ?? UserModel(),
-        _sessionModel = sessionModel ?? SessionModel() {
+  }) : _documentModel = fileModel ?? DocumentModel(),
+       _userModel = userModel ?? UserModel(),
+       _sessionModel = sessionModel ?? SessionModel() {
     _init(fileId);
   }
 
@@ -69,7 +71,7 @@ class ShareHandlingViewModel extends ChangeNotifier {
 
   Future<void> _loadCurrentFile(String fileId) async {
     try {
-      final files = await _fileModel.getUserFiles();
+      final files = await _documentModel.getUserFiles();
       _currentFile = files?.firstWhere(
         (f) => f.id == fileId,
         orElse: () => files.first,
@@ -85,20 +87,20 @@ class ShareHandlingViewModel extends ChangeNotifier {
     _members = [];
 
     _members.add({
-      'id': _currentFile!.owner.uuid,
-      'name': _currentFile!.owner.fullName,
-      'email': _currentFile!.owner.email,
+      'id': _currentFile!.userId,
+      'name': _currentFile!.userId,
+      'email': _currentFile!.userId,
       'isOwner': true,
     });
 
-    if (_currentFile!.viewersName != null && _currentFile!.viewersName!.isNotEmpty) {
-      for (final viewerEmail in _currentFile!.viewersName!) {
+    if (_currentFile!.viewers != null && _currentFile!.viewers!.isNotEmpty) {
+      for (final viewerUser in _currentFile!.viewers!) {
         final viewer = _availableUsers.firstWhere(
-          (user) => user.email.toLowerCase() == viewerEmail.toLowerCase(),
+          (user) => user.email.toLowerCase() == viewerUser.email.toLowerCase(),
           orElse: () => User(
-            uuid: 'unknown-${viewerEmail}',
-            fullName: viewerEmail.split('@').first,
-            email: viewerEmail,
+            uuid: 'unknown-${viewerUser.email}',
+            fullName: viewerUser.email.split('@').first,
+            email: viewerUser.email,
             filesNbr: 0,
             sharedFilesNbr: 0,
             storageLimit: 0,

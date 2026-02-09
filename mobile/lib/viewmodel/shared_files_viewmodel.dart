@@ -1,26 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:securite_mobile/enum/file_filter_enum.dart';
 import 'package:securite_mobile/enum/file_type_enum.dart';
-import 'package:securite_mobile/model/file_model.dart';
+import 'package:securite_mobile/model/document_model.dart';
 import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/model/user_model.dart';
 import 'package:securite_mobile/utils/file_name_util.dart';
 
 class SharedFilesViewModel extends ChangeNotifier {
   final userModel = UserModel();
-  final fileModel = FileModel();
+  final fileModel = DocumentModel();
   final sessionModel = SessionModel();
 
   final TextEditingController searchController = TextEditingController();
 
   User? _user;
-  List<AppFile>? _sharedFiles;
-  List<AppFile>? _filteredFiles;
+  List<Document>? _sharedFiles;
+  List<Document>? _filteredFiles;
 
   FileFilterEnum _currentFilter = FileFilterEnum.all;
 
-  List<AppFile> get sharedFiles => _filteredFiles ?? [];
+  List<Document> get sharedFiles => _filteredFiles ?? [];
+
   FileFilterEnum get currentFilter => _currentFilter;
+
   User? get currentUser => _user;
 
   SharedFilesViewModel() {
@@ -53,7 +55,7 @@ class SharedFilesViewModel extends ChangeNotifier {
   void _applyFilters() {
     final query = searchController.text.toLowerCase();
 
-    List<AppFile> filtered = _sharedFiles ?? [];
+    List<Document> filtered = _sharedFiles ?? [];
 
     const filterMap = {
       FileFilterEnum.pdf: FileTypeEnum.pdf,
@@ -67,23 +69,24 @@ class SharedFilesViewModel extends ChangeNotifier {
     if (targetType != null) {
       filtered = filtered.where((file) {
         return FileTypeEnum.fromExtension(
-          FileNameUtil.getExtension(file.name),
-        ) == targetType;
+              FileNameUtil.getExtension(file.originalName),
+            ) ==
+            targetType;
       }).toList();
     }
 
     if (_currentFilter == FileFilterEnum.owner && _user != null) {
-      filtered = filtered.where((file) => file.owner.uuid == _user!.uuid).toList();
+      filtered = filtered.where((file) => file.userId == _user!.uuid).toList();
     } else if (_currentFilter == FileFilterEnum.viewer && _user != null) {
       filtered = filtered.where((file) {
-        return file.owner.uuid != _user!.uuid &&
-            (file.viewersName?.contains(_user!.email) ?? false);
+        return file.userId != _user!.uuid &&
+            (file.viewers?.any((viewer) => viewer.id == _user!.uuid) ?? false);
       }).toList();
     }
 
     if (query.isNotEmpty) {
       filtered = filtered.where((file) {
-        return file.name.toLowerCase().contains(query);
+        return file.originalName.toLowerCase().contains(query);
       }).toList();
     }
 
@@ -91,7 +94,7 @@ class SharedFilesViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  AppFile? getFileById(String id) {
+  Document? getFileById(String id) {
     try {
       return _sharedFiles?.firstWhere((file) => file.id == id);
     } catch (e) {
@@ -99,25 +102,27 @@ class SharedFilesViewModel extends ChangeNotifier {
     }
   }
 
-  void openFile(AppFile file) async {
+  void openFile(Document file) async {
     fileModel.openFile(file);
   }
 
-  void renameFile(AppFile file, {required String newName}) async {
-    if (file.name == newName) return;
+  void renameFile(Document file, {required String newName}) async {
+    if (file.originalName == newName) return;
 
     fileModel.renameFile(file, newName: newName).then((res) {
       int index = _sharedFiles?.indexOf(file) ?? -1;
-      if (index != -1) _sharedFiles![index] = file.copyWith(name: newName);
+      if (index != -1) {
+        _sharedFiles![index] = file.copyWith(originalName: newName);
+      }
       notifyListeners();
     });
   }
 
-  void downloadFile(AppFile file) async {
+  void downloadFile(Document file) async {
     fileModel.downloadFile(file);
   }
 
-  void deleteFile(AppFile file) async {
+  void deleteFile(Document file) async {
     fileModel.deleteFile(file).then((res) {
       _sharedFiles?.removeWhere((e) => e == file);
       notifyListeners();

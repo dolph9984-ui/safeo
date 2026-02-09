@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:securite_mobile/model/file_model.dart'; // ✅ Importer AppFile
+import 'package:securite_mobile/model/document_model.dart'; // ✅ Importer Document
 import 'package:securite_mobile/view/trash/widgets/trash_item.dart';
 
 class TrashList extends StatelessWidget {
-  final List<AppFile> trashedFiles; // ✅ Changé de TrashedFile à AppFile
+  final List<Document> trashedFiles; // ✅ Changé de TrashedFile à Document
   final Set<String> selectedIds;
   final bool isSelectionMode;
   final Function(String id) onItemTap;

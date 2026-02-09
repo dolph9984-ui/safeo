@@ -33,12 +33,8 @@ class FileUploadService {
         'v1/api/document/upload',
         data: formData,
         onSendProgress: onProgress,
-        cancelToken: cancelToken, 
-        options: Options(
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        ),
+        cancelToken: cancelToken,
+        options: Options(headers: {'Content-Type': 'multipart/form-data'}),
       );
 
       if (response.statusCode == 201) {
@@ -68,9 +64,18 @@ class FileUploadService {
     }
 
     const allowedExtensions = [
-      'pdf', 'doc', 'docx', 'xls', 'xlsx',
-      'ppt', 'pptx', 'txt', 'csv',
-      'jpg', 'jpeg', 'png',
+      'pdf',
+      'doc',
+      'docx',
+      'xls',
+      'xlsx',
+      'ppt',
+      'pptx',
+      'txt',
+      'csv',
+      'jpg',
+      'jpeg',
+      'png',
     ];
 
     if (!allowedExtensions.contains(extension.toLowerCase())) {

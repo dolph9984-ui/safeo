@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
-import 'package:securite_mobile/model/file_model.dart';
+import 'package:securite_mobile/model/document_model.dart';
 import 'package:securite_mobile/model/user_model.dart';
 import 'package:securite_mobile/router/app_routes.dart';
 import 'package:securite_mobile/services/security/rbac_service.dart';
@@ -14,7 +14,7 @@ import 'package:securite_mobile/view/widgets/rename_file_dialog.dart';
 import 'package:securite_mobile/view/widgets/success_snackbar.dart';
 
 class UnifiedFileBottomSheet extends StatelessWidget {
-  final AppFile file;
+  final Document file;
   final User currentUser;
   final Function()? onOpenTap;
   final Function()? onDownloadTap;
@@ -90,7 +90,9 @@ class UnifiedFileBottomSheet extends StatelessWidget {
             showDialog(
               context: context,
               barrierColor: Colors.transparent,
-              animationStyle: AnimationStyle(duration: Duration(milliseconds: 0)),
+              animationStyle: AnimationStyle(
+                duration: Duration(milliseconds: 0),
+              ),
               builder: (context) {
                 return BlurredDialog(
                   popOnOutsideDialogTap: false,
@@ -101,7 +103,7 @@ class UnifiedFileBottomSheet extends StatelessWidget {
                       }
                       return null;
                     },
-                    initialName: file.name,
+                    initialName: file.originalName,
                     onCancelPress: () {
                       context.pop();
                       context.pop();
@@ -110,7 +112,10 @@ class UnifiedFileBottomSheet extends StatelessWidget {
                       if (onRenameTap != null) {
                         onRenameTap!(newName);
                       } else {
-                        showSuccessSnackbar(context, 'Fichier renommé en "$newName"');
+                        showSuccessSnackbar(
+                          context,
+                          'Fichier renommé en "$newName"',
+                        );
                       }
                       context.pop();
                       context.pop();
@@ -165,11 +170,13 @@ class UnifiedFileBottomSheet extends StatelessWidget {
           onTap: () {
             showDialog(
               barrierColor: Colors.transparent,
-              animationStyle: AnimationStyle(duration: Duration(milliseconds: 0)),
+              animationStyle: AnimationStyle(
+                duration: Duration(milliseconds: 0),
+              ),
               context: context,
               builder: (context) {
                 return ConfirmDialog(
-                  title: 'Placer "${file.name}" dans la corbeille ?',
+                  title: 'Placer "${file.originalName}" dans la corbeille ?',
                   description: null,
                   cancelLabel: 'Annuler',
                   confirmLabel: 'Déplacer vers la corbeille',
@@ -178,7 +185,10 @@ class UnifiedFileBottomSheet extends StatelessWidget {
                     if (onDeleteTap != null) {
                       onDeleteTap!();
                     } else {
-                      showSuccessSnackbar(context, 'Fichier déplacé vers la corbeille');
+                      showSuccessSnackbar(
+                        context,
+                        'Fichier déplacé vers la corbeille',
+                      );
                     }
                     context.pop();
                     context.pop();

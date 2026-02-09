@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:securite_mobile/enum/month_enum.dart';
-import 'package:securite_mobile/model/file_model.dart';
+import 'package:securite_mobile/model/document_model.dart';
 import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/utils/file_size_util.dart';
 
@@ -10,7 +10,7 @@ import '../../constants/app_fonts.dart';
 import 'blurred_dialog.dart';
 
 class FileInfo extends StatelessWidget {
-  final AppFile file;
+  final Document file;
 
   const FileInfo({super.key, required this.file});
 
@@ -29,7 +29,7 @@ class FileInfo extends StatelessWidget {
           spacing: 8,
           children: [
             Text(
-              file.name,
+              file.originalName,
               style: TextStyle(
                 color: AppColors.foreground,
                 fontSize: 20,
@@ -44,14 +44,14 @@ class FileInfo extends StatelessWidget {
               children: [
                 _buildInfoRow(
                   'Taille',
-                  '${FileSizeUtil.bytesToMb(file.size)} MB',
+                  '${FileSizeUtil.bytesToMb(file.fileSize)} MB',
                 ),
-                _buildInfoRow('Type', file.type.name.toUpperCase()),
+                _buildInfoRow('Type', file.fileMimeType.toUpperCase()),
                 _buildInfoRow('Partagé le', _formatDate(file.updatedAt)),
-                _buildInfoRow('Propriétaire', file.owner.fullName),
+                _buildInfoRow('Propriétaire', file.username),
                 _buildInfoRow(
                   'Votre rôle',
-                  SessionModel().session?.user.fullName == file.owner.fullName
+                  SessionModel().session?.user.uuid == file.userId
                       ? 'Propriétaire'
                       : 'Lecteur',
                 ),

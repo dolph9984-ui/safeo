@@ -14,6 +14,7 @@ class AuthInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
+    print('REQUEST : ${options.uri}');
     if (!options.path.contains('/auth/')) {
       final accessToken = await SessionTokenModel.getAccessToken();
 

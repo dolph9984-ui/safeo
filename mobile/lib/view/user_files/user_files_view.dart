@@ -7,7 +7,6 @@ import 'package:securite_mobile/view/shared_files/wigdet/filter_bottom_sheet.dar
 import 'package:securite_mobile/view/user_files/widgets/file_item.dart';
 import 'package:securite_mobile/view/user_files/widgets/files_list.dart';
 import 'package:securite_mobile/view/user_files/widgets/storage_card.dart';
-import 'package:securite_mobile/view/widgets/file_info_bottom_sheet.dart';
 import 'package:securite_mobile/view/widgets/user_bottom_sheet.dart';
 import 'package:securite_mobile/viewmodel/user_files_viewmodel.dart';
 
@@ -69,8 +68,8 @@ class _UserFilesViewState extends State<UserFilesView> {
           files: vm.filteredFiles
               .map(
                 (file) => FileItem(
-                  fileName: file.name,
-                  fileSize: file.size,
+                  fileName: file.originalName,
+                  fileSize: file.fileSize,
                   dateTime: file.createdAt,
                   onButtonTap: (String id) {
                     if (vm.currentUser != null) { // MODIFICATION

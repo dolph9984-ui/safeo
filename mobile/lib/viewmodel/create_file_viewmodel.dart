@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
+
+import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
-import 'package:dio/dio.dart';
 import 'package:securite_mobile/enum/file_visibility_enum.dart';
-import 'package:securite_mobile/model/file_model.dart';
+import 'package:securite_mobile/model/document_model.dart';
 
 class CreateFileViewModel extends ChangeNotifier {
-  final FileModel model = FileModel();
+  final model = DocumentModel();
 
   bool loading = false;
   FilePickerResult? selectedFile;
@@ -17,9 +17,10 @@ class CreateFileViewModel extends ChangeNotifier {
 
   int _uploadProgress = 0;
   String? _errorMessage;
+  String? uploadMessage;
 
   CancelToken? cancelToken;
-  
+
   bool _isCancelling = false;
 
   Timer? _debounceTimer;
@@ -36,7 +37,9 @@ class CreateFileViewModel extends ChangeNotifier {
       : 0;
 
   int get uploadProgress => _uploadProgress;
+
   String? get errorMessage => _errorMessage;
+
   bool get isCancelling => _isCancelling;
 
   void setFileVisibility(FileVisibilityEnum newVisibility) {
@@ -58,14 +61,13 @@ class CreateFileViewModel extends ChangeNotifier {
 
   void _setUploadProgress(int progress) {
     _uploadProgress = progress;
-    
+
     _debounceTimer?.cancel();
-    
+
     if (progress == 0 || progress == 100) {
       notifyListeners();
       return;
     }
-    
 
     _debounceTimer = Timer(Duration(milliseconds: 50), () {
       notifyListeners();
@@ -75,20 +77,6 @@ class CreateFileViewModel extends ChangeNotifier {
   void _setErrorMessage(String? message) {
     _errorMessage = message;
     notifyListeners();
-  }
-
-  void cancelUpload() {
-    if (_isCancelling) return; 
-    if (cancelToken == null || cancelToken!.isCancelled) return;
-    
-    _isCancelling = true;
-    notifyListeners();
-    
-    try {
-      cancelToken!.cancel("Annulé par l'utilisateur");
-    } catch (e) {
-      debugPrint('Erreur lors de l\'annulation: $e');
-    }
   }
 
   void unselectFile() {
@@ -107,7 +95,17 @@ class CreateFileViewModel extends ChangeNotifier {
     try {
       selectedFile = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: ['pdf', 'doc', 'docx', 'csv', 'jpg', 'jpeg', 'png', 'xls', 'xlsx'],
+        allowedExtensions: [
+          'pdf',
+          'doc',
+          'docx',
+          'csv',
+          'jpg',
+          'jpeg',
+          'png',
+          'xls',
+          'xlsx',
+        ],
         withData: true,
       );
 
@@ -139,6 +137,21 @@ class CreateFileViewModel extends ChangeNotifier {
     return platformFile.bytes;
   }
 
+  void cancelUpload() {
+    if (_isCancelling) return;
+    if (cancelToken == null || cancelToken!.isCancelled) return;
+
+    _isCancelling = true;
+    notifyListeners();
+
+    try {
+      cancelToken!.cancel("Annulé par l'utilisateur");
+      uploadMessage = 'Upload annulé par l\'utilisateur';
+    } catch (e) {
+      debugPrint('Erreur lors de l\'annulation: $e');
+    }
+  }
+
   Future<bool> uploadFile() async {
     if (selectedFile == null) {
       _setErrorMessage('Aucun fichier sélectionné');
@@ -160,12 +173,13 @@ class CreateFileViewModel extends ChangeNotifier {
       setLoading(true);
       _setUploadProgress(0);
       _setErrorMessage(null);
-      _isCancelling = false; 
+      _isCancelling = false;
 
       cancelToken = CancelToken();
 
-      final accessLevel =
-          fileVisibility == FileVisibilityEnum.private ? 'private' : 'shareable';
+      final accessLevel = fileVisibility == FileVisibilityEnum.private
+          ? 'private'
+          : 'shareable';
 
       await model.uploadFile(
         bytes: fileBytes,
@@ -177,12 +191,17 @@ class CreateFileViewModel extends ChangeNotifier {
 
       setLoading(false);
       _setUploadProgress(100);
+      uploadMessage = 'Upload réussi';
+
       return true;
     } on DioException catch (e) {
       if (CancelToken.isCancel(e)) {
         _setErrorMessage('Upload annulé');
+        uploadMessage = 'Upload annulé par l\'utilisateur';
       } else {
         _setErrorMessage('Erreur lors de l\'upload');
+        uploadMessage = 'Erreur lors de l\'upload';
+
         debugPrint('DioException uploadFile: $e');
       }
       setLoading(false);
@@ -192,6 +211,7 @@ class CreateFileViewModel extends ChangeNotifier {
       setLoading(false);
       _setUploadProgress(0);
       _setErrorMessage('Erreur inattendue');
+      uploadMessage = 'Erreur lors de l\'upload';
       debugPrint('Exception uploadFile: $e');
       return false;
     } finally {

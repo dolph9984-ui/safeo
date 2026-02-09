@@ -33,7 +33,6 @@ class OAuthViewModel extends ChangeNotifier {
 
     try {
       final token = await _oAuthService.login();
-      // TODO : replace with user from server
       await sessionModel.createSession(User.none(), token);
       return true;
     } on PlatformException catch (e) {

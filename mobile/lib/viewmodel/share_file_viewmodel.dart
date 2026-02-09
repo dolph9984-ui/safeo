@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:securite_mobile/model/file_model.dart';
+import 'package:securite_mobile/model/document_model.dart';
 import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/model/user_model.dart';
 
 class ShareFileViewModel extends ChangeNotifier {
-  final FileModel _fileModel;
+  final DocumentModel _documentModel;
   final UserModel _userModel;
   final SessionModel _sessionModel;
   final TextEditingController searchController = TextEditingController();
 
-  AppFile? _currentFile;
+  Document? _currentFile;
   User? _currentUser;
   List<User> _availableUsers = [];
   List<User> _sharedWith = [];
@@ -18,24 +18,32 @@ class ShareFileViewModel extends ChangeNotifier {
   bool _isSearching = false;
   String _emailToInvite = '';
 
-  AppFile? get currentFile => _currentFile;
+  Document? get currentFile => _currentFile;
+
   User? get currentUser => _currentUser;
+
   List<User> get sharedWith => _sharedWith;
+
   List<User> get searchResults => _searchResults;
+
   bool get isLoading => _isLoading;
+
   bool get isSearching => _isSearching;
+
   String get emailToInvite => _emailToInvite;
+
   bool get canSendInvite => _isValidEmail(_emailToInvite);
+
   bool get hasSearchResults => _searchResults.isNotEmpty;
 
   ShareFileViewModel({
     required String fileId,
-    FileModel? fileModel,
+    DocumentModel? fileModel,
     UserModel? userModel,
     SessionModel? sessionModel,
-  })  : _fileModel = fileModel ?? FileModel(),
-        _userModel = userModel ?? UserModel(),
-        _sessionModel = sessionModel ?? SessionModel() {
+  }) : _documentModel = fileModel ?? DocumentModel(),
+       _userModel = userModel ?? UserModel(),
+       _sessionModel = sessionModel ?? SessionModel() {
     searchController.addListener(_onSearchChanged);
     _init(fileId);
   }
@@ -80,7 +88,7 @@ class ShareFileViewModel extends ChangeNotifier {
 
   Future<void> _loadCurrentFile(String fileId) async {
     try {
-      final files = await _fileModel.getUserFiles();
+      final files = await _documentModel.getUserFiles();
       _currentFile = files?.firstWhere(
         (f) => f.id == fileId,
         orElse: () => files.first,
@@ -92,15 +100,16 @@ class ShareFileViewModel extends ChangeNotifier {
 
   Future<void> _loadSharedUsers() async {
     if (_currentFile == null) return;
-    
+
     _sharedWith = [];
-    
-    if (_currentFile!.viewersName != null && _currentFile!.viewersName!.isNotEmpty) {
+
+    final fileViewers = _currentFile!.viewers ?? [];
+    if (fileViewers.isNotEmpty) {
       _sharedWith = _availableUsers
-          .where((user) => _currentFile!.viewersName!.contains(user.email))
+          .where((user) => fileViewers.any((viewer) => viewer.id == user.uuid))
           .toList();
     }
-    
+
     notifyListeners();
   }
 
@@ -179,7 +188,7 @@ class ShareFileViewModel extends ChangeNotifier {
         (u) => u.email.toLowerCase() == email.toLowerCase(),
       );
 
-      await _fileModel.shareFile(_currentFile!, shareTo: [user]);
+      await _documentModel.shareFile(_currentFile!, shareTo: [user]);
 
       _sharedWith.add(user);
       searchController.clear();

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/enum/file_filter_enum.dart';
 import 'package:securite_mobile/enum/file_type_enum.dart';
-import 'package:securite_mobile/model/file_model.dart';
+import 'package:securite_mobile/model/document_model.dart';
 import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/model/user_model.dart';
 import 'package:securite_mobile/utils/file_name_util.dart';
@@ -12,33 +12,39 @@ import 'package:securite_mobile/view/widgets/confirm_dialog.dart';
 import 'package:securite_mobile/view/widgets/success_snackbar.dart';
 
 class TrashViewModel extends ChangeNotifier {
-  final FileModel fileModel;
+  final DocumentModel documentModel;
   final UserModel userModel;
   final SessionModel sessionModel;
 
   User? _user;
-  List<AppFile>? _trashFiles;
-  List<AppFile>? _filteredFiles;
+  List<Document>? _trashFiles;
+  List<Document>? _filteredFiles;
   Set<String> _selectedFileIds = {};
   bool _isSelectionMode = false;
 
   FileFilterEnum _currentFilter = FileFilterEnum.all;
 
   FileFilterEnum get currentFilter => _currentFilter;
-  List<AppFile> get trashedFiles => _filteredFiles ?? [];
+
+  List<Document> get trashedFiles => _filteredFiles ?? [];
+
   Set<String> get selectedFileIds => _selectedFileIds;
+
   bool get isSelectionMode => _isSelectionMode;
+
   User? get currentUser => _user;
+
   bool get hasFiles => (_filteredFiles ?? []).isNotEmpty;
+
   int get filesCount => (_filteredFiles ?? []).length;
 
   TrashViewModel({
-    FileModel? fileModel,
+    DocumentModel? fileModel,
     UserModel? userModel,
     SessionModel? sessionModel,
-  })  : fileModel = fileModel ?? FileModel(),
-        userModel = userModel ?? UserModel(),
-        sessionModel = sessionModel ?? SessionModel();
+  }) : documentModel = fileModel ?? DocumentModel(),
+       userModel = userModel ?? UserModel(),
+       sessionModel = sessionModel ?? SessionModel();
 
   void initUser() {
     if (sessionModel.session == null) {
@@ -51,7 +57,7 @@ class TrashViewModel extends ChangeNotifier {
   }
 
   void initFiles() {
-    fileModel.getTrashFiles().then((res) {
+    documentModel.getTrashFiles().then((res) {
       _trashFiles = res;
       _filteredFiles = res;
       notifyListeners();
@@ -77,14 +83,14 @@ class TrashViewModel extends ChangeNotifier {
     _filteredFiles = targetType == null
         ? _trashFiles
         : _trashFiles
-            ?.where(
-              (file) =>
-                  FileTypeEnum.fromExtension(
-                    FileNameUtil.getExtension(file.name),
-                  ) ==
-                  targetType,
-            )
-            .toList();
+              ?.where(
+                (file) =>
+                    FileTypeEnum.fromExtension(
+                      FileNameUtil.getExtension(file.originalName),
+                    ) ==
+                    targetType,
+              )
+              .toList();
   }
 
   void onItemTap(String id) {
@@ -206,7 +212,8 @@ class TrashViewModel extends ChangeNotifier {
       animationStyle: AnimationStyle(duration: Duration(milliseconds: 0)),
       builder: (context) => ConfirmDialog(
         title: 'Restaurer ce fichier ?',
-        description: 'Le fichier "${file.name}" sera restauré à son emplacement d\'origine.',
+        description:
+            'Le fichier "${file.originalName}" sera restauré à son emplacement d\'origine.',
         cancelLabel: 'Annuler',
         confirmLabel: 'Restaurer',
         confirmBgColor: AppColors.primary,
@@ -216,7 +223,7 @@ class TrashViewModel extends ChangeNotifier {
     );
 
     if (confirmed == true) {
-      await fileModel.restoreFile(file);
+      await documentModel.restoreFile(file);
 
       _trashFiles?.removeWhere((f) => f.id == fileId);
       _filterFiles();
@@ -239,7 +246,7 @@ class TrashViewModel extends ChangeNotifier {
       builder: (context) => ConfirmDialog(
         title: 'Supprimer définitivement ?',
         description:
-            'Le fichier "${file.name}" sera supprimé de manière permanente. Cette action est irréversible.',
+            'Le fichier "${file.originalName}" sera supprimé de manière permanente. Cette action est irréversible.',
         cancelLabel: 'Annuler',
         confirmLabel: 'Supprimer',
         confirmBgColor: AppColors.destructive,
@@ -249,7 +256,7 @@ class TrashViewModel extends ChangeNotifier {
     );
 
     if (confirmed == true) {
-      await fileModel.deleteFilePermanently(file);
+      await documentModel.deleteFilePermanently(file);
 
       _trashFiles?.removeWhere((f) => f.id == fileId);
       _filterFiles();
@@ -279,7 +286,7 @@ class TrashViewModel extends ChangeNotifier {
     );
 
     if (confirmed == true) {
-      await fileModel.restoreFiles(_selectedFileIds.toList());
+      await documentModel.restoreFiles(_selectedFileIds.toList());
 
       _trashFiles?.removeWhere((file) => _selectedFileIds.contains(file.id));
       _filterFiles();
@@ -309,7 +316,7 @@ class TrashViewModel extends ChangeNotifier {
     );
 
     if (confirmed == true) {
-      await fileModel.deleteFilesPermanently(_selectedFileIds.toList());
+      await documentModel.deleteFilesPermanently(_selectedFileIds.toList());
 
       _trashFiles?.removeWhere((file) => _selectedFileIds.contains(file.id));
       _filterFiles();
@@ -339,7 +346,7 @@ class TrashViewModel extends ChangeNotifier {
     );
 
     if (confirmed == true) {
-      await fileModel.emptyTrash();
+      await documentModel.emptyTrash();
 
       _trashFiles?.clear();
       _filterFiles();

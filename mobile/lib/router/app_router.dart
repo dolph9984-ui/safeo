@@ -25,12 +25,11 @@ final GoRouter appRouter = GoRouter(
   redirect: (context, state) async {
     final currentLocation = state.matchedLocation;
     final isLoggedIn = await SessionModel().isLoggedIn;
-    print('isloggedIn : $isLoggedIn');
 
     if (!isLoggedIn &&
         !currentLocation.startsWith(AppRoutes.login) &&
         !currentLocation.startsWith(AppRoutes.signup) &&
-        !currentLocation.startsWith(AppRoutes.twoFA) && 
+        !currentLocation.startsWith(AppRoutes.twoFA) &&
         !currentLocation.startsWith(AppRoutes.onboarding)) {
       return AppRoutes.onboarding;
     }
@@ -172,10 +171,7 @@ final GoRouter appRouter = GoRouter(
           return const UserFilesView();
         }
 
-        return ShareFileView(
-          fileId: fileId,
-          autoFocus: autoFocus,
-        );
+        return ShareFileView(fileId: fileId, autoFocus: autoFocus);
       },
     ),
 

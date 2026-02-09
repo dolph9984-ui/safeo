@@ -1,30 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:securite_mobile/model/file_model.dart';
+import 'package:securite_mobile/model/document_model.dart';
 import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/model/user_model.dart';
 
 class SearchPageViewModel extends ChangeNotifier {
-  final FileModel _fileModel;
+  final DocumentModel documentModel;
   final SessionModel _sessionModel;
   final TextEditingController searchController = TextEditingController();
 
   User? _currentUser;
-  List<AppFile> _allFiles = [];
-  List<AppFile> _searchResults = [];
-  List<AppFile> _recentSearches = [];
+  List<Document> _allFiles = [];
+  List<Document> _searchResults = [];
+  List<Document> _recentSearches = [];
   bool _isSearching = false;
   bool _isLoading = false;
 
-  List<AppFile> get searchResults => _searchResults;
-  List<AppFile> get recentSearches => _recentSearches;
+  List<Document> get searchResults => _searchResults;
+
+  List<Document> get recentSearches => _recentSearches;
+
   bool get isSearching => _isSearching;
+
   bool get isLoading => _isLoading;
+
   bool get hasQuery => searchController.text.trim().isNotEmpty;
+
   User? get currentUser => _currentUser;
 
-  SearchPageViewModel({FileModel? fileModel, SessionModel? sessionModel}) 
-      : _fileModel = fileModel ?? FileModel(),
-        _sessionModel = sessionModel ?? SessionModel() {
+  SearchPageViewModel({
+    DocumentModel? documentModel,
+    SessionModel? sessionModel,
+  }) : documentModel = documentModel ?? DocumentModel(),
+       _sessionModel = sessionModel ?? SessionModel() {
     searchController.addListener(_onSearchChanged);
     _init();
   }
@@ -50,14 +57,10 @@ class SearchPageViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final userFiles = await _fileModel.getUserFiles();
-      final sharedFiles = await _fileModel.getSharedFiles();
-      
-      _allFiles = [
-        ...?userFiles,
-        ...?sharedFiles,
-      ];
-      
+      final userFiles = await documentModel.getUserFiles();
+      final sharedFiles = await documentModel.getSharedFiles();
+
+      _allFiles = [...?userFiles, ...?sharedFiles];
     } catch (e) {
       debugPrint('Error loading files: $e');
     } finally {
@@ -86,15 +89,15 @@ class SearchPageViewModel extends ChangeNotifier {
 
   void _performSearch(String query) {
     final lowerQuery = query.toLowerCase();
-    
+
     _searchResults = _allFiles
-        .where((file) => file.name.toLowerCase().contains(lowerQuery))
+        .where((file) => file.originalName.toLowerCase().contains(lowerQuery))
         .toList();
-    
+
     _saveToRecentSearches(_searchResults);
   }
 
-  void _saveToRecentSearches(List<AppFile> results) {
+  void _saveToRecentSearches(List<Document> results) {
     if (results.isNotEmpty) {
       final newRecent = results.first;
       _recentSearches.removeWhere((f) => f.id == newRecent.id);

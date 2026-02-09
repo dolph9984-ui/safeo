@@ -194,19 +194,11 @@ class CreateFileView extends StatelessWidget {
       },
     );
 
-    final success = await vm.uploadFile();
+    await vm.uploadFile();
 
     if (context.mounted) {
       Navigator.of(context, rootNavigator: true).pop();
-    }
-
-
-    if (context.mounted) {
-      if (success) {
-        showSuccessSnackbar(context, 'Fichier uploadé avec succès');
-      } else {
-        showSuccessSnackbar(context, 'Upload annulé');
-      }
+      showSuccessSnackbar(context, vm.uploadMessage!);
     }
 
     if (context.mounted) {

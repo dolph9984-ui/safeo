@@ -1,26 +1,30 @@
 import 'package:flutter/foundation.dart';
 import 'package:securite_mobile/enum/file_filter_enum.dart';
 import 'package:securite_mobile/enum/file_type_enum.dart';
-import 'package:securite_mobile/model/file_model.dart';
+import 'package:securite_mobile/model/document_model.dart';
 import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/model/user_model.dart';
 import 'package:securite_mobile/utils/file_name_util.dart';
 
 class UserFilesViewModel extends ChangeNotifier {
   final userModel = UserModel();
-  final fileModel = FileModel();
+  final fileModel = DocumentModel();
   final sessionModel = SessionModel();
 
   User? _user;
-  List<AppFile>? _files;
-  List<AppFile>? _filteredFiles;
+  List<Document>? _files;
+  List<Document>? _filteredFiles;
 
   FileFilterEnum _currentFilter = FileFilterEnum.all;
 
   FileFilterEnum get currentFilter => _currentFilter;
+
   int get storageLimit => _user?.storageLimit ?? 5;
+
   int get storageUsed => _user?.storageUsed ?? 2;
-  List<AppFile> get filteredFiles => _filteredFiles ?? [];
+
+  List<Document> get filteredFiles => _filteredFiles ?? [];
+
   User? get currentUser => _user;
 
   void initUser() {
@@ -63,32 +67,32 @@ class UserFilesViewModel extends ChangeNotifier {
               ?.where(
                 (file) =>
                     FileTypeEnum.fromExtension(
-                      FileNameUtil.getExtension(file.name),
+                      FileNameUtil.getExtension(file.originalName),
                     ) ==
                     targetType,
               )
               .toList();
   }
 
-  void openFile(AppFile file) async {
+  void openFile(Document file) async {
     fileModel.openFile(file);
   }
 
-  void renameFile(AppFile file, {required String newName}) async {
-    if (file.name == newName) return;
+  void renameFile(Document file, {required String newName}) async {
+    if (file.originalName == newName) return;
 
     fileModel.renameFile(file, newName: newName).then((res) {
       int index = _files?.indexOf(file) ?? -1;
-      if (index != -1) _files![index] = file.copyWith(name: newName);
+      if (index != -1) _files![index] = file.copyWith(originalName: newName);
       notifyListeners();
     });
   }
 
-  void downloadFile(AppFile file) async {
+  void downloadFile(Document file) async {
     fileModel.downloadFile(file);
   }
 
-  void deleteFile(AppFile file) async {
+  void deleteFile(Document file) async {
     fileModel.deleteFile(file).then((res) {
       _files?.removeWhere((e) => e == file);
       notifyListeners();

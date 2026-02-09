@@ -31,11 +31,11 @@ class _SharedFilesViewState extends State<SharedFilesView> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<SharedFilesViewModel>();
-    
+
     final files = vm.sharedFiles.map((file) {
       return SharedFileItem(
         id: file.id,
-        fileName: file.name,
+        fileName: file.originalName,
         dateTime: file.createdAt,
         onButtonTap: (id) {
           final selectedFile = vm.getFileById(id);
@@ -50,7 +50,8 @@ class _SharedFilesViewState extends State<SharedFilesView> {
                   currentUser: vm.currentUser!,
                   onOpenTap: () => vm.openFile(selectedFile),
                   onDownloadTap: () => vm.downloadFile(selectedFile),
-                  onRenameTap: (newName) => vm.renameFile(selectedFile, newName: newName),
+                  onRenameTap: (newName) =>
+                      vm.renameFile(selectedFile, newName: newName),
                   onDeleteTap: () => vm.deleteFile(selectedFile),
                 );
               },
