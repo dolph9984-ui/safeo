@@ -1,4 +1,3 @@
-// lib/model/file_model.dart
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
