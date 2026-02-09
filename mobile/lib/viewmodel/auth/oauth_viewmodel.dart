@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:securite_mobile/main.dart'; // AJOUTEZ CETTE LIGNE
 import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/model/user_model.dart';
 import 'package:securite_mobile/services/auth/oauth_service.dart';

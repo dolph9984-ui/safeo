@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  battery_plus
   desktop_webview_window
   flutter_secure_storage_windows
   local_auth_windows

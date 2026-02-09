@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:securite_mobile/constants/permissions.dart';
 import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/router/app_routes.dart';
 import 'package:securite_mobile/view/app_scaffold.dart';
 import 'package:securite_mobile/view/auth/login_view.dart';
 import 'package:securite_mobile/view/auth/signup_view.dart';
 import 'package:securite_mobile/view/auth/two_fa_view.dart';
+import 'package:securite_mobile/view/battery_monitor.dart';
 import 'package:securite_mobile/view/create_file/create_file_view.dart';
 import 'package:securite_mobile/view/home/home_view.dart';
 import 'package:securite_mobile/view/onboarding_view.dart';
@@ -21,22 +23,34 @@ import 'package:securite_mobile/viewmodel/scaffold_viewmodel.dart';
 import 'package:securite_mobile/viewmodel/trash_viewmodel.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: AppRoutes.userFiles,
+  initialLocation: '/battery',
+  
+  refreshListenable: isAppUnlocked, 
+
   redirect: (context, state) async {
     final currentLocation = state.matchedLocation;
     final isLoggedIn = await SessionModel().isLoggedIn;
 
-    if (!isLoggedIn &&
+    if (!isAppUnlocked.value && currentLocation != '/battery') {
+      return '/battery';
+    }
+
+    if (isAppUnlocked.value && !isLoggedIn &&
         !currentLocation.startsWith(AppRoutes.login) &&
         !currentLocation.startsWith(AppRoutes.signup) &&
         !currentLocation.startsWith(AppRoutes.twoFA) &&
         !currentLocation.startsWith(AppRoutes.onboarding)) {
       return AppRoutes.onboarding;
     }
+    
     return null;
   },
 
   routes: [
+    GoRoute(
+      path: '/battery',
+      builder: (context, state) => const BatteryMonitorView(),
+    ),
     GoRoute(path: AppRoutes.root, builder: (_, _) => const SizedBox.shrink()),
     GoRoute(
       path: AppRoutes.authCallback,
