@@ -4,6 +4,7 @@ import 'package:securite_mobile/enum/file_type_enum.dart';
 import 'package:securite_mobile/model/document_model.dart';
 import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/model/user_model.dart';
+import 'package:securite_mobile/services/security/device_auth_service.dart';
 import 'package:securite_mobile/utils/file_name_util.dart';
 
 class UserFilesViewModel extends ChangeNotifier {
@@ -28,6 +29,7 @@ class UserFilesViewModel extends ChangeNotifier {
   User? get currentUser => _user;
 
   void initUser() async {
+
     if (sessionModel.session == null) {
       sessionModel.destroySession();
       return;

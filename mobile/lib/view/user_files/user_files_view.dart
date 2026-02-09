@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:securite_mobile/enum/file_filter_enum.dart';
 import 'package:securite_mobile/router/app_routes.dart';
+import 'package:securite_mobile/services/security/device_auth_service.dart';
 import 'package:securite_mobile/view/shared_files/wigdet/filter_bottom_sheet.dart';
 import 'package:securite_mobile/view/user_files/widgets/file_item.dart';
 import 'package:securite_mobile/view/user_files/widgets/files_list.dart';
@@ -72,7 +73,8 @@ class _UserFilesViewState extends State<UserFilesView> {
                   fileSize: file.fileSize,
                   dateTime: file.createdAt,
                   onButtonTap: (String id) {
-                    if (vm.currentUser != null) { // MODIFICATION
+                    if (vm.currentUser != null) {
+                      // MODIFICATION
                       showModalBottomSheet(
                         useRootNavigator: true,
                         context: context,
