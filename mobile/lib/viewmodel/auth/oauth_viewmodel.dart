@@ -6,6 +6,7 @@ import 'package:securite_mobile/services/auth/oauth_service.dart';
 
 class OAuthViewModel extends ChangeNotifier {
   final sessionModel = SessionModel();
+  final userModel = UserModel();
   final _oAuthService = OAuthService();
 
   bool _isLoading = false;
@@ -33,7 +34,20 @@ class OAuthViewModel extends ChangeNotifier {
 
     try {
       final token = await _oAuthService.login();
-      await sessionModel.createSession(User.none(), token);
+      User user;
+      final userResponse = await userModel.getUserFromServer();
+      if (userResponse.statusCode == 400) {
+        await sessionModel.destroySession();
+        return false;
+      }
+
+      if (userResponse.statusCode == 200 &&
+          userResponse.data != null &&
+          userResponse.data!.isNotEmpty) {
+        user = userResponse.data!.first;
+        await sessionModel.createSession(user, token);
+      }
+
       return true;
     } on PlatformException catch (e) {
       _errorMessage = (e.code == 'CANCELED')

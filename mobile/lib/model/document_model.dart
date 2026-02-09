@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:securite_mobile/model/user_model.dart';
 import 'package:securite_mobile/model/viewer_model.dart';
 import 'package:securite_mobile/services/file_upload_service.dart';
+import 'package:securite_mobile/utils/dio_util.dart';
 
 class UploadDocumentResponse {
   final int statusCode;
@@ -69,7 +70,8 @@ class Document {
           ? DateTime.parse(json['deletedAt'] as String)
           : null,
       userId: json['userId'] as String,
-      username: json['username'] as String,
+      // TODO : no username
+      username: (json['username'] ?? '') as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
       viewers: (json['viewers'] as List<dynamic>?)
@@ -113,9 +115,16 @@ class Document {
 
 class DocumentModel {
   final _uploadService = FileUploadService();
+  final _dio = DioClient.dio;
 
-  Future<List<Document>?> getUserDocuments() async {
-    return null;
+  Future<List<Document>> getUserDocuments() async {
+    final response = await _dio.get('v1/api/document');
+
+    final List data = response.data['documents'];
+
+    return data
+        .map((json) => Document.fromJson(json as Map<String, dynamic>))
+        .toList();
   }
 
   Future<List<Document>?> getSharedDocuments() async {

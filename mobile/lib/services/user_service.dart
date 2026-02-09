@@ -18,7 +18,6 @@ class UserService {
     try {
       final response = await _dio.get('/v1/api/user/me');
       final userMap = response.data['user'] as Map<String, dynamic>;
-      print(userMap['id']);
       return UserServiceResponse(
         data: [User.fromJson(userMap)],
         statusCode: response.statusCode ?? 200,

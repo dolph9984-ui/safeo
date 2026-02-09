@@ -97,7 +97,8 @@ class StorageCard extends StatelessWidget {
   }
 
   static Widget spaceIndicator(int used, int total) {
-    final ratio = (used / total).clamp(0.0, 1.0);
+    double ratio = (used / total).clamp(0.0, 1.0);
+    if (ratio < 0.1) ratio = 0;
 
     return LayoutBuilder(
       builder: (context, constraints) {

@@ -201,8 +201,6 @@ class CreateFileViewModel extends ChangeNotifier {
       } else {
         _setErrorMessage('Erreur lors de l\'upload');
         uploadMessage = 'Erreur lors de l\'upload';
-
-        debugPrint('DioException uploadFile: $e');
       }
       setLoading(false);
       _setUploadProgress(0);

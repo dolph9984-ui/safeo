@@ -14,6 +14,7 @@ class AuthInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
+    print('REQUEST: ${options.uri}');
     if (!options.path.contains('/auth/')) {
       final accessToken = await SessionTokenModel.getAccessToken();
 
@@ -23,6 +24,12 @@ class AuthInterceptor extends Interceptor {
     }
 
     handler.next(options);
+  }
+
+  @override
+  onResponse(response, handler) {
+    print('RESPONSE: ${response.data}');
+    return handler.next(response);
   }
 
   @override
@@ -77,7 +84,6 @@ class AuthInterceptor extends Interceptor {
         await SessionModel().destroySession();
       }
     }
-
     handler.next(err);
   }
 }
