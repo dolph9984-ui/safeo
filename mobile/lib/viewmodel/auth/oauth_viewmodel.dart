@@ -34,20 +34,12 @@ class OAuthViewModel extends ChangeNotifier {
 
     try {
       final token = await _oAuthService.login();
-      User user;
       final userResponse = await userModel.getUserFromServer();
-      if (userResponse.statusCode == 400) {
-        await sessionModel.destroySession();
-        return false;
-      }
 
-      if (userResponse.statusCode == 200 &&
-          userResponse.data != null &&
-          userResponse.data!.isNotEmpty) {
-        user = userResponse.data!.first;
-        await sessionModel.createSession(user, token);
-      }
-
+      await sessionModel.createSession(
+        userResponse.data?.first ?? User.none(),
+        token,
+      );
       return true;
     } on PlatformException catch (e) {
       _errorMessage = (e.code == 'CANCELED')

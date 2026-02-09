@@ -44,22 +44,11 @@ class SessionModel {
       }
 
       UserServiceResponse userResponse = await _userModel.getUserFromServer();
-      if (userResponse.statusCode == 404) {
-        SessionTokenModel.deleteTokens();
-        _userModel.clearUserFromCache();
-        return;
-      }
 
       User? user = userResponse.data?.first;
       user ??= await _userModel.getUserFromCache();
 
-      if (user == null) {
-        SessionTokenModel.deleteTokens();
-        _userModel.clearUserFromCache();
-        return;
-      }
-
-      session = Session(user: user, token: sessionToken);
+      session = Session(user: user ?? User.none(), token: sessionToken);
     } catch (e) {
       SessionTokenModel.deleteTokens();
       _userModel.clearUserFromCache();

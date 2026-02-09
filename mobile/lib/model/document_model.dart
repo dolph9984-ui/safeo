@@ -118,6 +118,8 @@ class DocumentModel {
   final _dio = DioClient.dio;
 
   Future<List<Document>> getUserDocuments() async {
+    return [];
+
     final response = await _dio.get('v1/api/document');
 
     final List data = response.data['documents'];
