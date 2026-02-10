@@ -24,7 +24,7 @@ class _SharedFilesViewState extends State<SharedFilesView> {
   void initState() {
     super.initState();
     _searchController.addListener(_onSearchChanged);
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<SharedFilesViewModel>()
         ..initUser()
@@ -57,8 +57,12 @@ class _SharedFilesViewState extends State<SharedFilesView> {
             (file) => file.id == id,
             orElse: () => throw Exception('File not found'),
           );
-          
+
+          // ... dans le onButtonTap
           if (vm.currentUser != null) {
+            final parentContext =
+                context; // context de la page, pas du BottomSheet
+
             showModalBottomSheet(
               useRootNavigator: true,
               context: context,
@@ -69,17 +73,26 @@ class _SharedFilesViewState extends State<SharedFilesView> {
                   currentUser: vm.currentUser!,
                   onOpenTap: () {
                     vm.openFile(selectedFile);
-                    Navigator.pop(context);
                   },
-                  onDownloadTap: () {
-                    vm.downloadFile(selectedFile);
-                    Navigator.pop(context);
+                  onDownloadTap: () async {
+                    final res = await vm.downloadFile(selectedFile);
+                    if (parentContext.mounted) {
+                      ScaffoldMessenger.of(parentContext).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            res
+                                ? 'Fichier téléchargé avec succès'
+                                : 'Erreur lors du téléchargement',
+                          ),
+                        ),
+                      );
+                    }
                   },
                   onRenameTap: (newName) async {
                     final result = await vm.renameFile(selectedFile, newName);
-                    if (context.mounted) {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
+                    if (parentContext.mounted) {
+                      Navigator.pop(context); // fermer le bottom sheet
+                      ScaffoldMessenger.of(parentContext).showSnackBar(
                         SnackBar(
                           content: Text(
                             result == ActionResult.success
@@ -92,9 +105,9 @@ class _SharedFilesViewState extends State<SharedFilesView> {
                   },
                   onDeleteTap: () async {
                     final result = await vm.deleteFile(selectedFile);
-                    if (context.mounted) {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
+                    if (parentContext.mounted) {
+                      Navigator.pop(context); // fermer le bottom sheet
+                      ScaffoldMessenger.of(parentContext).showSnackBar(
                         SnackBar(
                           content: Text(
                             result == ActionResult.success

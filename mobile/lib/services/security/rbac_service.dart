@@ -28,7 +28,7 @@ class RBACService {
       Permission.shareDocument,
       Permission.downloadDocument,
     },
-    Role.viewer: {Permission.readDocument, Permission.downloadDocument},
+    Role.viewer: {Permission.readDocument},
   };
 
   // Vérifie si un user peut faire une action sur un fichier
@@ -41,14 +41,7 @@ class RBACService {
   // Détermine le rôle du user sur ce fichier
   Role? _getUserRoleForFile(Document document, User user) {
     if (document.userId == user.uuid) return Role.owner;
-
-    final viewers = document.viewers ?? [];
-    if (document.accessLevel == 'shareable' &&
-        viewers.any((viewer) => viewer.id == user.uuid)) {
-      return Role.viewer;
-    }
-
-    return null;
+    return Role.viewer;
   }
 }
 

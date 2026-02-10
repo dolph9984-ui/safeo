@@ -39,11 +39,13 @@ class SharedFileItem extends StatelessWidget {
         child: Row(
           children: [
             SizedBox(
-              width: 90,
+              width: 48,
               height: 40,
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
+                  /*
+
                   Container(
                     width: 40,
                     height: 40,
@@ -53,10 +55,12 @@ class SharedFileItem extends StatelessWidget {
                         image: AssetImage('assets/icons/avatar.png'),
                         fit: BoxFit.cover,
                       ),
+
                     ),
                   ),
+                  */
                   Positioned(
-                    left: 35,
+                    left: 0,
                     child: FileThumbnail(
                       file: PlatformFile.fromMap({
                         "name": fileName,

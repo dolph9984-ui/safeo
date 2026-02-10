@@ -90,8 +90,9 @@ class SharedFilesViewModel extends ChangeNotifier {
     if (targetType != null) {
       filtered = filtered.where((file) {
         return FileTypeEnum.fromExtension(
-          FileNameUtil.getExtension(file.originalName),
-        ) == targetType;
+              FileNameUtil.getExtension(file.originalName),
+            ) ==
+            targetType;
       }).toList();
     } else if (_currentFilter == FileFilterEnum.owner) {
       filtered = filtered.where((file) => file.isOwner ?? false).toList();
@@ -150,7 +151,7 @@ class SharedFilesViewModel extends ChangeNotifier {
     fileModel.openFile(file);
   }
 
-  void downloadFile(Document file) {
-    fileModel.downloadFile(file);
+  Future<bool> downloadFile(Document file) async {
+    return await fileModel.downloadFile(file);
   }
 }

@@ -23,8 +23,16 @@ class UserFilesView extends StatefulWidget {
 }
 
 class _UserFilesViewState extends State<UserFilesView> {
+  bool _dialogHasOpened = false;
+
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UserFilesViewModel>()
+        ..initUser()
+        ..fetchFiles();
+    });
+
     super.initState();
   }
 
@@ -32,8 +40,8 @@ class _UserFilesViewState extends State<UserFilesView> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    print('widget token : ${widget.token}');
-    if (widget.token != null) {
+    if (widget.token != null && !_dialogHasOpened) {
+      _dialogHasOpened = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         showShareInvitationDialog(
           context: context,

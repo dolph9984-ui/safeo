@@ -72,14 +72,6 @@ class SharedFilesList extends StatelessWidget {
             ),
           ],
         ),
-        if (showFilterButton)
-          InkWell(
-            onTap: onFilterTap,
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            hoverColor: Colors.transparent,
-            child: SvgPicture.asset('assets/icons/filter.svg'),
-          ),
       ],
     );
   }

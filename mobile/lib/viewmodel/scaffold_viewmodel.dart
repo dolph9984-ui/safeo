@@ -30,11 +30,11 @@ class ScaffoldViewModel extends ChangeNotifier {
 
   GlobalKey<ScaffoldState> get scaffoldKey => _scaffoldKey;
 
-  String get userName => _user?.fullName ?? '?';
+  String get userName => sessionModel.session?.user.fullName ?? '?';
 
   String get imageProfileUrl => _user?.imageUrl ?? '';
 
-  String get email => _user?.email ?? '';
+  String get email => sessionModel.session?.user.email ?? '';
 
   int get filesNumber => filesVm.files?.length ?? 0;
 

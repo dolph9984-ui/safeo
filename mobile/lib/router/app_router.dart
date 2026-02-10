@@ -175,7 +175,6 @@ final GoRouter appRouter = GoRouter(
           builder: (context, state) {
             final uri = Uri.parse(state.uri.toString());
             final token = uri.queryParameters['token'];
-            debugPrint('token reçu : $token');
 
             return UserFilesView(key: ValueKey(token), token: token);
           },

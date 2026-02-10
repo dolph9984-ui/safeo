@@ -13,8 +13,8 @@ enum TwoFAMode { login, signup }
 class TwoFAViewModel extends ChangeNotifier {
   final TwoFAService _twoFAService;
   final sessionModel = SessionModel();
+  final userModel = UserModel();
 
-  // ✅ CHANGEMENT 1: Enlever 'final' pour permettre la mise à jour
   String verificationToken;
   final TwoFAMode mode;
 
@@ -36,12 +36,19 @@ class TwoFAViewModel extends ChangeNotifier {
   Timer? _resendTimer;
 
   String get code => _code;
+
   bool get isLoading => _isLoading;
+
   String? get errorMessage => _errorMessage;
+
   bool get isResending => _isResending;
+
   bool get canSubmit => _code.length == 6 && !_isLoading;
+
   String? get email => _email;
+
   int get resendCountdown => _resendCountdown;
+
   bool get canResend => _resendCountdown == 0 && !_isResending;
 
   @override
@@ -110,13 +117,15 @@ class TwoFAViewModel extends ChangeNotifier {
         refreshToken: response.refreshToken,
       );
 
-      // Stocker le token
+      // store token
       await SessionTokenModel.storeTokens(token);
 
-      final user = User.none();
+      final userResponse = await userModel.getUserFromServer();
+      User? user = userResponse.data?.first;
+      user ??= await userModel.getUserFromCache();
 
-      // Créer la session
-      await sessionModel.createSession(user, token);
+      // create session
+      await sessionModel.createSession(user ?? User.none(), token);
 
       _setLoading(false);
       return true;

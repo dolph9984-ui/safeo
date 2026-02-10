@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:securite_mobile/model/user_model.dart';
 import 'package:securite_mobile/model/viewer_model.dart';
@@ -209,33 +210,38 @@ class DocumentModel {
       rethrow;
     }
   }
-    
 
   Future<bool> downloadFile(Document document) async {
     try {
       final dir = await getApplicationDocumentsDirectory();
       final filePath = '${dir.path}/${document.originalName}';
+      final fileDir = File(filePath).parent;
 
-      print('path : $filePath');
+      if (!await fileDir.exists()) {
+        await fileDir.create(recursive: true);
+      }
 
-      final response = await _dio.get<List<int>>(
+      final response = await _dio.get<Map<String, dynamic>>(
         '/v1/api/document/${document.id}/download',
-
-        options: Options(
-          responseType: ResponseType.bytes,
-          followRedirects: false,
-        ),
       );
 
-      // write bytes to file
-      final file = File(filePath);
-      await file.writeAsBytes(response.data!, flush: true);
+      final downloadUrl = response.data?['downloadUrl'] as String;
 
+      final bytesResponse = await _dio.get<List<int>>(
+        downloadUrl,
+        options: Options(responseType: ResponseType.bytes),
+      );
+
+      final file = File(filePath);
+      await file.writeAsBytes(bytesResponse.data!, flush: true);
+
+      await OpenFilex.open(file.path);
       return true;
     } catch (e) {
-      debugPrint('Erreur téléchargement: $e');
-      return false;
+      debugPrint('Erreur téléchargement ou ouverture: $e');
     }
+
+    return false;
   }
 
   Future<Document> uploadFile({

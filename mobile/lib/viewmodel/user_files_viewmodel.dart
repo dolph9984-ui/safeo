@@ -16,11 +16,6 @@ class LoadingState {
 enum ActionResult { error, success }
 
 class UserFilesViewModel extends ChangeNotifier {
-  UserFilesViewModel() {
-    initUser();
-    fetchFiles();
-  }
-
   final userModel = UserModel();
   final documentModel = DocumentModel();
   final sessionModel = SessionModel();

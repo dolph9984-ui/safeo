@@ -35,6 +35,9 @@ class UnifiedFileBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = <BottomSheetItem>[];
 
+    /*
+
+
     if (currentUser.canRead(file)) {
       items.add(
         BottomSheetItem(
@@ -52,6 +55,8 @@ class UnifiedFileBottomSheet extends StatelessWidget {
         ),
       );
     }
+
+     */
 
     if (currentUser.canShare(file)) {
       items.add(
@@ -165,7 +170,7 @@ class UnifiedFileBottomSheet extends StatelessWidget {
     if (currentUser.canDelete(file)) {
       items.add(
         BottomSheetItem(
-          label: 'Placer dans la corbeille',
+          label: 'Supprimer',
           assetName: 'assets/icons/trash.svg',
           onTap: () {
             showDialog(
@@ -176,19 +181,16 @@ class UnifiedFileBottomSheet extends StatelessWidget {
               context: context,
               builder: (context) {
                 return ConfirmDialog(
-                  title: 'Placer "${file.originalName}" dans la corbeille ?',
+                  title: 'Supprimer "${file.originalName}" ?',
                   description: null,
                   cancelLabel: 'Annuler',
-                  confirmLabel: 'Déplacer vers la corbeille',
+                  confirmLabel: 'Supprimer',
                   confirmBgColor: AppColors.destructive,
                   onConfirm: () {
                     if (onDeleteTap != null) {
                       onDeleteTap!();
                     } else {
-                      showSuccessSnackbar(
-                        context,
-                        'Fichier déplacé vers la corbeille',
-                      );
+                      showSuccessSnackbar(context, 'Fichier supprimé');
                     }
                     context.pop();
                   },
