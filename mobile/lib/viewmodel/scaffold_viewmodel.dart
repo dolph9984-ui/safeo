@@ -13,6 +13,11 @@ class ScaffoldViewModel extends ChangeNotifier {
     sharedFilesVm.addListener(_onSharedFilesVmChanged);
   }
 
+  void refresh() {
+    filesVm.fetchFiles();
+    sharedFilesVm.fetchFiles();
+  }
+
   void _onFilesVmChanged() {
     notifyListeners();
   }

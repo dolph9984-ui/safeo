@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:securite_mobile/router/app_routes.dart';
+import 'package:securite_mobile/services/security/device_auth_service.dart';
 import 'package:securite_mobile/view/auth/components/auth_components.dart';
 import 'package:securite_mobile/view/auth/components/auth_scrollable_body.dart';
 import 'package:securite_mobile/view/auth/components/labeled_text_field_components.dart';
@@ -100,11 +101,14 @@ class _SignupViewState extends State<SignupView> {
                           : Icons.visibility_off_outlined,
                     ),
                     onPressed: () => setState(
-                        () => _obscureConfirmPassword = !_obscureConfirmPassword),
+                      () => _obscureConfirmPassword = !_obscureConfirmPassword,
+                    ),
                   ),
                 ),
 
-                AuthErrorMessage(message: signupVm.errorMessage ?? oauthVm.errorMessage),
+                AuthErrorMessage(
+                  message: signupVm.errorMessage ?? oauthVm.errorMessage,
+                ),
                 const SizedBox(height: 24),
 
                 LoadingElevatedButton(
@@ -113,11 +117,10 @@ class _SignupViewState extends State<SignupView> {
                   onPressed: signupVm.canSubmit
                       ? () async {
                           final response = await signupVm.submit();
-                          
-                          if (response != null && 
-                              response.verificationToken.isNotEmpty && 
+
+                          if (response != null &&
+                              response.verificationToken.isNotEmpty &&
                               context.mounted) {
-                            
                             context.go(
                               AppRoutes.twoFA,
                               extra: {
@@ -138,12 +141,16 @@ class _SignupViewState extends State<SignupView> {
                 GoogleAuthButton(
                   isLoading: oauthVm.isLoading,
                   onPressed: () async {
-                    final success = await oauthVm.googleLogin(
+                    bool biometricSuccess = await DeviceAuthService()
+                        .authenticateBiometric();
+                    if (!biometricSuccess) return;
+
+                    bool oAuthSuccess = await oauthVm.googleLogin(
                       context: 'signup_screen',
                     );
-                    
-                    if (success && context.mounted) {
-                      context.go(AppRoutes.home);
+
+                    if (oAuthSuccess && context.mounted) {
+                      context.go(AppRoutes.userFiles);
                     }
                   },
                 ),

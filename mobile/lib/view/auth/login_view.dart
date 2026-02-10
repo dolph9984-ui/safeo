@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:securite_mobile/router/app_routes.dart';
+import 'package:securite_mobile/services/security/device_auth_service.dart';
 import 'package:securite_mobile/view/auth/components/auth_components.dart';
 import 'package:securite_mobile/view/auth/components/auth_scrollable_body.dart';
 import 'package:securite_mobile/view/auth/components/labeled_text_field_components.dart';
@@ -99,11 +100,15 @@ class _LoginViewState extends State<LoginView> {
                 GoogleAuthButton(
                   isLoading: oauthVm.isLoading,
                   onPressed: () async {
-                    final success = await oauthVm.googleLogin(
+                    bool biometricSuccess = await DeviceAuthService()
+                        .authenticateBiometric();
+                    if (!biometricSuccess) return;
+
+                    bool oAuthSuccess = await oauthVm.googleLogin(
                       context: 'login_screen',
                     );
 
-                    if (success && context.mounted) {
+                    if (oAuthSuccess && context.mounted) {
                       context.go(AppRoutes.userFiles);
                     }
                   },

@@ -34,7 +34,7 @@ class OAuthService {
         },
       );
 
-      //Conversion explicite en String
+      // Conversion explicite en String
       final data = response.data as Map<String, dynamic>;
 
       return {

@@ -73,7 +73,10 @@ class AppScaffold extends StatelessWidget {
         },
         currentIndex: currentIndex,
       ),
-      body: child,
+      body: RefreshIndicator(
+        child: child,
+        onRefresh: () async => context.read<ScaffoldViewModel>().refresh(),
+      ),
     );
   }
 }

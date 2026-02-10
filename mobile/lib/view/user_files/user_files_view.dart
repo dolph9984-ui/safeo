@@ -27,12 +27,6 @@ class _UserFilesViewState extends State<UserFilesView> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<UserFilesViewModel>()
-        ..initUser()
-        ..fetchFiles();
-    });
-
     super.initState();
   }
 

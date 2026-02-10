@@ -20,6 +20,11 @@ class UserFilesViewModel extends ChangeNotifier {
   final documentModel = DocumentModel();
   final sessionModel = SessionModel();
 
+  UserFilesViewModel() {
+    initUser();
+    fetchFiles();
+  }
+
   User? _user;
   List<Document>? files;
   List<Document>? _filteredFiles;
