@@ -11,27 +11,20 @@ class SearchPageViewModel extends ChangeNotifier {
   User? _currentUser;
   List<Document> _allFiles = [];
   List<Document> _searchResults = [];
-  List<Document> _recentSearches = [];
   bool _isSearching = false;
   bool _isLoading = false;
 
   List<Document> get searchResults => _searchResults;
-
-  List<Document> get recentSearches => _recentSearches;
-
   bool get isSearching => _isSearching;
-
   bool get isLoading => _isLoading;
-
   bool get hasQuery => searchController.text.trim().isNotEmpty;
-
   User? get currentUser => _currentUser;
 
   SearchPageViewModel({
     DocumentModel? documentModel,
     SessionModel? sessionModel,
-  }) : documentModel = documentModel ?? DocumentModel(),
-       _sessionModel = sessionModel ?? SessionModel() {
+  })  : documentModel = documentModel ?? DocumentModel(),
+        _sessionModel = sessionModel ?? SessionModel() {
     searchController.addListener(_onSearchChanged);
     _init();
   }
@@ -39,7 +32,6 @@ class SearchPageViewModel extends ChangeNotifier {
   Future<void> _init() async {
     await initUser();
     await _loadAllFiles();
-    await _loadRecentSearches();
   }
 
   Future<void> initUser() async {
@@ -58,20 +50,22 @@ class SearchPageViewModel extends ChangeNotifier {
 
     try {
       final userFiles = await documentModel.getUserDocuments();
-      final sharedFiles = await documentModel.getSharedDocuments();
 
-      _allFiles = [...userFiles, ...?sharedFiles];
-    } catch (e) {
-      debugPrint('Error loading files: $e');
+      List<Document> sharedFiles = [];
+      try {
+        final shared = await documentModel.getSharedDocuments();
+        sharedFiles = shared ?? [];
+      } catch (_) {
+        // erreur ignorée volontairement
+      }
+
+      _allFiles = [...userFiles, ...sharedFiles];
+    } catch (_) {
+      _allFiles = [];
     } finally {
       _isLoading = false;
       notifyListeners();
     }
-  }
-
-  Future<void> _loadRecentSearches() async {
-    _recentSearches = _allFiles.take(3).toList();
-    notifyListeners();
   }
 
   void _onSearchChanged() {
@@ -91,32 +85,16 @@ class SearchPageViewModel extends ChangeNotifier {
     final lowerQuery = query.toLowerCase();
 
     _searchResults = _allFiles
-        .where((file) => file.originalName.toLowerCase().contains(lowerQuery))
+        .where(
+          (file) => file.originalName.toLowerCase().contains(lowerQuery),
+        )
         .toList();
-
-    _saveToRecentSearches(_searchResults);
-  }
-
-  void _saveToRecentSearches(List<Document> results) {
-    if (results.isNotEmpty) {
-      final newRecent = results.first;
-      _recentSearches.removeWhere((f) => f.id == newRecent.id);
-      _recentSearches.insert(0, newRecent);
-      if (_recentSearches.length > 10) {
-        _recentSearches = _recentSearches.take(10).toList();
-      }
-    }
   }
 
   void clearSearch() {
     searchController.clear();
     _searchResults = [];
     _isSearching = false;
-    notifyListeners();
-  }
-
-  void clearRecentSearches() {
-    _recentSearches = [];
     notifyListeners();
   }
 

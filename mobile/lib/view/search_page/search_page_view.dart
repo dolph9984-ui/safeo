@@ -3,8 +3,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
+import 'package:securite_mobile/constants/app_fonts.dart';
 import 'package:securite_mobile/view/search_page/widgets/search_page_search_bar.dart';
-import 'package:securite_mobile/view/search_page/widgets/recent_searches_section.dart';
 import 'package:securite_mobile/view/search_page/widgets/search_results_section.dart';
 import 'package:securite_mobile/viewmodel/search_page_viewmodel.dart';
 
@@ -76,9 +76,15 @@ class _SearchPageContent extends StatelessWidget {
                     results: vm.searchResults,
                     searchQuery: vm.searchController.text,
                   )
-                : RecentSearchesSection(
-                    recentFiles: vm.recentSearches,
-                    onClearAll: vm.clearRecentSearches,
+                : Center(
+                    child: Text(
+                      'Recherchez vos fichiers',
+                      style: TextStyle(
+                        fontFamily: AppFonts.productSansMedium,
+                        fontSize: 16,
+                        color: AppColors.mutedForeground,
+                      ),
+                    ),
                   ),
           ),
         ],
