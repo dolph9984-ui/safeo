@@ -142,16 +142,16 @@ class DocumentModel {
 
   Future<List<Document>?> getSharedDocuments() async {
     final response = await _dio.get('/v1/api/document/shared-documents');
-    
-    final List data = response.data['sharedDocuments']; 
-    
+
+    final List data = response.data['sharedDocuments'];
+
     return data.map((json) {
       final Map<String, dynamic> adaptedJson = {
         ...json,
         'user': json['ownerUser'],
         'viewers': json['viewers'] ?? [],
       };
-      
+
       return Document.fromJson(adaptedJson);
     }).toList();
   }
@@ -197,7 +197,7 @@ Future<void> shareFile(
 
       // write bytes to file
       final file = File(filePath);
-      await file.writeAsBytes(response.data!);
+      await file.writeAsBytes(response.data!, flush: true);
 
       return true;
     } catch (e) {
