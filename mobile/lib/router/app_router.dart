@@ -41,7 +41,7 @@ final GoRouter appRouter = GoRouter(
         !currentLocation.startsWith(AppRoutes.signup) &&
         !currentLocation.startsWith(AppRoutes.twoFA) &&
         !currentLocation.startsWith(AppRoutes.onboarding) &&
-        !currentLocation.startsWith(AppRoutes.shareInvitation)) {
+        !currentLocation.startsWith(AppRoutes.confirmInvite)) {
       return AppRoutes.onboarding;
     }
 
@@ -201,35 +201,36 @@ final GoRouter appRouter = GoRouter(
       },
     ),
 
-    GoRoute(
-      path: AppRoutes.shareInvitation,
-      name: AppRoutes.shareInvitation,
-      builder: (context, state) {
-        final token = state.uri.queryParameters['token'] ?? '';
-        final fileName = state.uri.queryParameters['fileName'] ?? 'Fichier';
-        final ownerName = state.uri.queryParameters['ownerName'] ?? 'Un utilisateur';
 
-        if (token.isEmpty) {
-          return const UserFilesView();
-        }
+  GoRoute(
+    path: AppRoutes.confirmInvite,
+    name: AppRoutes.confirmInvite,
+    builder: (context, state) {
+      final token = state.uri.queryParameters['token'] ?? '';
+      final fileName = state.uri.queryParameters['fileName'] ?? 'Fichier';
+      final ownerName = state.uri.queryParameters['ownerName'] ?? 'Un utilisateur';
 
-        // Afficher le dialog directement
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          showShareInvitationDialog(
-            context: context,
-            token: token,
-            fileName: fileName,
-            ownerName: ownerName,
-          );
-        });
+      if (token.isEmpty) {
+        return const UserFilesView();
+      }
 
-        // Retourner un écran de fond (ou un loading)
-        return const Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
+      // Afficher le dialog directement
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showShareInvitationDialog(
+          context: context,
+          token: token,
+          fileName: fileName,
+          ownerName: ownerName,
         );
-      },
-    ),
-  ],
+      });
+
+      // Retourner un écran de fond (ou un loading)
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    },
+  ),
+],
 );
