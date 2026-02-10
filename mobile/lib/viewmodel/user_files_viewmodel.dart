@@ -22,7 +22,7 @@ class UserFilesViewModel extends ChangeNotifier {
   }
 
   final userModel = UserModel();
-  final fileModel = DocumentModel();
+  final documentModel = DocumentModel();
   final sessionModel = SessionModel();
 
   User? _user;
@@ -60,7 +60,7 @@ class UserFilesViewModel extends ChangeNotifier {
   Future<void> fetchFiles() async {
     _setLoading(true, 'Récupération des fichiers');
     try {
-      files = await fileModel.getUserDocuments();
+      files = await documentModel.getUserDocuments();
       _filteredFiles = files;
     } finally {
       _setLoading(false);
@@ -103,7 +103,7 @@ class UserFilesViewModel extends ChangeNotifier {
 
     _setLoading(true);
 
-    final res = await fileModel.renameDocument(file, newName: newName);
+    final res = await documentModel.renameDocument(file, newName: newName);
 
     if (res) {
       final index = files?.indexOf(file) ?? -1;
@@ -118,13 +118,13 @@ class UserFilesViewModel extends ChangeNotifier {
     return res ? ActionResult.success : ActionResult.error;
   }
 
-  Future<ActionResult> deleteFile(Document file) async {
+  Future<ActionResult> deleteFile(Document document) async {
     _setLoading(true, 'Suppression du document');
 
-    final res = await fileModel.deleteDocument(file);
+    final res = await documentModel.deleteDocument(document);
 
     if (res) {
-      files?.remove(file);
+      files?.remove(document);
       _filterFiles();
       notifyListeners();
     }
@@ -134,10 +134,11 @@ class UserFilesViewModel extends ChangeNotifier {
   }
 
   void openFile(Document file) {
-    fileModel.openFile(file);
+    documentModel.openFile(file);
   }
 
-  void downloadFile(Document file) {
-    fileModel.downloadFile(file);
+  Future<ActionResult> downloadFile(Document document) async {
+    final res = await documentModel.downloadFile(document);
+    return res ? ActionResult.success : ActionResult.error;
   }
 }

@@ -111,7 +111,22 @@ class _UserFilesViewState extends State<UserFilesView> {
                                   }
                                 }
                               },
-                              onDownloadTap: () => vm.downloadFile(file),
+                              onDownloadTap: () async {
+                                final result = await vm.downloadFile(file);
+                                if (buildContext.mounted) {
+                                  if (result == ActionResult.success) {
+                                    showSuccessSnackbar(
+                                      buildContext,
+                                      'Fichier téléchargé',
+                                    );
+                                  } else {
+                                    showErrorSnackbar(
+                                      buildContext,
+                                      'Erreur lors du téléchargement',
+                                    );
+                                  }
+                                }
+                              },
                               onDeleteTap: () async {
                                 final result = await vm.deleteFile(file);
 
