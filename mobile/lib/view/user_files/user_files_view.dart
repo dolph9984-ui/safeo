@@ -112,12 +112,16 @@ class _UserFilesViewState extends State<UserFilesView> {
                                 }
                               },
                               onDownloadTap: () async {
+                                showInfoSnackbar(
+                                  context,
+                                  'Téléchargement en cours...',
+                                );
                                 final result = await vm.downloadFile(file);
                                 if (buildContext.mounted) {
                                   if (result == ActionResult.success) {
                                     showSuccessSnackbar(
                                       buildContext,
-                                      'Fichier téléchargé',
+                                      'Fichier téléchargé dans le dossier de l\'application',
                                     );
                                   } else {
                                     showErrorSnackbar(
