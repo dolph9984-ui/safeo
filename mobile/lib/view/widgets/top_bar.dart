@@ -1,26 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/constants/app_fonts.dart';
+import 'package:securite_mobile/viewmodel/scaffold_viewmodel.dart';
 
 class TopBar extends StatelessWidget implements PreferredSizeWidget {
-  final String? imageUrl;
-  final String username;
-
-  final Function() onImageTap;
-
-  const TopBar({
-    super.key,
-    this.imageUrl,
-    required this.onImageTap,
-    required this.username,
-  });
+  const TopBar({super.key});
 
   @override
   Size get preferredSize => const Size.fromHeight(56);
 
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<ScaffoldViewModel>();
     return AppBar(
       scrolledUnderElevation: 0,
       backgroundColor: AppColors.background,
@@ -42,20 +35,20 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             InkWell(
               borderRadius: BorderRadius.circular(50),
-              onTap: onImageTap,
+              onTap: () => vm.openDrawer(),
               child: Padding(
                 padding: const EdgeInsets.all(4),
                 child: CircleAvatar(
                   radius: 17,
-                  child: (imageUrl != null)
+                  child: vm.imageProfileUrl.trim().isNotEmpty
                       ? Image.network(
-                          imageUrl!,
+                          vm.imageProfileUrl,
                           height: 34,
                           width: 34,
                           errorBuilder: (_, _, _) {
-                            return username.trim().isNotEmpty
+                            return vm.userName.trim().isNotEmpty
                                 ? Text(
-                                    username[0],
+                                    vm.userName[0],
                                     style: TextStyle(
                                       fontFamily: AppFonts.zalandoSans,
                                       color: Colors.white,
@@ -68,13 +61,13 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
                                   );
                           },
                         )
-                      : username.trim().isNotEmpty
+                      : vm.userName.trim().isNotEmpty
                       ? Text(
-                          username[0],
+                          vm.userName[0],
                           style: TextStyle(
                             fontFamily: AppFonts.zalandoSans,
                             color: Colors.white,
-                            fontSize: 20,
+                            fontSize: 14,
                           ),
                         )
                       : SvgPicture.asset('assets/icons/user.svg', height: 18),

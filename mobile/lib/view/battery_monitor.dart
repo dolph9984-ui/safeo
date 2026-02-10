@@ -14,7 +14,8 @@ class BatteryMonitorView extends StatefulWidget {
   State<BatteryMonitorView> createState() => _BatteryMonitorViewState();
 }
 
-class _BatteryMonitorViewState extends State<BatteryMonitorView> with WidgetsBindingObserver {
+class _BatteryMonitorViewState extends State<BatteryMonitorView>
+    with WidgetsBindingObserver {
   final Battery _battery = Battery();
   final BiometricAuthService _biometricAuth = BiometricAuthService();
   int _level = 0;
@@ -41,7 +42,8 @@ class _BatteryMonitorViewState extends State<BatteryMonitorView> with WidgetsBin
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused) {
       _pausedTime = DateTime.now();
     } else if (state == AppLifecycleState.resumed && _pausedTime != null) {
       if (DateTime.now().difference(_pausedTime!).inSeconds >= 5) {
@@ -55,7 +57,9 @@ class _BatteryMonitorViewState extends State<BatteryMonitorView> with WidgetsBin
     if (await _biometricAuth.authenticate()) {
       isAppUnlocked.value = true;
       final logged = await SessionModel().isLoggedIn;
-      if (mounted) context.go(logged ? AppRoutes.userFiles : AppRoutes.onboarding);
+      if (mounted) {
+        context.go(logged ? AppRoutes.userFiles : AppRoutes.onboarding);
+      }
     }
   }
 
@@ -66,7 +70,7 @@ class _BatteryMonitorViewState extends State<BatteryMonitorView> with WidgetsBin
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Battérie', style: theme.textTheme.headlineLarge),
+        title: Text('Batterie', style: theme.textTheme.headlineLarge),
       ),
       body: Center(
         child: Column(
@@ -82,7 +86,11 @@ class _BatteryMonitorViewState extends State<BatteryMonitorView> with WidgetsBin
                   shape: BoxShape.circle,
                   color: AppColors.surface,
                   boxShadow: [
-                    BoxShadow(color: AppColors.primary.withOpacity(0.1), blurRadius: 40, spreadRadius: 10),
+                    BoxShadow(
+                      color: AppColors.primary.withOpacity(0.1),
+                      blurRadius: 40,
+                      spreadRadius: 10,
+                    ),
                   ],
                 ),
                 child: Center(
@@ -90,12 +98,24 @@ class _BatteryMonitorViewState extends State<BatteryMonitorView> with WidgetsBin
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        isCharging ? Icons.bolt_rounded : Icons.battery_full_rounded,
+                        isCharging
+                            ? Icons.bolt_rounded
+                            : Icons.battery_full_rounded,
                         size: 40,
-                        color: isCharging ? AppColors.success : AppColors.primary
+                        color: isCharging
+                            ? AppColors.success
+                            : AppColors.primary,
                       ),
-                      Text('$_level%', style: theme.textTheme.headlineLarge?.copyWith(fontSize: 48)),
-                      Text(isCharging ? 'Charge en cours' : 'Optimisé', style: theme.textTheme.bodySmall),
+                      Text(
+                        '$_level%',
+                        style: theme.textTheme.headlineLarge?.copyWith(
+                          fontSize: 48,
+                        ),
+                      ),
+                      Text(
+                        isCharging ? 'Charge en cours' : 'Optimisé',
+                        style: theme.textTheme.bodySmall,
+                      ),
                     ],
                   ),
                 ),
@@ -118,7 +138,12 @@ class _BatteryMonitorViewState extends State<BatteryMonitorView> with WidgetsBin
     );
   }
 
-  Widget _infoTile(BuildContext context, IconData icon, String label, String value) {
+  Widget _infoTile(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+  ) {
     return Column(
       children: [
         Icon(icon, color: AppColors.textSecondary, size: 20),

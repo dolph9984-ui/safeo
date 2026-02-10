@@ -68,8 +68,8 @@ class StorageCard extends StatelessWidget {
                   children: [
                     Text(
                       totalStorage >= 1024 * 1024 * 1024
-                          ? '${FileSizeUtil.bytesToGb(used)}GB'
-                          : '${FileSizeUtil.bytesToMb(used)}MB',
+                          ? '${FileSizeUtil.bytesToGb(used.clamp(0, totalStorage))}GB'
+                          : '${FileSizeUtil.bytesToMb(used.clamp(0, totalStorage))}MB',
 
                       style: TextStyle(
                         fontFamily: AppFonts.productSansMedium,
@@ -79,8 +79,8 @@ class StorageCard extends StatelessWidget {
                     ),
                     Text(
                       totalStorage >= 1024 * 1024 * 1024
-                          ? ' / ${FileSizeUtil.bytesToGb(totalStorage)}GB'
-                          : ' / ${FileSizeUtil.bytesToMb(totalStorage)}MB',
+                          ? ' / ${FileSizeUtil.bytesToGb(totalStorage.clamp(0, totalStorage))}GB'
+                          : ' / ${FileSizeUtil.bytesToMb(totalStorage.clamp(0, totalStorage))}MB',
 
                       style: TextStyle(
                         fontFamily: AppFonts.productSansRegular,

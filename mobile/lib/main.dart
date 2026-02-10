@@ -27,17 +27,25 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) {
-            final vm = ScaffoldViewModel();
-            vm.init();
-            return vm;
-          },
-        ),
         ChangeNotifierProvider(create: (_) => TrashViewModel()),
         ChangeNotifierProvider(create: (_) => UserFilesViewModel()),
         ChangeNotifierProvider(create: (_) => SharedFilesViewModel()),
         ChangeNotifierProvider(create: (_) => CreateFileViewModel()),
+        ChangeNotifierProxyProvider2<
+          UserFilesViewModel,
+          SharedFilesViewModel,
+          ScaffoldViewModel
+        >(
+          create: (context) => ScaffoldViewModel(
+            filesVm: context.read<UserFilesViewModel>(),
+            sharedFilesVm: context.read<SharedFilesViewModel>(),
+          )..init(),
+          update: (_, filesVm, sharedVm, scaffoldVm) {
+            scaffoldVm!.filesVm = filesVm;
+            scaffoldVm.sharedFilesVm = sharedVm;
+            return scaffoldVm;
+          },
+        ),
       ],
       child: MaterialApp.router(
         routerConfig: appRouter,
