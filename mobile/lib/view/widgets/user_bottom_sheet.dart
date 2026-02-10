@@ -191,7 +191,6 @@ class UnifiedFileBottomSheet extends StatelessWidget {
                       );
                     }
                     context.pop();
-                    context.pop();
                   },
                   onCancel: () {
                     context.pop();

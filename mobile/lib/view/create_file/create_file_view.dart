@@ -12,6 +12,7 @@ import 'package:securite_mobile/view/widgets/file_uploader.dart';
 import 'package:securite_mobile/view/widgets/progress_dialog.dart';
 import 'package:securite_mobile/view/widgets/success_snackbar.dart';
 import 'package:securite_mobile/viewmodel/create_file_viewmodel.dart';
+import 'package:securite_mobile/viewmodel/user_files_viewmodel.dart';
 
 class CreateFileView extends StatelessWidget {
   const CreateFileView({super.key});
@@ -202,6 +203,7 @@ class CreateFileView extends StatelessWidget {
     }
 
     if (context.mounted) {
+      context.read<UserFilesViewModel>().fetchFiles();
       context.go('/user-files');
     }
 

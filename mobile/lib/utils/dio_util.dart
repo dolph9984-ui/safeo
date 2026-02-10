@@ -37,6 +37,5 @@ class DioClient {
     };
 
     dio.interceptors.add(AuthInterceptor(dio));
-    dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
   }
 }

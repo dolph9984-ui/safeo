@@ -46,9 +46,9 @@ class FileInfo extends StatelessWidget {
                   'Taille',
                   '${FileSizeUtil.bytesToMb(file.fileSize)} MB',
                 ),
-                _buildInfoRow('Type', file.fileMimeType.toUpperCase()),
+                _buildInfoRow('Type', file.fileType.toUpperCase()),
                 _buildInfoRow('Partagé le', _formatDate(file.updatedAt)),
-                _buildInfoRow('Propriétaire', file.username),
+                _buildInfoRow('Propriétaire', file.owner.fullName),
                 _buildInfoRow(
                   'Votre rôle',
                   SessionModel().session?.user.uuid == file.userId

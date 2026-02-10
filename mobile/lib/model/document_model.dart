@@ -37,10 +37,10 @@ class Document {
   final bool isDeleted;
   final DateTime? deletedAt;
   final String userId;
-  final String username;
   final DateTime createdAt;
   final DateTime updatedAt;
   final List<Viewer>? viewers;
+  final User owner;
 
   const Document({
     required this.id,
@@ -52,10 +52,10 @@ class Document {
     required this.isDeleted,
     this.deletedAt,
     required this.userId,
-    required this.username,
     required this.createdAt,
     required this.updatedAt,
     required this.viewers,
+    required this.owner,
   });
 
   factory Document.fromJson(Map<String, dynamic> json) {
@@ -71,13 +71,16 @@ class Document {
           ? DateTime.parse(json['deletedAt'] as String)
           : null,
       userId: json['userId'] as String,
-      // TODO : no username
-      username: (json['username'] ?? '') as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
       viewers: (json['viewers'] as List<dynamic>?)
           ?.map((e) => Viewer.fromJson(e))
           .toList(),
+      owner: json['user'] != null
+          ? User.fromJson(json['user'])
+          : json['userId'] != null
+          ? User.none().copyWith(uuid: json['userId'])
+          : User.none(),
     );
   }
 
@@ -91,10 +94,10 @@ class Document {
     bool? isDeleted,
     DateTime? deletedAt,
     String? userId,
-    String? username,
     DateTime? createdAt,
     DateTime? updatedAt,
     List<Viewer>? viewers,
+    User? owner,
   }) {
     return Document(
       id: id ?? this.id,
@@ -106,10 +109,10 @@ class Document {
       isDeleted: isDeleted ?? this.isDeleted,
       deletedAt: deletedAt ?? this.deletedAt,
       userId: userId ?? this.userId,
-      username: username ?? this.username,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       viewers: viewers ?? this.viewers?.map((v) => v).toList(),
+      owner: owner ?? this.owner,
     );
   }
 }
@@ -199,19 +202,26 @@ class DocumentModel {
     required String newName,
   }) async {
     try {
-      final response = await _dio.patch('/v1/api/document/${document.id}');
+      final response = await _dio.patch(
+        '/v1/api/document/${document.id}',
+        data: {'fileName': newName},
+      );
       return (response.data['statusCode'] as int) == 200;
     } catch (e) {
+      debugPrintStack();
       debugPrint(e.toString());
       return false;
     }
   }
 
   Future<bool> deleteDocument(Document document) async {
+    await _dio.delete('/v1/api/document/${document.id}');
+
     try {
-      final response = await _dio.delete('/v1/api/document/${document.id}');
-      return (response.data['statusCode'] as int) == 200;
+      await _dio.delete('/v1/api/document/${document.id}');
+      return true;
     } catch (e) {
+      debugPrintStack();
       debugPrint(e.toString());
       return false;
     }

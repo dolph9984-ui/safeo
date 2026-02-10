@@ -1,11 +1,19 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:securite_mobile/enum/file_filter_enum.dart';
 import 'package:securite_mobile/enum/file_type_enum.dart';
 import 'package:securite_mobile/model/document_model.dart';
 import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/model/user_model.dart';
-import 'package:securite_mobile/services/security/device_auth_service.dart';
 import 'package:securite_mobile/utils/file_name_util.dart';
+
+class LoadingState {
+  final bool state;
+  final String message;
+
+  LoadingState({required this.state, required this.message});
+}
+
+enum ActionResult { error, success }
 
 class UserFilesViewModel extends ChangeNotifier {
   final userModel = UserModel();
@@ -15,6 +23,8 @@ class UserFilesViewModel extends ChangeNotifier {
   User? _user;
   List<Document>? _files;
   List<Document>? _filteredFiles;
+
+  LoadingState loading = LoadingState(state: false, message: '');
 
   FileFilterEnum _currentFilter = FileFilterEnum.all;
 
@@ -28,8 +38,12 @@ class UserFilesViewModel extends ChangeNotifier {
 
   User? get currentUser => _user;
 
-  void initUser() async {
+  void _setLoading(bool state, [String message = '']) {
+    loading = LoadingState(state: state, message: message);
+    notifyListeners();
+  }
 
+  void initUser() {
     if (sessionModel.session == null) {
       sessionModel.destroySession();
       return;
@@ -38,12 +52,14 @@ class UserFilesViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void initFiles() {
-    fileModel.getUserDocuments().then((res) {
-      _files = res;
-      _filteredFiles = res;
-      notifyListeners();
-    });
+  Future<void> fetchFiles() async {
+    _setLoading(true, 'Récupération des fichiers');
+    try {
+      _files = await fileModel.getUserDocuments();
+      _filteredFiles = _files;
+    } finally {
+      _setLoading(false);
+    }
   }
 
   void setCurrentFilter(FileFilterEnum newFilter) {
@@ -75,28 +91,48 @@ class UserFilesViewModel extends ChangeNotifier {
               .toList();
   }
 
-  void openFile(Document file) async {
+  Future<ActionResult> renameFile(Document file, String newName) async {
+    if (file.originalName == newName) {
+      return ActionResult.success;
+    }
+
+    _setLoading(true);
+
+    final res = await fileModel.renameDocument(file, newName: newName);
+
+    if (res) {
+      final index = _files?.indexOf(file) ?? -1;
+      if (index != -1) {
+        _files![index] = file.copyWith(originalName: newName);
+        _filterFiles();
+        notifyListeners();
+      }
+    }
+
+    _setLoading(false);
+    return res ? ActionResult.success : ActionResult.error;
+  }
+
+  Future<ActionResult> deleteFile(Document file) async {
+    _setLoading(true, 'Suppression du document');
+
+    final res = await fileModel.deleteDocument(file);
+
+    if (res) {
+      _files?.remove(file);
+      _filterFiles();
+      notifyListeners();
+    }
+
+    _setLoading(false);
+    return res ? ActionResult.success : ActionResult.error;
+  }
+
+  void openFile(Document file) {
     fileModel.openFile(file);
   }
 
-  void renameFile(Document file, {required String newName}) async {
-    if (file.originalName == newName) return;
-
-    fileModel.renameDocument(file, newName: newName).then((res) {
-      int index = _files?.indexOf(file) ?? -1;
-      if (index != -1) _files![index] = file.copyWith(originalName: newName);
-      notifyListeners();
-    });
-  }
-
-  void downloadFile(Document file) async {
+  void downloadFile(Document file) {
     fileModel.downloadFile(file);
-  }
-
-  void deleteFile(Document file) async {
-    fileModel.deleteDocument(file).then((res) {
-      _files?.removeWhere((e) => e == file);
-      notifyListeners();
-    });
   }
 }
