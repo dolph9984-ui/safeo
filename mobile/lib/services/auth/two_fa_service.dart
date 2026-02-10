@@ -43,18 +43,23 @@ class TwoFAService {
 
     return response.data['accessToken'] as String;
   }
-  
-  Future<void> resendLoginCode({required String verificationToken}) async {
-    await _dio.post(
+
+  Future<String> resendLoginCode({required String verificationToken}) async {
+    final response = await _dio.post(
       '/v1/api/auth/login/resend-otp',
       data: {'verificationToken': verificationToken},
     );
+
+    return response.data['verificationToken'] as String;
   }
 
-  Future<void> resendSignupCode({required String verificationToken}) async {
-    await _dio.post(
+  Future<String> resendSignupCode({required String verificationToken}) async {
+    final response = await _dio.post(
       '/v1/api/auth/signup/resend-otp',
       data: {'verificationToken': verificationToken},
     );
+
+    // ✅ Récupérer et retourner le nouveau verificationToken
+    return response.data['verificationToken'] as String;
   }
 }

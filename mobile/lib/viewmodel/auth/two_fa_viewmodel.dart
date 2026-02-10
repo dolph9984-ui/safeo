@@ -14,7 +14,8 @@ class TwoFAViewModel extends ChangeNotifier {
   final TwoFAService _twoFAService;
   final sessionModel = SessionModel();
 
-  final String verificationToken;
+  // ✅ CHANGEMENT 1: Enlever 'final' pour permettre la mise à jour
+  String verificationToken;
   final TwoFAMode mode;
 
   TwoFAViewModel({
@@ -35,19 +36,12 @@ class TwoFAViewModel extends ChangeNotifier {
   Timer? _resendTimer;
 
   String get code => _code;
-
   bool get isLoading => _isLoading;
-
   String? get errorMessage => _errorMessage;
-
   bool get isResending => _isResending;
-
   bool get canSubmit => _code.length == 6 && !_isLoading;
-
   String? get email => _email;
-
   int get resendCountdown => _resendCountdown;
-
   bool get canResend => _resendCountdown == 0 && !_isResending;
 
   @override
@@ -157,20 +151,31 @@ class TwoFAViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
+      String newVerificationToken;
+
       if (mode == TwoFAMode.signup) {
-        await _twoFAService.resendSignupCode(
+        newVerificationToken = await _twoFAService.resendSignupCode(
           verificationToken: verificationToken,
         );
       } else {
-        await _twoFAService.resendLoginCode(
+        newVerificationToken = await _twoFAService.resendLoginCode(
           verificationToken: verificationToken,
         );
+      }
+
+      verificationToken = newVerificationToken;
+
+      if (kDebugMode) {
+        print('Nouveau verificationToken: $newVerificationToken');
       }
 
       _isResending = false;
       _startResendTimer();
       return true;
     } catch (e) {
+      if (kDebugMode) {
+        print('Erreur resend code: $e');
+      }
       _errorMessage = 'Impossible de renvoyer le code';
       _isResending = false;
       notifyListeners();
