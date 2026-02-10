@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:securite_mobile/constants/permissions.dart';
 import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/router/app_routes.dart';
+import 'package:securite_mobile/utils/share_dialog_helper.dart';
 import 'package:securite_mobile/view/app_scaffold.dart';
 import 'package:securite_mobile/view/auth/login_view.dart';
 import 'package:securite_mobile/view/auth/signup_view.dart';
@@ -39,7 +40,8 @@ final GoRouter appRouter = GoRouter(
         !currentLocation.startsWith(AppRoutes.login) &&
         !currentLocation.startsWith(AppRoutes.signup) &&
         !currentLocation.startsWith(AppRoutes.twoFA) &&
-        !currentLocation.startsWith(AppRoutes.onboarding)) {
+        !currentLocation.startsWith(AppRoutes.onboarding) &&
+        !currentLocation.startsWith(AppRoutes.shareInvitation)) {
       return AppRoutes.onboarding;
     }
 
@@ -196,6 +198,37 @@ final GoRouter appRouter = GoRouter(
         }
 
         return ShareHandlingView(fileId: fileId);
+      },
+    ),
+
+    GoRoute(
+      path: AppRoutes.shareInvitation,
+      name: AppRoutes.shareInvitation,
+      builder: (context, state) {
+        final token = state.uri.queryParameters['token'] ?? '';
+        final fileName = state.uri.queryParameters['fileName'] ?? 'Fichier';
+        final ownerName = state.uri.queryParameters['ownerName'] ?? 'Un utilisateur';
+
+        if (token.isEmpty) {
+          return const UserFilesView();
+        }
+
+        // Afficher le dialog directement
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showShareInvitationDialog(
+            context: context,
+            token: token,
+            fileName: fileName,
+            ownerName: ownerName,
+          );
+        });
+
+        // Retourner un écran de fond (ou un loading)
+        return const Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
       },
     ),
   ],

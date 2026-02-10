@@ -162,23 +162,40 @@ class DocumentModel {
 
   Future<void> openFile(Document document) async {}
 
-Future<void> shareFile(
-  Document document, {
-  required String email,
-}) async {
-  try {
-    await _dio.post(
-      '/v1/api/document-shares/share/${document.id}',
-      data: {'invitedEmail': email},
-    );
-  } on DioException catch (e) {
-    if (e.response?.statusCode == 404) {
-      throw Exception('USER_NOT_FOUND');
+  Future<void> shareFile(
+    Document document, {
+    required String email,
+  }) async {
+    try {
+      await _dio.post(
+        '/v1/api/document-shares/share/${document.id}',
+        data: {'invitedEmail': email},
+      );
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        throw Exception('USER_NOT_FOUND');
+      }
+      rethrow;
     }
-    rethrow;
   }
-}
 
+  Future<void> acceptShareInvitation(String token) async {
+    try {
+      await _dio.post(
+        '/v1/api/document-shares/invite/accept',
+        data: {'token': token},
+      );
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        throw Exception('INVALID_TOKEN');
+      } else if (e.response?.statusCode == 404) {
+        throw Exception('USER_NOT_FOUND');
+      }
+      debugPrint('Error accepting invitation: $e');
+      rethrow;
+    }
+  }
+  
   Future<bool> downloadFile(Document document) async {
     try {
       final dir = await getApplicationDocumentsDirectory();
