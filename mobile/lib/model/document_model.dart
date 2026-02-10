@@ -192,7 +192,24 @@ class DocumentModel {
       rethrow;
     }
   }
-  
+
+  Future<void> removeViewer({
+    required String documentId,
+    required String userIdToRemove,
+  }) async {
+    try {
+      await _dio.delete(
+        '/v1/api/document-shares/$documentId/remove-viewer',
+        data: {'userIdToRemove': userIdToRemove},
+      );
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        throw Exception('UNAUTHORIZED');
+      }
+      rethrow;
+    }
+  }
+    
   Future<bool> downloadFile(Document document) async {
     try {
       final dir = await getApplicationDocumentsDirectory();

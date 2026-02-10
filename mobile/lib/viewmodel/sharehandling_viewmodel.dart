@@ -25,9 +25,9 @@ class ShareHandlingViewModel extends ChangeNotifier {
     DocumentModel? fileModel,
     UserModel? userModel,
     SessionModel? sessionModel,
-  }) : _documentModel = fileModel ?? DocumentModel(),
-       _userModel = userModel ?? UserModel(),
-       _sessionModel = sessionModel ?? SessionModel() {
+  })  : _documentModel = fileModel ?? DocumentModel(),
+        _userModel = userModel ?? UserModel(),
+        _sessionModel = sessionModel ?? SessionModel() {
     _init(fileId);
   }
 
@@ -73,7 +73,7 @@ class ShareHandlingViewModel extends ChangeNotifier {
   Future<void> _loadCurrentFile(String fileId) async {
     try {
       final files = await _documentModel.getUserDocuments();
-      _currentFile = files?.firstWhere(
+      _currentFile = files.firstWhere(
         (f) => f.id == fileId,
         orElse: () => files.first,
       );
@@ -87,21 +87,29 @@ class ShareHandlingViewModel extends ChangeNotifier {
 
     _members = [];
 
+    // Trouver le propriétaire du fichier parmi les utilisateurs disponibles
+    final owner = _availableUsers.firstWhere(
+      (user) => user.uuid == _currentFile!.userId,
+      orElse: () => _currentUser!, // Fallback sur l'utilisateur actuel
+    );
+
+    // Ajouter le propriétaire
     _members.add({
-      'id': _currentFile!.userId,
-      'name': _currentFile!.userId,
-      'email': _currentFile!.userId,
+      'id': owner.uuid,
+      'name': owner.fullName,
+      'email': owner.email,
       'isOwner': true,
     });
 
+    // Ajouter les viewers
     if (_currentFile!.viewers != null && _currentFile!.viewers!.isNotEmpty) {
-      for (final viewerUser in _currentFile!.viewers!) {
+      for (final viewerData in _currentFile!.viewers!) {
         final viewer = _availableUsers.firstWhere(
-          (user) => user.email.toLowerCase() == viewerUser.email.toLowerCase(),
+          (user) => user.uuid == viewerData.id, // Utiliser l'ID du viewer
           orElse: () => User(
-            uuid: 'unknown-${viewerUser.email}',
-            fullName: viewerUser.email.split('@').first,
-            email: viewerUser.email,
+            uuid: viewerData.id,
+            fullName: viewerData.email.split('@').first,
+            email: viewerData.email,
             filesNbr: 0,
             sharedFilesNbr: 0,
             storageLimit: 0,
@@ -143,10 +151,24 @@ class ShareHandlingViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
+      await _documentModel.removeViewer(
+        documentId: _currentFile!.id,
+        userIdToRemove: userId,
+      );
+
       _members.removeWhere((m) => m['id'] == userId);
-      return null;
+
+      await _loadCurrentFile(_currentFile!.id);
+      await _loadMembers();
+
+      return null; 
     } catch (e) {
       debugPrint('Error removing user access: $e');
+
+      if (e.toString().contains('UNAUTHORIZED')) {
+        return 'Seul le propriétaire peut retirer l\'accès';
+      }
+
       return 'Erreur lors de la suppression';
     } finally {
       _isLoading = false;
