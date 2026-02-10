@@ -65,6 +65,30 @@ class User {
     createdAt: DateTime.now(),
     imageUrl: null,
   );
+
+  User copyWith({
+    String? uuid,
+    String? fullName,
+    String? email,
+    int? filesNbr,
+    int? sharedFilesNbr,
+    int? storageLimit,
+    int? storageUsed,
+    DateTime? createdAt,
+    String? imageUrl,
+  }) {
+    return User(
+      uuid: uuid ?? this.uuid,
+      fullName: fullName ?? this.fullName,
+      email: email ?? this.email,
+      filesNbr: filesNbr ?? this.filesNbr,
+      sharedFilesNbr: sharedFilesNbr ?? this.sharedFilesNbr,
+      storageLimit: storageLimit ?? this.storageLimit,
+      storageUsed: storageUsed ?? this.storageUsed,
+      createdAt: createdAt ?? this.createdAt,
+      imageUrl: imageUrl ?? this.imageUrl,
+    );
+  }
 }
 
 class UserModel {
