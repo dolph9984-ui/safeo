@@ -160,10 +160,22 @@ class DocumentModel {
 
   Future<void> openFile(Document document) async {}
 
-  Future<void> shareFile(
-    Document document, {
-    required List<User> shareTo,
-  }) async {}
+Future<void> shareFile(
+  Document document, {
+  required String email,
+}) async {
+  try {
+    await _dio.post(
+      '/v1/api/document-shares/share/${document.id}',
+      data: {'invitedEmail': email},
+    );
+  } on DioException catch (e) {
+    if (e.response?.statusCode == 404) {
+      throw Exception('USER_NOT_FOUND');
+    }
+    rethrow;
+  }
+}
 
   Future<void> downloadFile(Document document) async {}
 

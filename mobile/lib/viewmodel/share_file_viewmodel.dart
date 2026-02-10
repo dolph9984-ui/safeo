@@ -91,7 +91,7 @@ class ShareFileViewModel extends ChangeNotifier {
   Future<void> _loadCurrentFile(String fileId) async {
     try {
       final files = await _documentModel.getUserDocuments();
-      _currentFile = files?.firstWhere(
+      _currentFile = files.firstWhere(
         (f) => f.id == fileId,
         orElse: () => files.first,
       );
@@ -166,14 +166,6 @@ class ShareFileViewModel extends ChangeNotifier {
       return 'Vous êtes déjà le propriétaire de ce fichier';
     }
 
-    final userExists = _availableUsers.any(
-      (u) => u.email.toLowerCase() == email.toLowerCase(),
-    );
-
-    if (!userExists) {
-      return 'Utilisateur non trouvé dans le système';
-    }
-
     final alreadyShared = _sharedWith.any(
       (u) => u.email.toLowerCase() == email.toLowerCase(),
     );
@@ -186,46 +178,30 @@ class ShareFileViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final user = _availableUsers.firstWhere(
-        (u) => u.email.toLowerCase() == email.toLowerCase(),
-      );
+      await _documentModel.shareFile(_currentFile!, email: email);
 
-      await _documentModel.shareFile(_currentFile!, shareTo: [user]);
+      await _loadSharedUsers();
 
-      _sharedWith.add(user);
       searchController.clear();
       _searchResults = [];
       _isSearching = false;
       _emailToInvite = '';
 
-      return null;
+      return null; 
     } catch (e) {
       debugPrint('Error sharing via email: $e');
-      return 'Erreur lors du partage';
+      
+      if (e.toString().contains('USER_NOT_FOUND')) {
+        return 'Aucun compte n\'est associé à cet email';
+      }
+      
+      return 'Aucun compte trouvé avec cet email';
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
-
-  Future<String?> removeUserAccess(User user) async {
-    if (_currentFile == null) return 'Erreur';
-
-    _isLoading = true;
-    notifyListeners();
-
-    try {
-      _sharedWith.removeWhere((u) => u.uuid == user.uuid);
-      return null;
-    } catch (e) {
-      debugPrint('Error removing user access: $e');
-      return 'Erreur lors de la suppression';
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
+    
   bool _isValidEmail(String email) {
     final emailRegex = RegExp(
       r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
