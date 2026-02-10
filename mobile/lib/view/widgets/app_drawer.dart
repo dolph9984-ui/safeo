@@ -58,13 +58,14 @@ class AppDrawer extends StatelessWidget {
                 endIndent: 16,
               ),
 
+              /*
               DrawerItem(
                 label: 'Consulter la corbeille',
                 assetName: 'assets/icons/trash.svg',
                 onTap: onTrashTap,
                 color: AppColors.foreground,
               ),
-
+               */
               DrawerItem(
                 label: 'Se déconnecter',
                 assetName: 'assets/icons/logout.svg',

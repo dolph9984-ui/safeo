@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:securite_mobile/constants/app_colors.dart';
 import 'package:securite_mobile/enum/file_filter_enum.dart';
 import 'package:securite_mobile/router/app_routes.dart';
+import 'package:securite_mobile/utils/share_dialog_helper.dart';
 import 'package:securite_mobile/view/shared_files/wigdet/filter_bottom_sheet.dart';
 import 'package:securite_mobile/view/user_files/widgets/file_item.dart';
 import 'package:securite_mobile/view/user_files/widgets/files_list.dart';
@@ -13,7 +14,9 @@ import 'package:securite_mobile/view/widgets/user_bottom_sheet.dart';
 import 'package:securite_mobile/viewmodel/user_files_viewmodel.dart';
 
 class UserFilesView extends StatefulWidget {
-  const UserFilesView({super.key});
+  final String? token;
+
+  const UserFilesView({super.key, required this.token});
 
   @override
   State<UserFilesView> createState() => _UserFilesViewState();
@@ -23,6 +26,23 @@ class _UserFilesViewState extends State<UserFilesView> {
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    print('widget token : ${widget.token}');
+    if (widget.token != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showShareInvitationDialog(
+          context: context,
+          token: widget.token!,
+          fileName: '',
+          ownerName: '',
+        );
+      });
+    }
   }
 
   @override

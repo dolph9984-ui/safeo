@@ -13,5 +13,5 @@ class AppRoutes {
   static const String trash = '/trash';
   static const String searchPage = '/searchPage';
   static const String shareHandling = '/share-handling';
-  static const String confirmInvite = '/confirm-invite';
+  static const String invite = '/invite';
 }

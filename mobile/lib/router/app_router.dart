@@ -19,15 +19,23 @@ import 'package:securite_mobile/view/shared_files/shared_files_view.dart';
 import 'package:securite_mobile/view/sharehandling/sharehandling_view.dart';
 import 'package:securite_mobile/view/trash/trash_view.dart';
 import 'package:securite_mobile/view/user_files/user_files_view.dart';
+import 'package:securite_mobile/view/widgets/invitation_dialog.dart';
 import 'package:securite_mobile/viewmodel/auth/two_fa_viewmodel.dart';
 import 'package:securite_mobile/viewmodel/trash_viewmodel.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/battery',
-
   refreshListenable: isAppUnlocked,
 
   redirect: (context, state) async {
+    final uriString = state.uri.toString();
+
+    if (uriString.startsWith('safeo://invite')) {
+      final uri = Uri.parse(uriString);
+      final token = uri.queryParameters['token'] ?? '';
+      // redirige vers /userFiles avec token en query parameter
+      return '${AppRoutes.userFiles}?token=$token';
+    }
+
     final currentLocation = state.matchedLocation;
     final isLoggedIn = await SessionModel().isLoggedIn;
 
@@ -41,7 +49,7 @@ final GoRouter appRouter = GoRouter(
         !currentLocation.startsWith(AppRoutes.signup) &&
         !currentLocation.startsWith(AppRoutes.twoFA) &&
         !currentLocation.startsWith(AppRoutes.onboarding) &&
-        !currentLocation.startsWith(AppRoutes.confirmInvite)) {
+        !currentLocation.startsWith(AppRoutes.invite)) {
       return AppRoutes.onboarding;
     }
 
@@ -50,10 +58,15 @@ final GoRouter appRouter = GoRouter(
 
   routes: [
     GoRoute(
+      path: AppRoutes.root,
+      builder: (context, state) => const SizedBox.shrink(),
+    ),
+
+    GoRoute(
       path: '/battery',
       builder: (context, state) => const BatteryMonitorView(),
     ),
-    GoRoute(path: AppRoutes.root, builder: (_, _) => const SizedBox.shrink()),
+
     GoRoute(
       path: AppRoutes.authCallback,
       redirect: (context, state) => AppRoutes.root,
@@ -159,7 +172,13 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: AppRoutes.userFiles,
           name: AppRoutes.userFiles,
-          builder: (context, state) => const UserFilesView(),
+          builder: (context, state) {
+            final uri = Uri.parse(state.uri.toString());
+            final token = uri.queryParameters['token'];
+            debugPrint('token reçu : $token');
+
+            return UserFilesView(key: ValueKey(token), token: token);
+          },
         ),
 
         // shared files
@@ -180,7 +199,7 @@ final GoRouter appRouter = GoRouter(
         final autoFocus = state.uri.queryParameters['autoFocus'] == 'true';
 
         if (fileId.isEmpty) {
-          return const UserFilesView();
+          return const UserFilesView(token: null);
         }
 
         return ShareFileView(fileId: fileId, autoFocus: autoFocus);
@@ -194,43 +213,11 @@ final GoRouter appRouter = GoRouter(
         final fileId = state.pathParameters['fileId'] ?? '';
 
         if (fileId.isEmpty) {
-          return const UserFilesView();
+          return const UserFilesView(token: null);
         }
 
         return ShareHandlingView(fileId: fileId);
       },
     ),
-
-
-  GoRoute(
-    path: AppRoutes.confirmInvite,
-    name: AppRoutes.confirmInvite,
-    builder: (context, state) {
-      final token = state.uri.queryParameters['token'] ?? '';
-      final fileName = state.uri.queryParameters['fileName'] ?? 'Fichier';
-      final ownerName = state.uri.queryParameters['ownerName'] ?? 'Un utilisateur';
-
-      if (token.isEmpty) {
-        return const UserFilesView();
-      }
-
-      // Afficher le dialog directement
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        showShareInvitationDialog(
-          context: context,
-          token: token,
-          fileName: fileName,
-          ownerName: ownerName,
-        );
-      });
-
-      // Retourner un écran de fond (ou un loading)
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    },
-  ),
-],
+  ],
 );

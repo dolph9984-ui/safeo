@@ -13,14 +13,11 @@ class ShareInvitationDialog {
       barrierDismissible: false,
       builder: (context) => ConfirmDialog(
         title: 'Invitation de partage',
-        description: '$ownerName vous invite à accéder au fichier "$fileName".\n\nVoulez-vous accepter cette invitation ?',
         cancelLabel: 'Refuser',
         confirmLabel: 'Accepter',
-        confirmBgColor: AppColors.primary, 
-        onConfirm: () {
-        },
-        onCancel: () {
-        },
+        confirmBgColor: AppColors.primary,
+        onConfirm: () {},
+        onCancel: () {},
       ),
     );
   }

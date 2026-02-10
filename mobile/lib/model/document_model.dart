@@ -210,6 +210,7 @@ class DocumentModel {
     }
   }
     
+
   Future<bool> downloadFile(Document document) async {
     try {
       final dir = await getApplicationDocumentsDirectory();
