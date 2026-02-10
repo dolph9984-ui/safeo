@@ -33,6 +33,8 @@ class SharedFilesViewModel extends ChangeNotifier {
 
   List<Document> get filteredFiles => _filteredFiles ?? [];
 
+  List<Document> get sharedFiles => _sharedFiles ?? [];
+
   User? get currentUser => _user;
 
   void _setLoading(bool state, [String message = '']) {
