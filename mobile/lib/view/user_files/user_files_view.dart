@@ -23,11 +23,6 @@ class _UserFilesViewState extends State<UserFilesView> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<UserFilesViewModel>()
-        ..fetchFiles()
-        ..initUser();
-    });
   }
 
   @override
@@ -44,7 +39,7 @@ class _UserFilesViewState extends State<UserFilesView> {
         if (vm.loading.state == true)
           Center(
             child: Column(
-              spacing: 8,
+              spacing: 24,
               children: [
                 SizedBox(height: 32),
                 if (vm.loading.message.isNotEmpty) Text(vm.loading.message),

@@ -19,13 +19,12 @@ import 'package:securite_mobile/view/sharehandling/sharehandling_view.dart';
 import 'package:securite_mobile/view/trash/trash_view.dart';
 import 'package:securite_mobile/view/user_files/user_files_view.dart';
 import 'package:securite_mobile/viewmodel/auth/two_fa_viewmodel.dart';
-import 'package:securite_mobile/viewmodel/scaffold_viewmodel.dart';
 import 'package:securite_mobile/viewmodel/trash_viewmodel.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/battery',
-  
-  refreshListenable: isAppUnlocked, 
+
+  refreshListenable: isAppUnlocked,
 
   redirect: (context, state) async {
     final currentLocation = state.matchedLocation;
@@ -35,14 +34,15 @@ final GoRouter appRouter = GoRouter(
       return '/battery';
     }
 
-    if (isAppUnlocked.value && !isLoggedIn &&
+    if (isAppUnlocked.value &&
+        !isLoggedIn &&
         !currentLocation.startsWith(AppRoutes.login) &&
         !currentLocation.startsWith(AppRoutes.signup) &&
         !currentLocation.startsWith(AppRoutes.twoFA) &&
         !currentLocation.startsWith(AppRoutes.onboarding)) {
       return AppRoutes.onboarding;
     }
-    
+
     return null;
   },
 
@@ -149,11 +149,7 @@ final GoRouter appRouter = GoRouter(
           onPopInvokedWithResult: (didPop, result) {
             context.go(AppRoutes.userFiles);
           },
-          child: AppScaffold(
-            currentIndex: currentIndex,
-            vm: context.read<ScaffoldViewModel>(),
-            child: child,
-          ),
+          child: AppScaffold(currentIndex: currentIndex, child: child),
         );
       },
       routes: [

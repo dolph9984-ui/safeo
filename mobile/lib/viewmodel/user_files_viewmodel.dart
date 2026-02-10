@@ -16,12 +16,17 @@ class LoadingState {
 enum ActionResult { error, success }
 
 class UserFilesViewModel extends ChangeNotifier {
+  UserFilesViewModel() {
+    initUser();
+    fetchFiles();
+  }
+
   final userModel = UserModel();
   final fileModel = DocumentModel();
   final sessionModel = SessionModel();
 
   User? _user;
-  List<Document>? _files;
+  List<Document>? files;
   List<Document>? _filteredFiles;
 
   LoadingState loading = LoadingState(state: false, message: '');
@@ -55,8 +60,8 @@ class UserFilesViewModel extends ChangeNotifier {
   Future<void> fetchFiles() async {
     _setLoading(true, 'Récupération des fichiers');
     try {
-      _files = await fileModel.getUserDocuments();
-      _filteredFiles = _files;
+      files = await fileModel.getUserDocuments();
+      _filteredFiles = files;
     } finally {
       _setLoading(false);
     }
@@ -79,8 +84,8 @@ class UserFilesViewModel extends ChangeNotifier {
     final targetType = filterMap[_currentFilter];
 
     _filteredFiles = targetType == null
-        ? _files
-        : _files
+        ? files
+        : files
               ?.where(
                 (file) =>
                     FileTypeEnum.fromExtension(
@@ -101,9 +106,9 @@ class UserFilesViewModel extends ChangeNotifier {
     final res = await fileModel.renameDocument(file, newName: newName);
 
     if (res) {
-      final index = _files?.indexOf(file) ?? -1;
+      final index = files?.indexOf(file) ?? -1;
       if (index != -1) {
-        _files![index] = file.copyWith(originalName: newName);
+        files![index] = file.copyWith(originalName: newName);
         _filterFiles();
         notifyListeners();
       }
@@ -119,7 +124,7 @@ class UserFilesViewModel extends ChangeNotifier {
     final res = await fileModel.deleteDocument(file);
 
     if (res) {
-      _files?.remove(file);
+      files?.remove(file);
       _filterFiles();
       notifyListeners();
     }
