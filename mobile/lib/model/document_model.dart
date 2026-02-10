@@ -143,7 +143,7 @@ class DocumentModel {
   Future<List<Document>?> getSharedDocuments() async {
     final response = await _dio.get('/v1/api/document/shared-documents');
 
-    final List data = response.data['sharedDocuments'];
+    final List data = response.data['documents'];
 
     return data.map((json) {
       final Map<String, dynamic> adaptedJson = {
@@ -162,22 +162,19 @@ class DocumentModel {
 
   Future<void> openFile(Document document) async {}
 
-Future<void> shareFile(
-  Document document, {
-  required String email,
-}) async {
-  try {
-    await _dio.post(
-      '/v1/api/document-shares/share/${document.id}',
-      data: {'invitedEmail': email},
-    );
-  } on DioException catch (e) {
-    if (e.response?.statusCode == 404) {
-      throw Exception('USER_NOT_FOUND');
+  Future<void> shareFile(Document document, {required String email}) async {
+    try {
+      await _dio.post(
+        '/v1/api/document-shares/share/${document.id}',
+        data: {'invitedEmail': email},
+      );
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        throw Exception('USER_NOT_FOUND');
+      }
+      rethrow;
     }
-    rethrow;
   }
-}
 
   Future<bool> downloadFile(Document document) async {
     try {
