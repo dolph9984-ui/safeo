@@ -60,7 +60,7 @@ class SearchPageViewModel extends ChangeNotifier {
       final userFiles = await documentModel.getUserDocuments();
       final sharedFiles = await documentModel.getSharedDocuments();
 
-      _allFiles = [...userFiles, ...?sharedFiles];
+      _allFiles = [...?userFiles, ...?sharedFiles];
     } catch (e) {
       debugPrint('Error loading files: $e');
     } finally {

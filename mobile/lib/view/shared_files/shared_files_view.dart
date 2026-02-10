@@ -18,28 +18,47 @@ class SharedFilesView extends StatefulWidget {
 }
 
 class _SharedFilesViewState extends State<SharedFilesView> {
+  final _searchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
+    _searchController.addListener(_onSearchChanged);
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<SharedFilesViewModel>()
         ..initUser()
-        ..initFiles();
+        ..fetchFiles();
     });
+  }
+
+  void _onSearchChanged() {
+    context.read<SharedFilesViewModel>().searchFiles(_searchController.text);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<SharedFilesViewModel>();
 
-    final files = vm.sharedFiles.map((file) {
+    final files = vm.filteredFiles.map((file) {
       return SharedFileItem(
         id: file.id,
         fileName: file.originalName,
         dateTime: file.createdAt,
         onButtonTap: (id) {
-          final selectedFile = vm.getFileById(id);
-          if (selectedFile != null && vm.currentUser != null) {
+          final selectedFile = vm.filteredFiles.firstWhere(
+            (file) => file.id == id,
+            orElse: () => throw Exception('File not found'),
+          );
+          
+          if (vm.currentUser != null) {
             showModalBottomSheet(
               useRootNavigator: true,
               context: context,
@@ -48,11 +67,44 @@ class _SharedFilesViewState extends State<SharedFilesView> {
                 return UnifiedFileBottomSheet(
                   file: selectedFile,
                   currentUser: vm.currentUser!,
-                  onOpenTap: () => vm.openFile(selectedFile),
-                  onDownloadTap: () => vm.downloadFile(selectedFile),
-                  onRenameTap: (newName) =>
-                      vm.renameFile(selectedFile, newName: newName),
-                  onDeleteTap: () => vm.deleteFile(selectedFile),
+                  onOpenTap: () {
+                    vm.openFile(selectedFile);
+                    Navigator.pop(context);
+                  },
+                  onDownloadTap: () {
+                    vm.downloadFile(selectedFile);
+                    Navigator.pop(context);
+                  },
+                  onRenameTap: (newName) async {
+                    final result = await vm.renameFile(selectedFile, newName);
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            result == ActionResult.success
+                                ? 'Fichier renommé avec succès'
+                                : 'Erreur lors du renommage',
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  onDeleteTap: () async {
+                    final result = await vm.deleteFile(selectedFile);
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            result == ActionResult.success
+                                ? 'Fichier supprimé avec succès'
+                                : 'Erreur lors de la suppression',
+                          ),
+                        ),
+                      );
+                    }
+                  },
                 );
               },
             );
@@ -72,7 +124,7 @@ class _SharedFilesViewState extends State<SharedFilesView> {
               child: Material(
                 type: MaterialType.transparency,
                 child: SharedFileSearchBar(
-                  controller: vm.searchController,
+                  controller: _searchController,
                   hintText: 'Rechercher un fichier...',
                   iconPath: 'assets/icons/search.svg',
                 ),
@@ -93,13 +145,16 @@ class _SharedFilesViewState extends State<SharedFilesView> {
                 return FilterBottomSheet(
                   currentFilter: vm.currentFilter,
                   allowedFilter: FileFilterEnum.values,
-                  onFilterSelected: (filter) => vm.setFilter(filter),
+                  onFilterSelected: (filter) {
+                    vm.setCurrentFilter(filter);
+                    Navigator.pop(context);
+                  },
                 );
               },
             );
           },
           showFilterButton: true,
-          messageOnEmpty: 'Aucun fichier trouvé',
+          messageOnEmpty: 'Aucun fichier partagé trouvé',
         ),
       ],
     );

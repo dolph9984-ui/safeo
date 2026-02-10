@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:securite_mobile/enum/file_filter_enum.dart';
 import 'package:securite_mobile/enum/file_type_enum.dart';
 import 'package:securite_mobile/model/document_model.dart';
@@ -6,57 +6,76 @@ import 'package:securite_mobile/model/session_model.dart';
 import 'package:securite_mobile/model/user_model.dart';
 import 'package:securite_mobile/utils/file_name_util.dart';
 
+class LoadingState {
+  final bool state;
+  final String message;
+
+  LoadingState({required this.state, required this.message});
+}
+
+enum ActionResult { error, success }
+
 class SharedFilesViewModel extends ChangeNotifier {
   final userModel = UserModel();
   final fileModel = DocumentModel();
   final sessionModel = SessionModel();
 
-  final TextEditingController searchController = TextEditingController();
-
   User? _user;
   List<Document>? _sharedFiles;
   List<Document>? _filteredFiles;
+  String _searchQuery = '';
+
+  LoadingState loading = LoadingState(state: false, message: '');
 
   FileFilterEnum _currentFilter = FileFilterEnum.all;
 
-  List<Document> get sharedFiles => _filteredFiles ?? [];
-
   FileFilterEnum get currentFilter => _currentFilter;
+
+  List<Document> get filteredFiles => _filteredFiles ?? [];
 
   User? get currentUser => _user;
 
-  SharedFilesViewModel() {
-    searchController.addListener(_applyFilters);
+  void _setLoading(bool state, [String message = '']) {
+    loading = LoadingState(state: state, message: message);
+    notifyListeners();
   }
 
   void initUser() {
     if (sessionModel.session == null) {
       sessionModel.destroySession();
-      _user = User.none();
       return;
     }
     _user = sessionModel.session!.user;
     notifyListeners();
   }
 
-  void initFiles() {
-    fileModel.getSharedDocuments().then((res) {
-      _sharedFiles = res;
-      _filteredFiles = res;
-      notifyListeners();
-    });
+  Future<void> fetchFiles() async {
+    _setLoading(true, 'Récupération des fichiers partagés');
+    try {
+      _sharedFiles = await fileModel.getSharedDocuments();
+      _filteredFiles = _sharedFiles;
+      _applyFiltersAndSearch();
+    } finally {
+      _setLoading(false);
+    }
   }
 
-  void setFilter(FileFilterEnum filter) {
-    _currentFilter = filter;
-    _applyFilters();
+  void setCurrentFilter(FileFilterEnum newFilter) {
+    _currentFilter = newFilter;
+    _applyFiltersAndSearch();
+    notifyListeners();
   }
 
-  void _applyFilters() {
-    final query = searchController.text.toLowerCase();
+  void searchFiles(String query) {
+    _searchQuery = query.toLowerCase();
+    _applyFiltersAndSearch();
+    notifyListeners();
+  }
 
+  void _applyFiltersAndSearch() {
     List<Document> filtered = _sharedFiles ?? [];
 
+    // 1. Appliquer les filtres de type de fichier
     const filterMap = {
       FileFilterEnum.pdf: FileTypeEnum.pdf,
       FileFilterEnum.image: FileTypeEnum.image,
@@ -69,70 +88,67 @@ class SharedFilesViewModel extends ChangeNotifier {
     if (targetType != null) {
       filtered = filtered.where((file) {
         return FileTypeEnum.fromExtension(
-              FileNameUtil.getExtension(file.originalName),
-            ) ==
-            targetType;
+          FileNameUtil.getExtension(file.originalName),
+        ) == targetType;
       }).toList();
+    } else if (_currentFilter == FileFilterEnum.owner) {
+      filtered = filtered.where((file) => file.isOwner ?? false).toList();
+    } else if (_currentFilter == FileFilterEnum.viewer) {
+      filtered = filtered.where((file) => !(file.isOwner ?? true)).toList();
     }
 
-    if (_currentFilter == FileFilterEnum.owner && _user != null) {
-      filtered = filtered.where((file) => file.userId == _user!.uuid).toList();
-    } else if (_currentFilter == FileFilterEnum.viewer && _user != null) {
+    // 2. Appliquer la recherche textuelle
+    if (_searchQuery.isNotEmpty) {
       filtered = filtered.where((file) {
-        return file.userId != _user!.uuid &&
-            (file.viewers?.any((viewer) => viewer.id == _user!.uuid) ?? false);
-      }).toList();
-    }
-
-    if (query.isNotEmpty) {
-      filtered = filtered.where((file) {
-        return file.originalName.toLowerCase().contains(query);
+        return file.originalName.toLowerCase().contains(_searchQuery);
       }).toList();
     }
 
     _filteredFiles = filtered;
-    notifyListeners();
   }
 
-  Document? getFileById(String id) {
-    try {
-      return _sharedFiles?.firstWhere((file) => file.id == id);
-    } catch (e) {
-      return null;
+  Future<ActionResult> renameFile(Document file, String newName) async {
+    if (file.originalName == newName) {
+      return ActionResult.success;
     }
+
+    _setLoading(true, 'Renommage du document');
+
+    final res = await fileModel.renameDocument(file, newName: newName);
+
+    if (res) {
+      final index = _sharedFiles?.indexOf(file) ?? -1;
+      if (index != -1) {
+        _sharedFiles![index] = file.copyWith(originalName: newName);
+        _applyFiltersAndSearch();
+        notifyListeners();
+      }
+    }
+
+    _setLoading(false);
+    return res ? ActionResult.success : ActionResult.error;
   }
 
-  void openFile(Document file) async {
+  Future<ActionResult> deleteFile(Document file) async {
+    _setLoading(true, 'Suppression du document');
+
+    final res = await fileModel.deleteDocument(file);
+
+    if (res) {
+      _sharedFiles?.remove(file);
+      _applyFiltersAndSearch();
+      notifyListeners();
+    }
+
+    _setLoading(false);
+    return res ? ActionResult.success : ActionResult.error;
+  }
+
+  void openFile(Document file) {
     fileModel.openFile(file);
   }
 
-  void renameFile(Document file, {required String newName}) async {
-    if (file.originalName == newName) return;
-
-    fileModel.renameDocument(file, newName: newName).then((res) {
-      int index = _sharedFiles?.indexOf(file) ?? -1;
-      if (index != -1) {
-        _sharedFiles![index] = file.copyWith(originalName: newName);
-      }
-      notifyListeners();
-    });
-  }
-
-  void downloadFile(Document file) async {
+  void downloadFile(Document file) {
     fileModel.downloadFile(file);
-  }
-
-  void deleteFile(Document file) async {
-    fileModel.deleteDocument(file).then((res) {
-      _sharedFiles?.removeWhere((e) => e == file);
-      notifyListeners();
-    });
-  }
-
-  @override
-  void dispose() {
-    searchController.removeListener(_applyFilters);
-    searchController.dispose();
-    super.dispose();
   }
 }

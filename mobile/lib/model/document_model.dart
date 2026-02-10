@@ -41,6 +41,7 @@ class Document {
   final DateTime updatedAt;
   final List<Viewer>? viewers;
   final User owner;
+  final bool? isOwner;
 
   const Document({
     required this.id,
@@ -56,6 +57,7 @@ class Document {
     required this.updatedAt,
     required this.viewers,
     required this.owner,
+    this.isOwner,
   });
 
   factory Document.fromJson(Map<String, dynamic> json) {
@@ -78,9 +80,12 @@ class Document {
           .toList(),
       owner: json['user'] != null
           ? User.fromJson(json['user'])
+          : json['ownerUser'] != null
+          ? User.fromJson(json['ownerUser'])
           : json['userId'] != null
           ? User.none().copyWith(uuid: json['userId'])
           : User.none(),
+      isOwner: json['isOwner'] as bool?,
     );
   }
 
@@ -98,6 +103,7 @@ class Document {
     DateTime? updatedAt,
     List<Viewer>? viewers,
     User? owner,
+    bool? isOwner,
   }) {
     return Document(
       id: id ?? this.id,
@@ -113,6 +119,7 @@ class Document {
       updatedAt: updatedAt ?? this.updatedAt,
       viewers: viewers ?? this.viewers?.map((v) => v).toList(),
       owner: owner ?? this.owner,
+      isOwner: isOwner ?? this.isOwner,
     );
   }
 }
@@ -132,7 +139,19 @@ class DocumentModel {
   }
 
   Future<List<Document>?> getSharedDocuments() async {
-    return null;
+    final response = await _dio.get('/v1/api/document/shared-documents');
+    
+    final List data = response.data['sharedDocuments']; 
+    
+    return data.map((json) {
+      final Map<String, dynamic> adaptedJson = {
+        ...json,
+        'user': json['ownerUser'],
+        'viewers': json['viewers'] ?? [],
+      };
+      
+      return Document.fromJson(adaptedJson);
+    }).toList();
   }
 
   Future<List<Document>?> getTrashDocuments() async {
@@ -215,8 +234,6 @@ class DocumentModel {
   }
 
   Future<bool> deleteDocument(Document document) async {
-    await _dio.delete('/v1/api/document/${document.id}');
-
     try {
       await _dio.delete('/v1/api/document/${document.id}');
       return true;
