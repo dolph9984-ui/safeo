@@ -39,18 +39,17 @@
                     android:scheme="safeo" />
             </intent-filter>
 
-            <!-- Deeplink Invitation -->
-            <intent-filter android:autoVerify="true">
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="safeo-api.greny.app"
-                    android:path="/v1/api/document-shares/invite"
-                    android:scheme="https" />
+                    android:host="invite"
+                    android:scheme="safeo" />
             </intent-filter>
+
 
         </activity>
 
