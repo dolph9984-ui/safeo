@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:securite_mobile/model/user_model.dart';
 import 'package:securite_mobile/model/viewer_model.dart';
 import 'package:securite_mobile/services/file_upload_service.dart';
@@ -177,7 +179,32 @@ Future<void> shareFile(
   }
 }
 
-  Future<void> downloadFile(Document document) async {}
+  Future<bool> downloadFile(Document document) async {
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final filePath = '${dir.path}/${document.originalName}';
+
+      print('path : $filePath');
+
+      final response = await _dio.get<List<int>>(
+        '/v1/api/document/${document.id}/download',
+
+        options: Options(
+          responseType: ResponseType.bytes,
+          followRedirects: false,
+        ),
+      );
+
+      // write bytes to file
+      final file = File(filePath);
+      await file.writeAsBytes(response.data!);
+
+      return true;
+    } catch (e) {
+      debugPrint('Erreur téléchargement: $e');
+      return false;
+    }
+  }
 
   Future<Document> uploadFile({
     required Uint8List bytes,

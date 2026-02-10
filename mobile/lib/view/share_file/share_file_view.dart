@@ -31,10 +31,7 @@ class _ShareFileContent extends StatelessWidget {
   final String fileId;
   final bool autoFocus;
 
-  const _ShareFileContent({
-    required this.fileId,
-    required this.autoFocus,
-  });
+  const _ShareFileContent({required this.fileId, required this.autoFocus});
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +73,7 @@ class _ShareFileContent extends StatelessWidget {
               hintText: 'Inviter un utilisateur par email',
               iconPath: 'assets/icons/user-plus.svg',
               onChanged: vm.onInviteEmailChanged,
-              autoFocus: autoFocus,  
+              autoFocus: autoFocus,
             ),
 
             const SizedBox(height: 8),
@@ -97,7 +94,7 @@ class _ShareFileContent extends StatelessWidget {
                 onPressed: vm.canSendInvite && !vm.isLoading
                     ? () async {
                         final error = await vm.shareWithEmail(vm.emailToInvite);
-                        
+
                         if (context.mounted) {
                           if (error == null) {
                             showSuccessSnackbar(
@@ -154,7 +151,7 @@ class _ShareFileContent extends StatelessWidget {
             Expanded(
               child: ListView.separated(
                 itemCount: vm.sharedWith.length + 1,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                separatorBuilder: (_, _) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   if (index == 0 && vm.currentUser != null) {
                     return MemberTile(
